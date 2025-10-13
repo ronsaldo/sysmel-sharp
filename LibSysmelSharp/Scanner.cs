@@ -90,9 +90,124 @@ namespace LibSysmelSharp
             return c == '-' || c == '+';
         }
 
+        private bool IsOperatorCharacter(int c)
+        {
+            if (c < 0)
+                return false;
+            return "+-/\\*~<>=@%|&?!^".IndexOf((char)c) >= 0;
+        }
+
+        private Token ScanOperator()
+        {
+            ScannerState initialState = state.Copy();
+            int c = state.Peek();
+            state.Advance();
+
+            if(!IsOperatorCharacter(state.Peek()))
+            {
+                if(c == '|')
+                    return state.MakeTokenStartingFrom(TokenKind.Bar, initialState);
+                if (c == '<')
+                    return state.MakeTokenStartingFrom(TokenKind.LessThan, initialState);
+                if (c == '>')
+                    return state.MakeTokenStartingFrom(TokenKind.GreaterThan, initialState);
+            }
+
+            while (IsOperatorCharacter(state.Peek()))
+                state.Advance();
+
+            return state.MakeTokenStartingFrom(TokenKind.Operator, initialState);
+        }
+
         private Token ScanDelimiters()
         {
             ScannerState initialState = state.Copy();
+            int c = state.Peek();
+            switch(c)
+            {
+            case '(':
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.LeftParent, initialState);
+            case ')':
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.RightParent, initialState);
+            case '[':
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.LeftBracket, initialState);
+            case ']':
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.RightBracket, initialState);
+            case '{':
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.LeftCurlyBracket, initialState);
+            case '}':
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.RightCurlyBracket, initialState);
+            case ';':
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.Semicolon, initialState);
+            case ',':
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.Comma, initialState);
+            case '!':
+                if(state.PeekAt(1) == '{')
+                {
+                    state.AdvanceWithCount(2);
+                    return state.MakeTokenStartingFrom(TokenKind.MethodStart, initialState);
+                }
+                break;
+            case '.':
+                state.Advance();
+                if (state.Peek() == '.' && state.PeekAt(1) == '.')
+                {
+                    state.AdvanceWithCount(2);
+                    return state.MakeTokenStartingFrom(TokenKind.Ellipsis, initialState);
+                }
+                return state.MakeTokenStartingFrom(TokenKind.Dot, initialState);
+            case ':':
+                state.Advance();
+                if (state.Peek() == ':')
+                {
+                    state.Advance();
+                    return state.MakeTokenStartingFrom(TokenKind.ColonColon, initialState);
+                }
+                else if (state.Peek() == '=')
+                {
+                    state.Advance();
+                    return state.MakeTokenStartingFrom(TokenKind.Assignment, initialState);
+                }
+                return state.MakeTokenStartingFrom(TokenKind.Colon, initialState);
+            case '`':
+                {
+                    int c2 = state.PeekAt(1);
+                    if(c2 == '\'')
+                    {
+                        state.AdvanceWithCount(2);
+                        return state.MakeTokenStartingFrom(TokenKind.Quote, initialState);
+                    }
+                    if (c2 == '`')
+                    {
+                        state.AdvanceWithCount(2);
+                        return state.MakeTokenStartingFrom(TokenKind.QuasiQuote, initialState);
+                    }
+                    if (c2 == ',')
+                    {
+                        state.AdvanceWithCount(2);
+                        return state.MakeTokenStartingFrom(TokenKind.QuasiUnquote, initialState);
+                    }
+                    if (c2 == '@')
+                    {
+                        state.AdvanceWithCount(2);
+                        return state.MakeTokenStartingFrom(TokenKind.Splice, initialState);
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+
+            if (IsOperatorCharacter(c))
+                return ScanOperator();
 
             state.Advance();
             return state.MakeErrorToken("Unknown character", initialState);

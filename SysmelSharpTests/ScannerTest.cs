@@ -132,5 +132,83 @@ namespace SysmelSharpTests
             Assert.AreEqual("multi:keyword:with:", tokens[0].GetText());
             Assert.AreEqual(TokenKind.EndOfSource, tokens[1].kind);
         }
+
+
+        [TestMethod]
+        public void TestDelimiters()
+        {
+            List<Token> tokens = ScanString("() [] {}");
+            Assert.AreEqual(7, tokens.Count);
+
+            Assert.AreEqual(TokenKind.LeftParent, tokens[0].kind);
+            Assert.AreEqual(TokenKind.RightParent, tokens[1].kind);
+
+            Assert.AreEqual(TokenKind.LeftBracket, tokens[2].kind);
+            Assert.AreEqual(TokenKind.RightBracket, tokens[3].kind);
+
+            Assert.AreEqual(TokenKind.LeftCurlyBracket, tokens[4].kind);
+            Assert.AreEqual(TokenKind.RightCurlyBracket, tokens[5].kind);
+
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[6].kind);
+        }
+
+        [TestMethod]
+        public void TestDelimiters2()
+        {
+            List<Token> tokens = ScanString("; , . ... : :: :=");
+            Assert.AreEqual(8, tokens.Count);
+
+            Assert.AreEqual(TokenKind.Semicolon, tokens[0].kind);
+            Assert.AreEqual(TokenKind.Comma, tokens[1].kind);
+            Assert.AreEqual(TokenKind.Dot, tokens[2].kind);
+            Assert.AreEqual(TokenKind.Ellipsis, tokens[3].kind);
+            Assert.AreEqual(TokenKind.Colon, tokens[4].kind);
+            Assert.AreEqual(TokenKind.ColonColon, tokens[5].kind);
+            Assert.AreEqual(TokenKind.Assignment, tokens[6].kind);
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[7].kind);
+        }
+
+        [TestMethod]
+        public void TestDelimiters3()
+        {
+            List<Token> tokens = ScanString("#[ #{ #( !{");
+            Assert.AreEqual(5, tokens.Count);
+
+            Assert.AreEqual(TokenKind.ByteArrayStart, tokens[0].kind);
+            Assert.AreEqual(TokenKind.ImmutableDictionaryStart, tokens[1].kind);
+            Assert.AreEqual(TokenKind.LiteralArrayStart, tokens[2].kind);
+            Assert.AreEqual(TokenKind.MethodStart, tokens[3].kind);
+
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[4].kind);
+        }
+
+        [TestMethod]
+        public void TestMacroOperators()
+        {
+            List<Token> tokens = ScanString("`' `` `, `@");
+            Assert.AreEqual(5, tokens.Count);
+
+            Assert.AreEqual(TokenKind.Quote, tokens[0].kind);
+            Assert.AreEqual(TokenKind.QuasiQuote, tokens[1].kind);
+            Assert.AreEqual(TokenKind.QuasiUnquote, tokens[2].kind);
+            Assert.AreEqual(TokenKind.Splice, tokens[3].kind);
+
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[4].kind);
+        }
+
+        [TestMethod]
+        public void TestOperators()
+        {
+            List<Token> tokens = ScanString("| < > + *");
+            Assert.AreEqual(6, tokens.Count);
+
+            Assert.AreEqual(TokenKind.Bar, tokens[0].kind);
+            Assert.AreEqual(TokenKind.LessThan, tokens[1].kind);
+            Assert.AreEqual(TokenKind.GreaterThan, tokens[2].kind);
+            Assert.AreEqual(TokenKind.Operator, tokens[3].kind);
+            Assert.AreEqual(TokenKind.Operator, tokens[4].kind);
+
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[5].kind);
+        }
     }
 }
