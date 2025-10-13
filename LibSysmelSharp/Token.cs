@@ -10,7 +10,11 @@ namespace LibSysmelSharp
     {
         public TokenKind kind = TokenKind.NullToken;
         public SourcePosition sourcePosition = new SourcePosition();
-        public string text = "";
         public string errorMessage = "";
+
+        public string GetText()
+        {
+            return sourcePosition.GetText();
+        }
     }
 }

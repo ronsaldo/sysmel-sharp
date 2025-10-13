@@ -9,10 +9,13 @@
         Character,
         Float,
         Identifier,
-        Nat,
+        Integer,
         Keyword,
         MultiKeyword,
         Operator,
+        Bar,
+        LessThan,
+        GreaterThan,
         String,
         Symbol,
 
@@ -23,20 +26,14 @@
         LeftCurlyBracket,
         RightCurlyBracket,
 
-        LessThan,
-        GreaterThan,
-        Star,
-        Question,
-        Bang,
+
         Colon,
         ColonColon,
-        Bar,
         Assignment,
         Semicolon,
         Comma,
         Dot,
         Ellipsis,
-        BindOperator,
         Quote,
         QuasiQuote,
         QuasiUnquote,
@@ -45,5 +42,7 @@
         ByteArrayStart,
         ImmutableDictionaryStart,
         LiteralArrayStart,
+
+        MethodStart
     }
 }

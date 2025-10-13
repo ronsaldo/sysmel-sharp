@@ -15,5 +15,12 @@ namespace LibSysmelSharp
         public int endLine;
         public int startColumn;
         public int endColumn;
+
+
+        public string GetText()
+        {
+            return sourceCode.text.Substring(startIndex, endIndex - startIndex);
+        }
+
     }
 }
