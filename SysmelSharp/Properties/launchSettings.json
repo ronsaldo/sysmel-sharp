@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SysmelSharp": {
+      "commandName": "Project",
+      "commandLineArgs": "-eval \"1+1\""
+    }
+  }
+}
