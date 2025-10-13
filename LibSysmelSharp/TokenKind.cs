@@ -1,0 +1,49 @@
+﻿namespace LibSysmelSharp
+{
+    public enum TokenKind
+    {
+        NullToken,
+        EndOfSource,
+        Error,
+
+        Character,
+        Float,
+        Identifier,
+        Nat,
+        Keyword,
+        MultiKeyword,
+        Operator,
+        String,
+        Symbol,
+
+        LeftParent,
+        RightParent,
+        LeftBracket,
+        RightBracket,
+        LeftCurlyBracket,
+        RightCurlyBracket,
+
+        LessThan,
+        GreaterThan,
+        Star,
+        Question,
+        Bang,
+        Colon,
+        ColonColon,
+        Bar,
+        Assignment,
+        Semicolon,
+        Comma,
+        Dot,
+        Ellipsis,
+        BindOperator,
+        Quote,
+        QuasiQuote,
+        QuasiUnquote,
+        Splice,
+
+        ByteArrayStart,
+        ImmutableDictionaryStart,
+        LiteralArrayStart,
+    }
+}
