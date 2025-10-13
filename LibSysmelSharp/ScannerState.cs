@@ -65,7 +65,7 @@ namespace LibSysmelSharp
         public int PeekAt(int offset)
         {
             if (position + offset < textSize)
-                return (int)text[offset];
+                return (int)text[position + offset];
             return -1;
         }
 
