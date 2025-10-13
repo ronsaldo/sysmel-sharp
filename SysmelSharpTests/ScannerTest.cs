@@ -210,5 +210,75 @@ namespace SysmelSharpTests
 
             Assert.AreEqual(TokenKind.EndOfSource, tokens[5].kind);
         }
+
+        [TestMethod]
+        public void TestCharacter()
+        {
+            List<Token> tokens = ScanString("'A'");
+            Assert.AreEqual(2, tokens.Count);
+
+            Assert.AreEqual(TokenKind.Character, tokens[0].kind);
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[1].kind);
+        }
+
+        [TestMethod]
+        public void TestString()
+        {
+            List<Token> tokens = ScanString("\"Hello World\"");
+            Assert.AreEqual(2, tokens.Count);
+
+            Assert.AreEqual(TokenKind.String, tokens[0].kind);
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[1].kind);
+        }
+
+        [TestMethod]
+        public void TestSymbolIdentifier()
+        {
+            List<Token> tokens = ScanString("#identifier");
+            Assert.AreEqual(2, tokens.Count);
+
+            Assert.AreEqual(TokenKind.Symbol, tokens[0].kind);
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[1].kind);
+        }
+
+        [TestMethod]
+        public void TestSymbolOperator()
+        {
+            List<Token> tokens = ScanString("#+");
+            Assert.AreEqual(2, tokens.Count);
+
+            Assert.AreEqual(TokenKind.Symbol, tokens[0].kind);
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[1].kind);
+        }
+
+        [TestMethod]
+        public void TestSymbolString()
+        {
+            List<Token> tokens = ScanString("#\"String Symbol\"");
+            Assert.AreEqual(2, tokens.Count);
+
+            Assert.AreEqual(TokenKind.Symbol, tokens[0].kind);
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[1].kind);
+        }
+
+        [TestMethod]
+        public void TestSymbolKeyword()
+        {
+            List<Token> tokens = ScanString("#keyword:");
+            Assert.AreEqual(2, tokens.Count);
+
+            Assert.AreEqual(TokenKind.Symbol, tokens[0].kind);
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[1].kind);
+        }
+
+        [TestMethod]
+        public void TestSymbolMultiKeyword()
+        {
+            List<Token> tokens = ScanString("#multi:keyword:with:");
+            Assert.AreEqual(2, tokens.Count);
+
+            Assert.AreEqual(TokenKind.Symbol, tokens[0].kind);
+            Assert.AreEqual(TokenKind.EndOfSource, tokens[1].kind);
+        }
     }
 }

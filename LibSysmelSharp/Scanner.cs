@@ -107,9 +107,9 @@ namespace LibSysmelSharp
             {
                 if(c == '|')
                     return state.MakeTokenStartingFrom(TokenKind.Bar, initialState);
-                if (c == '<')
+                else if (c == '<')
                     return state.MakeTokenStartingFrom(TokenKind.LessThan, initialState);
-                if (c == '>')
+                else if (c == '>')
                     return state.MakeTokenStartingFrom(TokenKind.GreaterThan, initialState);
             }
 
@@ -294,6 +294,115 @@ namespace LibSysmelSharp
             return state.MakeTokenStartingFrom(TokenKind.Identifier, initialState);
         }
 
+        private Token ScanPoundSequence()
+        {
+            ScannerState initialState = state.Copy();
+            state.Advance();
+
+            int c1 = state.Peek();
+            if(IsIdentifierStart(c1))
+            {
+                state.Advance();
+                while (IsIdentifierMiddle(state.Peek()))
+                    state.Advance();
+
+                if(state.Peek() == ':')
+                {
+                    state.Advance();
+                    bool hasAdvanced = true;
+
+                    while(hasAdvanced)
+                        hasAdvanced = ScanAdvanceKeyword();
+                }
+
+                return state.MakeTokenStartingFrom(TokenKind.Symbol, initialState);
+            }
+
+            if(IsOperatorCharacter(c1))
+            {
+                while (IsOperatorCharacter(state.Peek()))
+                    state.Advance();
+                
+                return state.MakeTokenStartingFrom(TokenKind.Symbol, initialState);
+            }
+
+            if(c1 == '"')
+            {
+                state.Advance();
+
+                while (!state.AtEnd() && state.Peek() != '"')
+                {
+                    if (state.Peek() == '\\' && state.PeekAt(1) >= 0)
+                        state.AdvanceWithCount(2);
+                    else
+                        state.Advance();
+                }
+
+                if (state.Peek() != '"')
+                    return state.MakeErrorToken("Incomplete symbol string literal", initialState);
+
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.Symbol, initialState);
+            }
+
+            if(c1 == '[')
+            {
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.ByteArrayStart, initialState);
+            }
+            if (c1 == '{')
+            {
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.ImmutableDictionaryStart, initialState);
+            }
+            if (c1 == '(')
+            {
+                state.Advance();
+                return state.MakeTokenStartingFrom(TokenKind.LiteralArrayStart, initialState);
+            }
+
+            return state.MakeErrorToken("Unknown character", initialState);
+        }
+        private Token ScanCharacter()
+        {
+            ScannerState initialState = state.Copy();
+            state.Advance();
+
+            while (!state.AtEnd() && state.Peek() != '\'')
+            {
+                if (state.Peek() == '\\' && state.PeekAt(1) >= 0)
+                    state.AdvanceWithCount(2);
+                else
+                    state.Advance();
+            }
+
+            if (state.Peek() != '\'')
+                return state.MakeErrorToken("Incomplete character literal", initialState);
+
+            state.Advance();
+            return state.MakeTokenStartingFrom(TokenKind.Character, initialState);
+        }
+
+        private Token ScanString()
+        {
+            ScannerState initialState = state.Copy();
+            state.Advance();
+
+            while(!state.AtEnd() && state.Peek() != '"')
+            {
+                if(state.Peek() == '\\' && state.PeekAt(1) >= 0)
+                    state.AdvanceWithCount(2);
+                else
+                    state.Advance();
+            }
+
+            if (state.Peek() != '"')
+                return state.MakeErrorToken("Incomplete string literal", initialState);
+            
+            state.Advance();
+            return state.MakeTokenStartingFrom(TokenKind.String, initialState);
+        }
+
         private Token ScanSingleToken()
         {
             Token? whiteErrorToken = SkipWhite();
@@ -317,6 +426,18 @@ namespace LibSysmelSharp
             // Identifiers
             if (IsIdentifierStart(c))
                 return ScanIdentifierOrKeyword();
+
+            // Pound sequence.
+            if (c == '#')
+                return ScanPoundSequence();
+
+            // Characters
+            if (c == '\'')
+                return ScanCharacter();
+
+            // Strings
+            if (c == '"')
+                return ScanString();
 
             return ScanDelimiters();
         }
