@@ -19,6 +19,39 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestApplication()
+        {
+            ParseTreeNode node = ParseString("x()");
+            Assert.IsTrue(node.IsParseTreeApplicationNode());
+
+            ParseTreeApplicationNode application = (ParseTreeApplicationNode)node;
+            Assert.IsTrue(application.functional.IsParseTreeIdentifierReferenceNode());
+            Assert.AreEqual(0, application.arguments.Length);
+        }
+
+        [TestMethod]
+        public void TestApplication2()
+        {
+            ParseTreeNode node = ParseString("x(42)");
+            Assert.IsTrue(node.IsParseTreeApplicationNode());
+
+            ParseTreeApplicationNode application = (ParseTreeApplicationNode)node;
+            Assert.IsTrue(application.functional.IsParseTreeIdentifierReferenceNode());
+            Assert.AreEqual(1, application.arguments.Length);
+        }
+
+        [TestMethod]
+        public void TestApplication3()
+        {
+            ParseTreeNode node = ParseString("x(42. 5)");
+            Assert.IsTrue(node.IsParseTreeApplicationNode());
+
+            ParseTreeApplicationNode application = (ParseTreeApplicationNode)node;
+            Assert.IsTrue(application.functional.IsParseTreeIdentifierReferenceNode());
+            Assert.AreEqual(2, application.arguments.Length);
+        }
+
+        [TestMethod]
         public void TestEmptySequence()
         {
             ParseTreeNode node = ParseString("");
@@ -125,6 +158,26 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestEmptyList()
+        {
+            ParseTreeNode node = ParseString("[]");
+            Assert.IsTrue(node.IsParseTreeListNode());
+
+            ParseTreeListNode list = (ParseTreeListNode)node;
+            Assert.AreEqual(0, list.elements.Length);
+        }
+
+        [TestMethod]
+        public void TestList()
+        {
+            ParseTreeNode node = ParseString("[1 . 2]");
+            Assert.IsTrue(node.IsParseTreeListNode());
+
+            ParseTreeListNode list = (ParseTreeListNode)node;
+            Assert.AreEqual(2, list.elements.Length);
+        }
+
+        [TestMethod]
         public void TestEmptyTuple()
         {
             ParseTreeNode node = ParseString("()");
@@ -186,7 +239,6 @@ namespace SysmelSharpTests
             Assert.IsTrue(application.functional.IsParseTreeIdentifierReferenceNode());
             Assert.AreEqual(3, application.arguments.Length);
         }
-
 
         [TestMethod]
         public void TestKeywordMessageSend()

@@ -124,6 +124,26 @@ namespace LibSysmelSharp
             return state.ExpectsAddingErrorNode(TokenKind.RightParent, "Missing right parenthesis.", expression);
         }
 
+        private ParseTreeNode ParseList()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.LeftBracket);
+            state.Advance();
+
+            List<ParseTreeNode> elements = ParseExpressionListUntilEndOrDelimiter(TokenKind.RightBracket);
+
+            if (state.PeekKind() == TokenKind.RightBracket)
+            {
+                state.Advance();
+            }
+            else
+            {
+                elements.Add(state.MakeErrorAtCurrentPosition("Expected a right bracket."));
+            }
+
+            return new ParseTreeListNode(state.SourcePositionFrom(startingPosition), elements.ToArray());
+        }
+
         private ParseTreeNode ParseTerm()
         {
             TokenKind kind = state.PeekKind();
@@ -133,6 +153,8 @@ namespace LibSysmelSharp
                 return ParseIdentifierReference();
             case TokenKind.LeftParent:
                 return ParseParentheses();
+            case TokenKind.LeftBracket:
+                return ParseList();
             default:
                 return ParseLiteral();
             }
@@ -140,7 +162,7 @@ namespace LibSysmelSharp
 
         bool IsUnaryPostfixToken(TokenKind kind)
         {
-            return kind == TokenKind.Identifier;
+            return kind == TokenKind.Identifier || kind == TokenKind.LeftParent;
         }
         private ParseTreeNode ParseUnaryPostfixExpression()
         {
@@ -157,6 +179,22 @@ namespace LibSysmelSharp
                         string selector = token.GetText();
                         ParseTreeNode selectorNode = new ParseTreeLiteralSymbolNode(token.sourcePosition, selector);
                         receiver = new ParseTreeMessageSendNode(state.SourcePositionFrom(startingPosition), receiver, selectorNode, new ParseTreeNode[0]);
+                    }
+                    break;
+                case TokenKind.LeftParent:
+                    {
+                        state.Advance();
+                        List<ParseTreeNode> callArguments = ParseExpressionListUntilEndOrDelimiter(TokenKind.RightParent);
+                        if (state.PeekKind() == TokenKind.RightParent)
+                        {
+                            state.Advance();
+                        }
+                        else
+                        {
+                            callArguments.Add(state.MakeErrorAtCurrentPosition("Expected a right parent."));
+                        }
+
+                        receiver = new ParseTreeApplicationNode(state.SourcePositionFrom(startingPosition), receiver, callArguments.ToArray());
                     }
                     break;
                 }
