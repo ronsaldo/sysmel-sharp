@@ -24,6 +24,36 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestFalseValue()
+        {
+            Value value = EvaluateString("false");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.AreEqual(false, value.AsBoolean());
+        }
+
+        [TestMethod]
+        public void TestTrueValue()
+        {
+            Value value = EvaluateString("true");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.AreEqual(true, value.AsBoolean());
+        }
+
+        [TestMethod]
+        public void TestNilValue()
+        {
+            Value value = EvaluateString("nil");
+            Assert.IsTrue(value.IsNilValue());
+        }
+
+        [TestMethod]
+        public void TestVoidValue()
+        {
+            Value value = EvaluateString("void");
+            Assert.IsTrue(value.IsVoidValue());
+        }
+
+        [TestMethod]
         public void TestLiteralCharacter()
         {
             Value value = EvaluateString("'A'");

@@ -14,6 +14,11 @@
             return this;
         }
 
+        public virtual bool AsBoolean()
+        {
+            throw new NotSupportedException();
+        }
+
         public virtual long AsInteger()
         {
             throw new NotSupportedException();
@@ -40,8 +45,22 @@
         public virtual bool IsType()
         {
             return false;
-
         }
+        public virtual bool IsVoidValue()
+        {
+            return false;
+        }
+
+        public virtual bool IsNilValue()
+        {
+            return false;
+        }
+
+        public virtual bool IsBooleanValue()
+        {
+            return false;
+        }
+
         public virtual bool IsIntegerValue()
         {
             return false;
@@ -58,6 +77,10 @@
         }
 
         public virtual bool IsSymbolValue()
+        {
+            return false;
+        }
+        public virtual bool isMacroContextValue()
         {
             return false;
         }
