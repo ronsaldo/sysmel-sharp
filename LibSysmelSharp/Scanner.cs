@@ -9,7 +9,7 @@ namespace LibSysmelSharp
 
         public Scanner()
         {
-            state = new ScannerState();
+            this.state = new ScannerState(new SourceCode());
         }
 
         private Token? SkipWhite()
@@ -411,9 +411,7 @@ namespace LibSysmelSharp
 
             if(state.AtEnd())
             {
-                Token endOfSource = new Token();
-                endOfSource.kind = TokenKind.EndOfSource;
-                return endOfSource;
+                return state.MakeTokenStartingFrom(TokenKind.EndOfSource, state);
             }
 
             int c = state.Peek();

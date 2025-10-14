@@ -5,13 +5,18 @@ namespace LibSysmelSharp
 {
     internal class ScannerState
     {
-        public SourceCode? sourceCode;
+        public SourceCode sourceCode;
         public string text = "";
         public int textSize;
         public int position;
         public int line;
         public int column;
         public bool isPreviousCR;
+
+        public ScannerState(SourceCode sourceCode)
+        {
+            this.sourceCode = sourceCode;
+        }
 
         public void Advance()
         {
@@ -76,8 +81,7 @@ namespace LibSysmelSharp
 
         public ScannerState Copy()
         {
-            ScannerState copy = new ScannerState();
-            copy.sourceCode = sourceCode;
+            ScannerState copy = new ScannerState(sourceCode);
             copy.text       = text;
             copy.textSize   = textSize;
             copy.position   = position;
@@ -89,8 +93,7 @@ namespace LibSysmelSharp
 
         public Token MakeErrorToken(string errorMessage, ScannerState previousState)
         {
-            SourcePosition sourcePosition = new SourcePosition();
-            sourcePosition.sourceCode = sourceCode;
+            SourcePosition sourcePosition = new SourcePosition(sourceCode);
 
             sourcePosition.startIndex = previousState.position;
             sourcePosition.endIndex = position;
@@ -99,17 +102,12 @@ namespace LibSysmelSharp
             sourcePosition.startColumn = previousState.column;
             sourcePosition.endColumn = column;
 
-            Token token = new Token();
-            token.kind = TokenKind.Error;
-            token.sourcePosition = sourcePosition;
-            token.errorMessage = errorMessage;
-            return token;
+            return new Token(TokenKind.Error, sourcePosition, errorMessage);
         }
 
         public Token MakeTokenStartingFrom(TokenKind kind, ScannerState previousState)
         {
-            SourcePosition sourcePosition = new SourcePosition();
-            sourcePosition.sourceCode = sourceCode;
+            SourcePosition sourcePosition = new SourcePosition(sourceCode);
 
             sourcePosition.startIndex = previousState.position;
             sourcePosition.endIndex = position;
@@ -118,16 +116,12 @@ namespace LibSysmelSharp
             sourcePosition.startColumn = previousState.column;
             sourcePosition.endColumn = column;
 
-            Token token = new Token();
-            token.kind = kind;
-            token.sourcePosition = sourcePosition;
-            return token;
+            return new Token(kind, sourcePosition);
         }
 
         static public ScannerState ForSourceCode(SourceCode sourceCode)
         {
-            ScannerState state = new ScannerState();
-            state.sourceCode = sourceCode;
+            ScannerState state = new ScannerState(sourceCode);
             state.text = sourceCode.text;
             state.textSize = sourceCode.text.Length;
             state.position = 0;
