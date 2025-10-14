@@ -9,6 +9,7 @@ namespace LibSysmelSharp
     public class ParseTreeErrorNode : ParseTreeNode
     {
         public string message = "";
+        public ParseTreeNode? innerNode;
 
         public override bool IsParseTreeErrorNode()
         {

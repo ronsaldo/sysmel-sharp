@@ -115,7 +115,7 @@ namespace LibSysmelSharp
             }
         }
 
-        private ParseTreeNode ParseTreeIdentifierReference()
+        private ParseTreeNode ParseIdentifierReference()
         {
             Token token = state.Next();
             Debug.Assert(token.kind == TokenKind.Identifier);
@@ -126,13 +126,34 @@ namespace LibSysmelSharp
             return identifierNode;
         }
 
+        private ParseTreeNode ParseParentheses()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.LeftParent);
+            state.Advance();
+
+            if(state.PeekKind() == TokenKind.RightParent)
+            {
+                state.Advance();
+                ParseTreeTupleNode tupleNode = new ParseTreeTupleNode();
+                tupleNode.sourcePosition = state.SourcePositionFrom(startingPosition);
+                tupleNode.elements = new ParseTreeNode[0];
+                return tupleNode;
+            }
+
+            ParseTreeNode expression = ParseExpressionSequenceUntilEndOrDelimiter(TokenKind.RightParent);
+            return state.ExpectsAddingErrorNode(TokenKind.RightParent, "Missing right parenthesis.", expression);
+        }
+
         private ParseTreeNode ParseTerm()
         {
             TokenKind kind = state.PeekKind();
             switch (kind)
             {
             case TokenKind.Identifier:
-                return ParseTreeIdentifierReference();
+                return ParseIdentifierReference();
+            case TokenKind.LeftParent:
+                return ParseParentheses();
             default:
                 return ParseLiteral();
             }

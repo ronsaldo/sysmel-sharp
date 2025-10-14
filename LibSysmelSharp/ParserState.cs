@@ -131,5 +131,20 @@ namespace LibSysmelSharp
                 return errorNode;
             }
         }
+
+        public ParseTreeNode ExpectsAddingErrorNode(TokenKind expectedKind, string errorMessage, ParseTreeNode node)
+        {
+            if(PeekKind() == expectedKind)
+            {
+                Advance();
+                return node;
+            }
+
+            ParseTreeErrorNode errorNode = new ParseTreeErrorNode();
+            errorNode.sourcePosition = CurrentSourcePosition();
+            errorNode.message = errorMessage;
+            errorNode.innerNode = node;
+            return errorNode;
+        }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class ParseTreeIdentifierReferenceNode : ParseTreeNode
     {
-        public string value;
+        public string value = "";
 
         public override bool IsParseTreeIdentifierReferenceNode()
         {

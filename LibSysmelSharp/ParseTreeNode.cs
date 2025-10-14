@@ -45,5 +45,10 @@
             return false;
         }
 
+        public virtual bool IsParseTreeTupleNode()
+        {
+            return false;
+        }
+
     }
 }
