@@ -1,4 +1,6 @@
-﻿namespace LibSysmelSharp
+﻿using System.Diagnostics;
+
+namespace LibSysmelSharp
 {
     public class Intrinsics
     {
@@ -82,6 +84,33 @@
             }
 
             return uniqueInstance;
+        }
+
+        public void AddMethod(AbstractFunction method)
+        {
+            Debug.Assert(method.name != null);
+            globalIntrinsicDictionary[method.name] = method;
+        }
+
+        void RegisterControlFlowMacros()
+        {
+            AddMethod(new PrimitiveFunction("if:then:else:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode condition = (ParseTreeNode)arguments[1];
+                    ParseTreeNode trueExpression = (ParseTreeNode)arguments[2];
+                    ParseTreeNode falseExpression = (ParseTreeNode)arguments[3];
+                    return new ParseTreeIfSelectionNode(context.sourcePosition, condition, trueExpression, falseExpression);
+                }));
+            AddMethod(new PrimitiveFunction("if:then:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode condition = (ParseTreeNode)arguments[1];
+                    ParseTreeNode trueExpression = (ParseTreeNode)arguments[2];
+                    return new ParseTreeIfSelectionNode(context.sourcePosition, condition, trueExpression, null);
+                }));
         }
 
         void RegisterIntegerTypePrimitives(NominalType integerType)
@@ -176,6 +205,7 @@
 
         void RegisterPrimitives()
         {
+            RegisterControlFlowMacros();
             RegisterIntegerTypePrimitives(IntegerType);
         }
     }

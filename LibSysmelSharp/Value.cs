@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LibSysmelSharp
 {
@@ -31,6 +32,12 @@ namespace LibSysmelSharp
                 throw new SysmelException(sourcePosition, "Expected an expression with type " + expectedType.ToString() + " instead of " + valueType.ToString());
             return evalResult;
         }
+        public virtual Value AnalyzeAndEvaluateMacroArgumentInEnvironment(Environment environment, SysmelType expectedType)
+        {
+            return AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, expectedType);
+        }
+
+
         public virtual Value AnalyzeAndEvaluateMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, Environment environment)
         {
             Value? method = LookupSelector(selector);
@@ -45,8 +52,18 @@ namespace LibSysmelSharp
             for (int i = 0; i < messageSend.arguments.Length; ++i)
                 argumentValues[i] = messageSend.arguments[i].AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
             return PerformWithArguments(selector, argumentValues);
-
         }
+
+        public virtual Value AnalyzeAndEvaluateApplicationInEnvironment(ParseTreeApplicationNode application, Environment environment)
+        {
+            return GetSysmelType().AnalyzeAndEvaluateApplicationInEnvironmentWithFunctional(application, environment, this);
+        }
+
+        public virtual Value AnalyzeAndEvaluateApplicationInEnvironmentWithFunctional(ParseTreeApplicationNode application, Environment environment, Value functional)
+        {
+            throw new SysmelException(application.sourcePosition, "Non functional value.");
+        }
+
         public virtual Value AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(ParseTreeMessageSendNode messageSend, string selector, Environment environment, Value receiver, Value method)
         {
             throw new SysmelException(messageSend.sourcePosition, "Found method does not have a functional type.");

@@ -10,7 +10,7 @@ namespace LibSysmelSharp
     {
         public Environment environment;
 
-        public MacroContextValue(SourcePosition sourcePosition, Environment environment) : base(sourcePosition)
+        public MacroContextValue(SourcePosition? sourcePosition, Environment environment) : base(sourcePosition)
         {
             this.environment = environment;
         }

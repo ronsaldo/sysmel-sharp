@@ -191,5 +191,29 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsBooleanValue());
             Assert.AreEqual(false, value.AsBoolean());
         }
+
+
+        [TestMethod]
+        public void TestIfThenExpression()
+        {
+            Value value = EvaluateString("if: false then: 0");
+            Assert.IsTrue(value.IsVoidValue());
+
+            value = EvaluateString("if: true then: 0");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(0, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestIfThenElseExpression()
+        {
+            Value value = EvaluateString("if: false then: 0 else: 1");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(1, value.AsInteger());
+
+            value = EvaluateString("if: true then: 0 else: 1");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(0, value.AsInteger());
+        }
     }
 }

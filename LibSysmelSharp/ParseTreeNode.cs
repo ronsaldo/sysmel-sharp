@@ -9,6 +9,13 @@
             throw new NotImplementedException();
         }
 
+        public override Value AnalyzeAndEvaluateMacroArgumentInEnvironment(Environment environment, SysmelType expectedType)
+        {
+            if (expectedType == Intrinsics.GetSingleton().ParseTreeNodeType)
+                return this;
+            return base.AnalyzeAndEvaluateMacroArgumentInEnvironment(environment, expectedType);
+        }
+
         public override SysmelType GetSysmelType()
         {
             return Intrinsics.GetSingleton().ParseTreeNodeType;
@@ -32,8 +39,11 @@
         {
             return false;
         }
-
-
+        
+        public virtual bool IsParseTreeIfSelectionNode()
+        {
+            return false;
+        }
         public virtual bool IsParseTreeLexicalBlockNode()
         {
             return false;

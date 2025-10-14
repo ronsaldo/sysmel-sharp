@@ -22,5 +22,11 @@ namespace LibSysmelSharp
         {
             return true;
         }
+
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            Value functionalValue = functional.AnalyzeAndEvaluateInEnvironment(environment);
+            return functionalValue.AnalyzeAndEvaluateApplicationInEnvironment(this, environment);
+        }
     }
 }
