@@ -11,5 +11,9 @@
         {
             return true;
         }
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            return new StringValue(sourcePosition, value, Intrinsics.GetSingleton().StringType);
+        }
     }
 }

@@ -4,6 +4,16 @@
     {
         public ParseTreeNode(SourcePosition sourcePosition) : base(sourcePosition) { }
 
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override SysmelType GetSysmelType()
+        {
+            return Intrinsics.GetSingleton().ParseTreeNodeType;
+        }
+
         public override bool IsParseTreeNode()
         {
             return true;

@@ -12,5 +12,10 @@
         {
             return true;
         }
+
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            return new IntegerValue(sourcePosition, value, Intrinsics.GetSingleton().IntegerType);
+        }
     }
 }

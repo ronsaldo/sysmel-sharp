@@ -1,0 +1,24 @@
+﻿using System.Collections.Generic;
+
+namespace LibSysmelSharp
+{
+    public class LexicalEnvironment : Environment
+    {
+        public Environment parent;
+        public Dictionary<string, Value> localSymbolTable;
+
+        public LexicalEnvironment(Environment parent)
+        {
+            this.parent = parent;
+            this.localSymbolTable = new Dictionary<string, Value> ();
+        }
+
+        public override Value? lookupRecursively(string symbol)
+        {
+            if(localSymbolTable.ContainsKey(symbol))
+                return localSymbolTable[symbol];
+
+            return parent.lookupRecursively(symbol);
+        }
+    }
+}

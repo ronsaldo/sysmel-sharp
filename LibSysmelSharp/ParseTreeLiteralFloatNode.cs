@@ -13,5 +13,10 @@
         {
             return true;
         }
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            return new FloatValue(sourcePosition, value, Intrinsics.GetSingleton().FloatType);
+        }
+
     }
 }

@@ -13,5 +13,9 @@
         {
             return true;
         }
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            return new SymbolValue(sourcePosition, value, Intrinsics.GetSingleton().SymbolType);
+        }
     }
 }

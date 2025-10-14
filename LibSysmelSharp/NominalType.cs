@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LibSysmelSharp
+{
+    public class NominalType : SysmelType
+    {
+        public string name;
+
+        public NominalType(SourcePosition? sourcePosition, string name) : base(sourcePosition)
+        {
+            this.name = name;
+        }
+
+        public override string? GetName()
+        {
+            return name;
+        }
+
+        public override SysmelType GetSysmelType()
+        {
+            return Intrinsics.GetSingleton().TypeUniverse0;
+        }
+    }
+}
