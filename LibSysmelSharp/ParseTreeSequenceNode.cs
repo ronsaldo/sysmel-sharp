@@ -20,5 +20,12 @@ namespace LibSysmelSharp
             return true;
         }
 
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            Value result = VoidValue.GetSingleton();
+            foreach (ParseTreeNode expression in expressions)
+                result = expression.AnalyzeAndEvaluateInEnvironment(environment);
+            return result;
+        }
     }
 }

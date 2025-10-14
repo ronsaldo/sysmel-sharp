@@ -92,5 +92,20 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsSymbolValue());
             Assert.AreEqual("symbol", value.AsSymbol());
         }
+
+        [TestMethod]
+        public void TestEmptySequence()
+        {
+            Value value = EvaluateString("");
+            Assert.IsTrue(value.IsVoidValue());
+
+        }
+        [TestMethod]
+        public void TestSequence()
+        {
+            Value value = EvaluateString("1 . 2");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+        }
     }
 }
