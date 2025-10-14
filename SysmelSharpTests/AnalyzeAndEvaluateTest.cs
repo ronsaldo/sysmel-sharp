@@ -141,11 +141,55 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
-        public void TestUnaryMessageSend()
+        public void TestBinaryExpression()
         {
-            Value value = EvaluateString("2 negated");
+            Value value = EvaluateString("1 + 2");
             Assert.IsTrue(value.IsIntegerValue());
-            Assert.AreEqual(-2, value.AsInteger());
+            Assert.AreEqual(3, value.AsInteger());
+
+            value = EvaluateString("2 - 3");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(-1, value.AsInteger());
+
+            value = EvaluateString("2 * 3");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(6, value.AsInteger());
+
+            value = EvaluateString("6 // 3");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+
+            value = EvaluateString("7 % 3");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(1, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestBinaryExpression2()
+        {
+            Value value = EvaluateString("1 = 2");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.AreEqual(false, value.AsBoolean());
+
+            value = EvaluateString("1 ~= 2");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.AreEqual(true, value.AsBoolean());
+
+            value = EvaluateString("1 < 2");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.AreEqual(true, value.AsBoolean());
+
+            value = EvaluateString("1 <= 2");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.AreEqual(true, value.AsBoolean());
+
+            value = EvaluateString("1 > 2");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.AreEqual(false, value.AsBoolean());
+
+            value = EvaluateString("1 >= 2");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.AreEqual(false, value.AsBoolean());
         }
     }
 }

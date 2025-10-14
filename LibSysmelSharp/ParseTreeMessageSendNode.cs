@@ -12,7 +12,7 @@ namespace LibSysmelSharp
         public ParseTreeNode selector;
         public ParseTreeNode[] arguments;
 
-        public ParseTreeMessageSendNode(SourcePosition sourcePosition, ParseTreeNode receiver, ParseTreeNode selector, ParseTreeNode[] arguments) : base(sourcePosition)
+        public ParseTreeMessageSendNode(SourcePosition? sourcePosition, ParseTreeNode receiver, ParseTreeNode selector, ParseTreeNode[] arguments) : base(sourcePosition)
         {
             this.receiver = receiver;
             this.selector = selector;

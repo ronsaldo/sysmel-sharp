@@ -2,7 +2,7 @@
 {
     public class ParseTreeNode : Value
     {
-        public ParseTreeNode(SourcePosition sourcePosition) : base(sourcePosition) { }
+        public ParseTreeNode(SourcePosition? sourcePosition) : base(sourcePosition) { }
 
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {

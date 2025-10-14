@@ -12,7 +12,7 @@ namespace LibSysmelSharp
     {
         public PrimitiveFunctionDelegate implementation;
 
-        public PrimitiveFunction(string name, SysmelType functionType, PrimitiveFunctionDelegate implementation) : base(null, name, functionType)
+        public PrimitiveFunction(string name, bool isMacro, SysmelType functionType, PrimitiveFunctionDelegate implementation) : base(null, name, isMacro, functionType)
         {
             this.implementation = implementation;
         }

@@ -86,9 +86,92 @@
 
         void RegisterIntegerTypePrimitives(NominalType integerType)
         {
-            integerType.AddMethod(new PrimitiveFunction("negated", null, (Value[] arguments) => {
-                return new IntegerValue(arguments[0].sourcePosition, -arguments[0].AsInteger(), integerType);
-            }));
+            integerType.AddMethod(new PrimitiveFunction("negated", false,
+                new SimpleFunctionType(null, [ integerType ], integerType),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, -arguments[0].AsInteger(), integerType);
+                }));
+
+            integerType.AddMethod(new PrimitiveFunction("+", false,
+                new SimpleFunctionType(null, [ integerType, integerType ], integerType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return new IntegerValue(arguments[0].sourcePosition, leftValue + rightValue, integerType);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("-", false,
+                new SimpleFunctionType(null, [ integerType, integerType ], integerType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return new IntegerValue(arguments[0].sourcePosition, leftValue - rightValue, integerType);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("*", false,
+                new SimpleFunctionType(null, [integerType, integerType ], integerType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return new IntegerValue(arguments[0].sourcePosition, leftValue * rightValue, integerType);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("//", false,
+                new SimpleFunctionType(null, [integerType, integerType ], integerType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return new IntegerValue(arguments[0].sourcePosition, leftValue / rightValue, integerType);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("%", false,
+                new SimpleFunctionType(null, [integerType, integerType], integerType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return new IntegerValue(arguments[0].sourcePosition, leftValue % rightValue, integerType);
+                }));
+
+            integerType.AddMethod(new PrimitiveFunction("=", false,
+                new SimpleFunctionType(null, [integerType, integerType], BooleanType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return BooleanValue.GetWithValue(leftValue == rightValue);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("~=", false,
+                new SimpleFunctionType(null, [integerType, integerType], BooleanType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return BooleanValue.GetWithValue(leftValue != rightValue);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("<", false,
+                new SimpleFunctionType(null, [integerType, integerType], BooleanType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return BooleanValue.GetWithValue(leftValue < rightValue);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("<=", false,
+                new SimpleFunctionType(null, [integerType, integerType], BooleanType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return BooleanValue.GetWithValue(leftValue <= rightValue);
+                }));
+            integerType.AddMethod(new PrimitiveFunction(">", false,
+                new SimpleFunctionType(null, [integerType, integerType], BooleanType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return BooleanValue.GetWithValue(leftValue > rightValue);
+                }));
+            integerType.AddMethod(new PrimitiveFunction(">=", false,
+                new SimpleFunctionType(null, [integerType, integerType], BooleanType),
+                (Value[] arguments) => {
+                    long leftValue = arguments[0].AsInteger();
+                    long rightValue = arguments[1].AsInteger();
+                    return BooleanValue.GetWithValue(leftValue >= rightValue);
+                }));
+
+
         }
 
         void RegisterPrimitives()

@@ -10,11 +10,13 @@ namespace LibSysmelSharp
     {
         public SysmelType functionType;
         public string? name;
+        public bool isMacro;
 
-        public AbstractFunction(SourcePosition? sourcePosition, string? name, SysmelType functionType) : base(sourcePosition)
+        public AbstractFunction(SourcePosition? sourcePosition, string? name, bool isMacro, SysmelType functionType) : base(sourcePosition)
         {
             this.functionType = functionType;
             this.name = name;
+            this.isMacro = isMacro;
         }
 
         public override SysmelType GetSysmelType()

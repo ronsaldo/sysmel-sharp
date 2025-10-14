@@ -21,6 +21,10 @@ namespace LibSysmelSharp
         {
             return trueSingletonValue;
         }
+        public static BooleanValue GetWithValue(bool value)
+        {
+            return value ? GetTrue() : GetFalse();
+        }
 
         public override SysmelType GetSysmelType()
         {
