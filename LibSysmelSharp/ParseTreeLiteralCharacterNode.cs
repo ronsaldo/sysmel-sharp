@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibSysmelSharp
+﻿namespace LibSysmelSharp
 {
     public class ParseTreeLiteralCharacterNode : ParseTreeNode
     {
         public uint value;
+
+        public ParseTreeLiteralCharacterNode(SourcePosition sourcePosition, uint value) : base(sourcePosition)
+        {
+            this.value = value;
+        }
 
         public override bool IsParseTreeLiteralCharacterNode()
         {

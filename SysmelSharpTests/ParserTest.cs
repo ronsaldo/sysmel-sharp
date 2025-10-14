@@ -152,5 +152,17 @@ namespace SysmelSharpTests
             Assert.IsTrue(tuple.elements[2].IsParseTreeLiteralIntegerNode());
             Assert.AreEqual(3, ((ParseTreeLiteralIntegerNode)tuple.elements[2]).value);
         }
+
+        [TestMethod]
+        public void TestAssignmentExpression()
+        {
+            ParseTreeNode node = ParseString("x := 42");
+            Assert.IsTrue(node.IsParseTreeAssignmentNode());
+
+            ParseTreeAssignmentNode assignment = (ParseTreeAssignmentNode)node;
+            Assert.IsTrue(assignment.store.IsParseTreeIdentifierReferenceNode());
+
+            Assert.IsTrue(assignment.value.IsParseTreeLiteralIntegerNode());
+        }
     }
 }

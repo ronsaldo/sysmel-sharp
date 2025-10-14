@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibSysmelSharp
+﻿namespace LibSysmelSharp
 {
     public class ParseTreeLiteralFloatNode : ParseTreeNode
     {
         public double value;
+
+        public ParseTreeLiteralFloatNode(SourcePosition sourcePosition, double value) : base(sourcePosition)
+        {
+            this.value = value;
+        }
 
         public override bool IsParseTreeLiteralFloatNode()
         {

@@ -31,10 +31,7 @@ namespace LibSysmelSharp
             string tokenText = token.GetText();
             string parsedTokenText = ParseCEscapeCharacters(tokenText.Substring(1, tokenText.Length - 2));
 
-            ParseTreeLiteralCharacterNode literalNode = new ParseTreeLiteralCharacterNode();
-            literalNode.sourcePosition = token.sourcePosition;
-            literalNode.value = parsedTokenText[0];
-            return literalNode;
+            return new ParseTreeLiteralCharacterNode(token.sourcePosition, parsedTokenText[0]);
         }
 
         private ParseTreeNode ParseLiteralInteger()
@@ -42,10 +39,7 @@ namespace LibSysmelSharp
             Token token = state.Next(); 
             Debug.Assert(token.kind == TokenKind.Integer);
 
-            ParseTreeLiteralIntegerNode literalNode = new ParseTreeLiteralIntegerNode();
-            literalNode.sourcePosition = token.sourcePosition;
-            literalNode.value = Int64.Parse(token.GetText());
-            return literalNode;
+            return new ParseTreeLiteralIntegerNode(token.sourcePosition, Int64.Parse(token.GetText()));
         }
 
         private ParseTreeNode ParseLiteralFloat()
@@ -53,10 +47,7 @@ namespace LibSysmelSharp
             Token token = state.Next();
             Debug.Assert(token.kind == TokenKind.Float);
 
-            ParseTreeLiteralFloatNode literalNode = new ParseTreeLiteralFloatNode();
-            literalNode.sourcePosition = token.sourcePosition;
-            literalNode.value = Double.Parse(token.GetText(), CultureInfo.InvariantCulture);
-            return literalNode;
+            return new ParseTreeLiteralFloatNode(token.sourcePosition, Double.Parse(token.GetText(), CultureInfo.InvariantCulture));
         }
 
         private ParseTreeNode ParseLiteralString()
@@ -67,10 +58,7 @@ namespace LibSysmelSharp
             string tokenText = token.GetText();
             string parsedTokenText = ParseCEscapeCharacters(tokenText.Substring(1, tokenText.Length - 2));
 
-            ParseTreeLiteralStringNode literalNode = new ParseTreeLiteralStringNode();
-            literalNode.sourcePosition = token.sourcePosition;
-            literalNode.value = parsedTokenText;
-            return literalNode;
+            return new ParseTreeLiteralStringNode(token.sourcePosition, parsedTokenText);
         }
         private ParseTreeNode ParseLiteralSymbol()
         {
@@ -89,10 +77,7 @@ namespace LibSysmelSharp
                 symbolText = tokenText.Substring(1);
             }
 
-            ParseTreeLiteralSymbolNode literalNode = new ParseTreeLiteralSymbolNode();
-            literalNode.sourcePosition = token.sourcePosition;
-            literalNode.value = symbolText;
-            return literalNode;
+            return new ParseTreeLiteralSymbolNode(token.sourcePosition, symbolText);
 
         }
         private ParseTreeNode ParseLiteral()
@@ -120,10 +105,7 @@ namespace LibSysmelSharp
             Token token = state.Next();
             Debug.Assert(token.kind == TokenKind.Identifier);
 
-            ParseTreeIdentifierReferenceNode identifierNode = new ParseTreeIdentifierReferenceNode();
-            identifierNode.sourcePosition = token.sourcePosition;
-            identifierNode.value = token.GetText();
-            return identifierNode;
+            return new ParseTreeIdentifierReferenceNode(token.sourcePosition, token.GetText());
         }
 
         private ParseTreeNode ParseParentheses()
@@ -135,10 +117,7 @@ namespace LibSysmelSharp
             if(state.PeekKind() == TokenKind.RightParent)
             {
                 state.Advance();
-                ParseTreeTupleNode tupleNode = new ParseTreeTupleNode();
-                tupleNode.sourcePosition = state.SourcePositionFrom(startingPosition);
-                tupleNode.elements = new ParseTreeNode[0];
-                return tupleNode;
+                return new ParseTreeTupleNode(state.SourcePositionFrom(startingPosition), new ParseTreeNode[0]);
             }
 
             ParseTreeNode expression = ParseExpressionSequenceUntilEndOrDelimiter(TokenKind.RightParent);
@@ -158,9 +137,47 @@ namespace LibSysmelSharp
                 return ParseLiteral();
             }
         }
-        private ParseTreeNode ParseAssignmentExpression()
+        private ParseTreeNode ParseBinaryExpressionSequence()
         {
             return ParseTerm();
+        }
+        private ParseTreeNode ParseAssociationExpression()
+        {
+            return ParseBinaryExpressionSequence();
+        }
+        private ParseTreeNode ParseKeywordApplication()
+        {
+            return ParseTerm();
+        }
+        private ParseTreeNode ParseKeywordMessage()
+        {
+            return ParseTerm();
+        }
+
+        private ParseTreeNode ParseMessageCascade()
+        {
+            return ParseKeywordMessage();
+        }
+
+        private ParseTreeNode ParseLowPrecedenceExpression()
+        {
+            if (state.PeekKind() == TokenKind.Keyword)
+                return ParseKeywordApplication();
+            return ParseMessageCascade();
+        }
+
+        private ParseTreeNode ParseAssignmentExpression()
+        {
+            int startingPosition = state.position;
+            ParseTreeNode assignedStore = ParseLowPrecedenceExpression();
+
+            if (state.PeekKind() != TokenKind.Assignment)
+                return assignedStore;
+
+            state.Advance();
+            ParseTreeNode assignedValue = ParseAssignmentExpression();
+
+            return new ParseTreeAssignmentNode(state.SourcePositionFrom(startingPosition), assignedStore, assignedValue);
         }
 
         private ParseTreeNode ParseCommaExpression()
@@ -180,10 +197,7 @@ namespace LibSysmelSharp
                 tupleElements.Add(nextElement);
             }
 
-            ParseTreeTupleNode node = new ParseTreeTupleNode();
-            node.sourcePosition = state.SourcePositionFrom(startingPosition);
-            node.elements = tupleElements.ToArray();
-            return node;
+            return new ParseTreeTupleNode(state.SourcePositionFrom(startingPosition), tupleElements.ToArray());
         }
 
         private ParseTreeNode ParseExpresion()

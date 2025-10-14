@@ -10,9 +10,8 @@ namespace LibSysmelSharp
     {
         public ParseTreeNode[] expressions;
 
-        public ParseTreeSequenceNode(SourcePosition sourcePosition, ParseTreeNode[] expressions)
+        public ParseTreeSequenceNode(SourcePosition sourcePosition, ParseTreeNode[] expressions) : base(sourcePosition)
         {
-            this.sourcePosition = sourcePosition;
             this.expressions = expressions;
         }
 

@@ -2,6 +2,8 @@
 {
     public class ParseTreeNode : Value
     {
+        public ParseTreeNode(SourcePosition sourcePosition) : base(sourcePosition) { }
+
         public override bool IsParseTreeNode()
         {
             return true;
@@ -46,6 +48,38 @@
         }
 
         public virtual bool IsParseTreeTupleNode()
+        {
+            return false;
+        }
+
+        public virtual bool IsParseTreeAssignmentNode()
+        {
+            return false;
+        }
+        public virtual bool IsParseTreeAssociationNode()
+        {
+            return false;
+        }
+        public virtual bool IsParseTreeApplicationNode()
+        {
+            return false;
+        }
+        public virtual bool IsParseTreeBinaryExpressionSequence()
+        {
+            return false;
+        }
+
+        public virtual bool IsParseTreeMessageSendNode()
+        {
+            return false;
+        }
+
+        public virtual bool IsParseTreeMessageCascadeNode()
+        {
+            return false;
+        }
+
+        public virtual bool IsParseTreeCascadedMessageNode()
         {
             return false;
         }

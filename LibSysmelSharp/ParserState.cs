@@ -103,10 +103,7 @@ namespace LibSysmelSharp
 
         public ParseTreeErrorNode MakeErrorAtCurrentPosition(string errorMessage)
         {
-            ParseTreeErrorNode errorNode = new ParseTreeErrorNode();
-            errorNode.sourcePosition = CurrentSourcePosition();
-            errorNode.message = errorMessage;
-            return errorNode;
+            return new ParseTreeErrorNode(CurrentSourcePosition(), errorMessage, null);
         }
 
         public ParseTreeErrorNode AdvanceWithExpectedError(string errorMessage)
@@ -115,21 +112,13 @@ namespace LibSysmelSharp
             {
                 Token errorToken = Next();
                 
-                ParseTreeErrorNode errorNode = new ParseTreeErrorNode();
-                errorNode.sourcePosition = errorToken.sourcePosition;
-                errorNode.message = errorToken.errorMessage;
-                return errorNode;
+                return new ParseTreeErrorNode(errorToken.sourcePosition, errorToken.errorMessage, null);
             }
 
             if (!AtEnd())
                 Advance();
 
-            {
-                ParseTreeErrorNode errorNode = new ParseTreeErrorNode();
-                errorNode.sourcePosition = CurrentSourcePosition();
-                errorNode.message = errorMessage;
-                return errorNode;
-            }
+            return new ParseTreeErrorNode(CurrentSourcePosition(), errorMessage, null);
         }
 
         public ParseTreeNode ExpectsAddingErrorNode(TokenKind expectedKind, string errorMessage, ParseTreeNode node)
@@ -140,11 +129,7 @@ namespace LibSysmelSharp
                 return node;
             }
 
-            ParseTreeErrorNode errorNode = new ParseTreeErrorNode();
-            errorNode.sourcePosition = CurrentSourcePosition();
-            errorNode.message = errorMessage;
-            errorNode.innerNode = node;
-            return errorNode;
+            return new ParseTreeErrorNode(CurrentSourcePosition(), errorMessage, node);
         }
     }
 }
