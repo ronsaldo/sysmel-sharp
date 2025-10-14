@@ -54,6 +54,15 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestLexicalBlock()
+        {
+            Value value = EvaluateString("{42}");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
+
+
+        [TestMethod]
         public void TestLiteralCharacter()
         {
             Value value = EvaluateString("'A'");
@@ -106,6 +115,29 @@ namespace SysmelSharpTests
             Value value = EvaluateString("1 . 2");
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(2, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestEmptyList()
+        {
+            Value value = EvaluateString("[]");
+            Assert.IsTrue(value.IsListValue());
+
+            ListValue listValue = (ListValue)value;
+            Assert.AreEqual(0, listValue.elements.Length);
+        }
+
+        [TestMethod]
+        public void TestList()
+        {
+            Value value = EvaluateString("[1 . 2]");
+            Assert.IsTrue(value.IsListValue());
+
+            ListValue listValue = (ListValue)value;
+            Assert.AreEqual(2, listValue.elements.Length);
+
+            Assert.AreEqual(1, listValue.elements[0].AsInteger());
+            Assert.AreEqual(2, listValue.elements[1].AsInteger());
         }
     }
 }

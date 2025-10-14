@@ -84,6 +84,14 @@
         {
             return false;
         }
+        public virtual bool IsListValue()
+        {
+            return false;
+        }
+        public virtual bool IsTupleValue()
+        {
+            return false;
+        }
 
         public virtual SysmelType GetSysmelType()
         {

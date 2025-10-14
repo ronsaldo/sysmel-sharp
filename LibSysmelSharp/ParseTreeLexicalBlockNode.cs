@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,6 +18,11 @@ namespace LibSysmelSharp
         public override bool IsParseTreeLexicalBlockNode()
         {
             return true;
+        }
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            Environment childEnvironment = new LexicalEnvironment(environment);
+            return body.AnalyzeAndEvaluateInEnvironment(childEnvironment);
         }
     }
 }

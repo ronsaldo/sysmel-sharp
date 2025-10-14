@@ -21,6 +21,8 @@
         public NominalType ParseTreeNodeType;
         public NominalType MacroContextType;
 
+        public NominalType DynamicListType; // TODO: Use an array type.
+
         public Value? LookIntrinsicGlobal(string symbol)
         {
             if (!globalIntrinsicDictionary.ContainsKey(symbol))
@@ -57,6 +59,8 @@
 
             ParseTreeNodeType = CreateNominalType("ParseTreeNode");
             MacroContextType  = CreateNominalType("MacroContextType");
+
+            DynamicListType = CreateNominalType("DynamicList");
 
             RegisterIntrinsicValue("false", BooleanValue.GetFalse());
             RegisterIntrinsicValue("true",  BooleanValue.GetTrue());
