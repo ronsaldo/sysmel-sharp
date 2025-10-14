@@ -137,10 +137,96 @@ namespace LibSysmelSharp
                 return ParseLiteral();
             }
         }
-        private ParseTreeNode ParseBinaryExpressionSequence()
+        private ParseTreeNode ParseUnaryPostfixExpression()
         {
             return ParseTerm();
         }
+        private ParseTreeNode ParseQuoteExpression()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.Quote);
+            state.Advance();
+
+            ParseTreeNode expression = ParseUnaryPrefixExpression();
+            return new ParseTreeQuoteNode(state.SourcePositionFrom(startingPosition), expression);
+        }
+
+        private ParseTreeNode ParseQuasiQuoteExpression()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.QuasiQuote);
+            state.Advance();
+
+            ParseTreeNode expression = ParseUnaryPrefixExpression();
+            return new ParseTreeQuasiQuoteNode(state.SourcePositionFrom(startingPosition), expression);
+        }
+
+        private ParseTreeNode ParseQuasiUnquoteExpression()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.QuasiUnquote);
+            state.Advance();
+
+            ParseTreeNode expression = ParseUnaryPrefixExpression();
+            return new ParseTreeQuasiUnquoteNode(state.SourcePositionFrom(startingPosition), expression);
+        }
+
+        private ParseTreeNode ParseSpliceExpression()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.Splice);
+            state.Advance();
+
+            ParseTreeNode expression = ParseUnaryPrefixExpression();
+            return new ParseTreeSpliceNode(state.SourcePositionFrom(startingPosition), expression);
+        }
+
+        private ParseTreeNode ParseUnaryPrefixExpression()
+        {
+            switch(state.PeekKind())
+            {
+            case TokenKind.Quote: return ParseQuoteExpression();
+            case TokenKind.QuasiQuote: return ParseQuasiQuoteExpression();
+            case TokenKind.QuasiUnquote: return ParseQuasiUnquoteExpression();
+            case TokenKind.Splice: return ParseSpliceExpression();
+            }
+            return ParseUnaryPostfixExpression();
+        }
+
+        private bool IsBinaryOperatorToken(TokenKind kind)
+        {
+            switch(kind)
+            {
+            case TokenKind.Operator:    return true;
+            case TokenKind.Bar:         return true;
+            case TokenKind.LessThan:    return true;
+            case TokenKind.GreaterThan: return true;
+            default: return false;
+            }
+        }
+
+        private ParseTreeNode ParseBinaryExpressionSequence()
+        {
+            int startingPosition = state.position;
+            ParseTreeNode firstOperand = ParseUnaryPrefixExpression();
+            if (!IsBinaryOperatorToken(state.PeekKind()))
+                return firstOperand;
+
+            List<ParseTreeNode> operands = new List<ParseTreeNode>();
+            operands.Add(firstOperand);
+            
+            while(IsBinaryOperatorToken(state.PeekKind()))
+            {
+                Token operatorToken = state.Next();
+                operands.Add(new ParseTreeLiteralSymbolNode(operatorToken.sourcePosition, operatorToken.GetText()));
+
+                ParseTreeNode operand = ParseUnaryPrefixExpression();
+                operands.Add(operand);
+            }
+
+            return new ParseTreeBinaryExpressionSequence(state.SourcePositionFrom(startingPosition), operands.ToArray());
+        }
+
         private ParseTreeNode ParseAssociationExpression()
         {
             int startingPosition = state.position;

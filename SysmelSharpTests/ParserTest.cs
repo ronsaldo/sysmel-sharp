@@ -199,5 +199,55 @@ namespace SysmelSharpTests
             Assert.IsTrue(messageSend.selector.IsParseTreeLiteralSymbolNode());
             Assert.AreEqual(2, messageSend.arguments.Length);
         }
+
+        [TestMethod]
+        public void TestBinaryExpression()
+        {
+            ParseTreeNode node = ParseString("1 + 2");
+            Assert.IsTrue(node.IsParseTreeBinaryExpressionSequence());
+
+            ParseTreeBinaryExpressionSequence expressionSequence = (ParseTreeBinaryExpressionSequence)node;
+            Assert.AreEqual(3, expressionSequence.operands.Length);
+        }
+
+        [TestMethod]
+        public void TestUnaryMessageSend()
+        {
+            ParseTreeNode node = ParseString("42 negated");
+            Assert.IsTrue(node.IsParseTreeMessageSendNode());
+
+            ParseTreeMessageSendNode send = (ParseTreeMessageSendNode)node;
+            Assert.IsTrue(send.receiver.IsParseTreeLiteralIntegerNode());
+            Assert.IsTrue(send.selector.IsParseTreeLiteralSymbolNode());
+            Assert.AreEqual(0, send.arguments.Length);
+        }
+
+        [TestMethod]
+        public void TestQuote()
+        {
+            ParseTreeNode node = ParseString("`'quote");
+            Assert.IsTrue(node.IsParseTreeQuoteNode());
+        }
+
+        [TestMethod]
+        public void TestQuasiQuote()
+        {
+            ParseTreeNode node = ParseString("``quote");
+            Assert.IsTrue(node.IsParseTreeQuasiQuoteNode());
+        }
+
+        [TestMethod]
+        public void TestQuasiUnquote()
+        {
+            ParseTreeNode node = ParseString("`,quote");
+            Assert.IsTrue(node.IsParseTreeQuasiUnquoteNode());
+        }
+
+        [TestMethod]
+        public void TestSplice()
+        {
+            ParseTreeNode node = ParseString("`@quote");
+            Assert.IsTrue(node.IsParseTreeSpliceNode());
+        }
     }
 }

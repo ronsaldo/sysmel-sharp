@@ -83,6 +83,23 @@
         {
             return false;
         }
+        public virtual bool IsParseTreeQuoteNode()
+        {
+            return false;
+        }
 
+        public virtual bool IsParseTreeQuasiQuoteNode()
+        {
+            return false;
+        }
+
+        public virtual bool IsParseTreeQuasiUnquoteNode()
+        {
+            return false;
+        }
+        public virtual bool IsParseTreeSpliceNode()
+        {
+            return false;
+        }
     }
 }
