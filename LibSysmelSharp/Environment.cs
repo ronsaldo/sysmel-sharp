@@ -2,6 +2,6 @@
 {
     public abstract class Environment
     {
-        public abstract Value? lookupRecursively(string symbol);
+        public abstract Value? LookupRecursively(string symbol);
     }
 }

@@ -15,13 +15,13 @@ namespace LibSysmelSharp
             this.parent = parent;
         }
 
-        public override Value? lookupRecursively(string symbol)
+        public override Value? LookupRecursively(string symbol)
         {
             Value? intrinsicValue = Intrinsics.GetSingleton().LookIntrinsicGlobal(symbol);
             if (intrinsicValue != null)
                 return intrinsicValue;
 
-            return parent.lookupRecursively(symbol);
+            return parent.LookupRecursively(symbol);
         }
     }
 

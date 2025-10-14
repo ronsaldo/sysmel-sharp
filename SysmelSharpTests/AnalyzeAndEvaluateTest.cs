@@ -16,6 +16,14 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestIntrinsicType()
+        {
+            Value value = EvaluateString("Integer");
+            Assert.IsTrue(value.IsType());
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, value);
+        }
+
+        [TestMethod]
         public void TestLiteralCharacter()
         {
             Value value = EvaluateString("'A'");

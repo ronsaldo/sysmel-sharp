@@ -13,12 +13,12 @@ namespace LibSysmelSharp
             this.localSymbolTable = new Dictionary<string, Value> ();
         }
 
-        public override Value? lookupRecursively(string symbol)
+        public override Value? LookupRecursively(string symbol)
         {
             if(localSymbolTable.ContainsKey(symbol))
                 return localSymbolTable[symbol];
 
-            return parent.lookupRecursively(symbol);
+            return parent.LookupRecursively(symbol);
         }
     }
 }

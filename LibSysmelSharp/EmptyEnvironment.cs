@@ -2,7 +2,7 @@
 {
     public class EmptyEnvironment : Environment
     {
-        public override Value? lookupRecursively(string symbol)
+        public override Value? LookupRecursively(string symbol)
         {
             return null;
         }

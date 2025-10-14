@@ -12,5 +12,12 @@
         {
             return true;
         }
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            Value? foundValue = environment.LookupRecursively(value);
+            if(foundValue == null)
+                throw new SysmelException(sourcePosition, "Failed to find identifier #" + value);
+            return foundValue;
+        }
     }
 }
