@@ -149,7 +149,7 @@ namespace SysmelSharpTests
             Assert.IsTrue(tuple.elements[1].IsParseTreeLiteralIntegerNode());
             Assert.AreEqual(2, ((ParseTreeLiteralIntegerNode)tuple.elements[1]).value);
 
-            Assert.IsTrue(tuple.elements[1].IsParseTreeLiteralIntegerNode());
+            Assert.IsTrue(tuple.elements[2].IsParseTreeLiteralIntegerNode());
             Assert.AreEqual(3, ((ParseTreeLiteralIntegerNode)tuple.elements[2]).value);
         }
     }
