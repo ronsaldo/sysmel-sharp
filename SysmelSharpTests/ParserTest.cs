@@ -96,5 +96,21 @@ namespace SysmelSharpTests
             ParseTreeIdentifierReferenceNode identNode = (ParseTreeIdentifierReferenceNode)node;
             Assert.AreEqual("identifier", identNode.value);
         }
+
+        [TestMethod]
+        public void TestSequenceWithTwoTerms()
+        {
+            ParseTreeNode node = ParseString("1 . 2");
+            Assert.IsTrue(node.IsParseTreeSequenceNode());
+
+            ParseTreeSequenceNode sequenceNode = (ParseTreeSequenceNode)node;
+            Assert.AreEqual(2, sequenceNode.expressions.Length);
+
+            Assert.IsTrue(sequenceNode.expressions[0].IsParseTreeLiteralIntegerNode());
+            Assert.AreEqual(1, ((ParseTreeLiteralIntegerNode)sequenceNode.expressions[0]).value);
+
+            Assert.IsTrue(sequenceNode.expressions[1].IsParseTreeLiteralIntegerNode());
+            Assert.AreEqual(2, ((ParseTreeLiteralIntegerNode)sequenceNode.expressions[1]).value);
+        }
     }
 }
