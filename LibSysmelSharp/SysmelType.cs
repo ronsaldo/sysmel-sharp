@@ -31,5 +31,6 @@ namespace LibSysmelSharp
         {
             return this == other;
         }
+
     }
 }

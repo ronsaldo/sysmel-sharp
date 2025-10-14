@@ -23,5 +23,10 @@ namespace LibSysmelSharp
         {
             return functionType;
         }
+
+        public override bool IsMacroFunction()
+        {
+            return isMacro;
+        }
     }
 }

@@ -36,6 +36,8 @@ namespace LibSysmelSharp
             Value? method = LookupSelector(selector);
             if(method != null)
             {
+                SysmelType functionType = method.GetSysmelType();
+                return functionType.AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(messageSend, selector, environment, this, method);
 
             }
 
@@ -44,6 +46,10 @@ namespace LibSysmelSharp
                 argumentValues[i] = messageSend.arguments[i].AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
             return PerformWithArguments(selector, argumentValues);
 
+        }
+        public virtual Value AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(ParseTreeMessageSendNode messageSend, string selector, Environment environment, Value receiver, Value method)
+        {
+            throw new SysmelException(messageSend.sourcePosition, "Found method does not have a functional type.");
         }
 
         public virtual Value? LookupSelector(string selector)
@@ -152,6 +158,11 @@ namespace LibSysmelSharp
             return false;
         }
         public virtual bool IsTupleValue()
+        {
+            return false;
+        }
+
+        public virtual bool IsMacroFunction()
         {
             return false;
         }
