@@ -11,7 +11,7 @@ namespace LibSysmelSharp
         public Value[] elements;
         public SysmelType type;
 
-        public ListValue(SourcePosition sourcePosition, Value[] elements, SysmelType type) : base(sourcePosition)
+        public ListValue(SourcePosition? sourcePosition, Value[] elements, SysmelType type) : base(sourcePosition)
         {
             this.elements = elements;
             this.type = type;

@@ -139,5 +139,13 @@ namespace SysmelSharpTests
             Assert.AreEqual(1, listValue.elements[0].AsInteger());
             Assert.AreEqual(2, listValue.elements[1].AsInteger());
         }
+
+        [TestMethod]
+        public void TestUnaryMessageSend()
+        {
+            Value value = EvaluateString("2 negated");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(-2, value.AsInteger());
+        }
     }
 }

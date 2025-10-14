@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LibSysmelSharp
 {
-    public class NominalType : SysmelType
+    public class NominalType : SimpleType
     {
         public string name;
 

@@ -1,4 +1,6 @@
-﻿namespace LibSysmelSharp
+﻿using System;
+
+namespace LibSysmelSharp
 {
     public class Value
     {
@@ -12,6 +14,60 @@
         public virtual Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
             return this;
+        }
+
+        public virtual Value AnalyzeAndEvaluateInEnvironmentWithDecayedType(Environment environment)
+        {
+            // TODO: Load references.
+            return AnalyzeAndEvaluateInEnvironment(environment);
+        }
+
+        public virtual Value AnalyzeAndEvaluateInEnvironmentWithExpectedType(Environment environment, SysmelType expectedType)
+        {
+            Value evalResult = AnalyzeAndEvaluateInEnvironment(environment);
+            SysmelType valueType = evalResult.GetSysmelType();
+            if (!expectedType.IsSatisfiedBy(valueType))
+                throw new SysmelException(sourcePosition, "Expected an expression with type " + expectedType.ToString() + " instead of " + valueType.ToString());
+            return evalResult;
+        }
+        public virtual Value AnalyzeAndEvaluateMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, Environment environment)
+        {
+            Value? method = LookupSelector(selector);
+            if(method != null)
+            {
+
+            }
+
+            Value[] argumentValues = new Value[messageSend.arguments.Length];
+            for (int i = 0; i < messageSend.arguments.Length; ++i)
+                argumentValues[i] = messageSend.arguments[i].AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
+            return PerformWithArguments(selector, argumentValues);
+
+        }
+
+        public virtual Value? LookupSelector(string selector)
+        {
+            return GetSysmelType().LookupSelector(selector);
+        }
+        
+        public virtual void WithSelectorAddMethod(string selector, Value method)
+        {
+            GetSysmelType().WithSelectorAddMethod(selector, method);
+        }
+
+        public virtual Value PerformWithArguments(string selector, Value[] arguments)
+        {
+            Value? foundMethod = LookupSelector(selector);
+            if (foundMethod == null)
+                throw new SysmelException(sourcePosition, "Message not understood #" + selector);
+
+            Value[] receiverArgument = new Value[] { this };
+            Value[] callArguments = receiverArgument.Concat(arguments).ToArray();
+            return foundMethod.EvaluateWithArguments(callArguments);
+        }
+        public virtual Value EvaluateWithArguments(Value[] callArguments)
+        {
+            throw new SysmelException(sourcePosition, "Cannot evaluate non-functional value.");
         }
 
         public virtual bool AsBoolean()

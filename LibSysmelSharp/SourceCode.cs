@@ -12,5 +12,12 @@
             sourceCode.text = text;
             return sourceCode;
         }
+
+        public override string ToString()
+        {
+            if (directory != "")
+                return directory + "/" + name;
+            return name;
+        }
     }
 }

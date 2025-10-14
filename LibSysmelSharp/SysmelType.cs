@@ -12,6 +12,11 @@ namespace LibSysmelSharp
         {
         }
 
+        public override Value? LookupSelector(string selector)
+        {
+            return null;
+        }
+
         public virtual string? GetName()
         {
             return null;
@@ -20,6 +25,11 @@ namespace LibSysmelSharp
         public override bool IsType()
         {
             return true;
+        }
+
+        public virtual bool IsSatisfiedBy(SysmelType other)
+        {
+            return this == other;
         }
     }
 }

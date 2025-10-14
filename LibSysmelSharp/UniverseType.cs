@@ -2,7 +2,7 @@
 
 namespace LibSysmelSharp
 {
-    public class UniverseType : SysmelType
+    public class UniverseType : SimpleType
     {
         public int index;
         private UniverseType? nextUniverseType;

@@ -66,7 +66,6 @@
             RegisterIntrinsicValue("true",  BooleanValue.GetTrue());
             RegisterIntrinsicValue("nil",   NilValue.GetSingleton());
             RegisterIntrinsicValue("void",  VoidValue.GetSingleton());
-
         }
 
         public static void Reset()
@@ -76,11 +75,22 @@
 
         public static Intrinsics GetSingleton()
         {
-            if(uniqueInstance == null)
+            if (uniqueInstance == null)
+            {
                 uniqueInstance = new Intrinsics();
+                uniqueInstance.RegisterPrimitives();
+            }
 
             return uniqueInstance;
         }
 
+        void RegisterIntegerTypePrimitives(NominalType integerType)
+        {
+        }
+
+        void RegisterPrimitives()
+        {
+            RegisterIntegerTypePrimitives(IntegerType);
+        }
     }
 }
