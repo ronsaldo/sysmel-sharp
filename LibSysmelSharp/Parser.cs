@@ -143,16 +143,71 @@ namespace LibSysmelSharp
 
             return new ParseTreeListNode(state.SourcePositionFrom(startingPosition), elements.ToArray());
         }
+        ParseTreeArgumentDefinitionNode ParseBlockArgument()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.Colon);
+            state.Advance();
+
+            ParseTreeNode? typeExpression = null;
+            if (state.PeekKind() == TokenKind.LeftParent)
+                typeExpression = ParseParentheses();
+
+            string? name = null;
+            if (state.PeekKind() == TokenKind.Identifier)
+                name = state.Next().GetText();
+
+            return new ParseTreeArgumentDefinitionNode(state.SourcePositionFrom(startingPosition), name, typeExpression);
+        }
+
+        private ParseTreeFunctionalSignatureNode? ParseBlockFunctionalSignature()
+        {
+            bool hasFunctionalTypeComponents = false;
+            int startingPosition = state.position;
+
+            List<ParseTreeArgumentDefinitionNode> arguments = new List<ParseTreeArgumentDefinitionNode>();
+            while(state.PeekKind() == TokenKind.Colon)
+            {
+                hasFunctionalTypeComponents = true;
+                ParseTreeArgumentDefinitionNode argument = ParseBlockArgument();
+                arguments.Add(argument);
+            }
+
+            ParseTreeNode? resultTypeExpression = null;
+            if(state.PeekKind() == TokenKind.ColonColon)
+            {
+                state.Advance();
+                resultTypeExpression = ParseUnaryPrefixExpression();
+                hasFunctionalTypeComponents = true;
+            }
+
+            if(state.PeekKind() == TokenKind.Bar)
+            {
+                state.Advance();
+                hasFunctionalTypeComponents = true;
+            }
+
+            if (!hasFunctionalTypeComponents)
+                return null;
+
+            return new ParseTreeFunctionalSignatureNode(state.SourcePositionFrom(startingPosition), arguments.ToArray(), resultTypeExpression, null);
+        }
+
         private ParseTreeNode ParseBlock()
         {
             int startingPosition = state.position;
             Debug.Assert(state.PeekKind() == TokenKind.LeftCurlyBracket);
             state.Advance();
 
+            ParseTreeFunctionalSignatureNode? functionalSignature = ParseBlockFunctionalSignature();
+
             ParseTreeNode expression = ParseExpressionSequenceUntilEndOrDelimiter(TokenKind.RightCurlyBracket);
             ParseTreeNode expressionWithError = state.ExpectsAddingErrorNode(TokenKind.RightCurlyBracket, "Missing right curly bracket", expression);
 
-            return new ParseTreeLexicalBlockNode(state.SourcePositionFrom(startingPosition), expressionWithError);
+            if (functionalSignature == null)
+                return new ParseTreeLexicalBlockNode(state.SourcePositionFrom(startingPosition), expressionWithError);
+            else
+                return new ParseTreeBlockClosureNode(state.SourcePositionFrom(startingPosition), functionalSignature, expressionWithError);
         }
 
         private ParseTreeNode ParseTerm()

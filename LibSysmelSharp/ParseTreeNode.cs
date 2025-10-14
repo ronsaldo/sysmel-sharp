@@ -13,6 +13,17 @@
             return false;
         }
 
+        public virtual bool IsParseTreeBlockClosureNode()
+        {
+            return false;
+        }
+
+        public virtual bool IsParseTreeFunctionalSignatureNode()
+        {
+            return false;
+        }
+
+
         public virtual bool IsParseTreeLexicalBlockNode()
         {
             return false;

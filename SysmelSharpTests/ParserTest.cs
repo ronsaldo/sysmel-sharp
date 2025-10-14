@@ -58,6 +58,27 @@ namespace SysmelSharpTests
             Assert.IsTrue(node.IsParseTreeLexicalBlockNode());
         }
 
+        [TestMethod]
+        public void TestBlockClosure()
+        {
+            ParseTreeNode node = ParseString("{:x | x}");
+            Assert.IsTrue(node.IsParseTreeBlockClosureNode());
+
+            ParseTreeBlockClosureNode blockClosureNode = (ParseTreeBlockClosureNode)node;
+            Assert.AreEqual(1, blockClosureNode.functionalSignature.argumentDefinitions.Length);
+            Assert.AreEqual("x", blockClosureNode.functionalSignature.argumentDefinitions[0].name);
+        }
+
+        [TestMethod]
+        public void TestBlockClosure2()
+        {
+            ParseTreeNode node = ParseString("{:(Integer)x :: Integer | x}");
+            Assert.IsTrue(node.IsParseTreeBlockClosureNode());
+
+            ParseTreeBlockClosureNode blockClosureNode = (ParseTreeBlockClosureNode)node;
+            Assert.AreEqual(1, blockClosureNode.functionalSignature.argumentDefinitions.Length);
+            Assert.AreEqual("x", blockClosureNode.functionalSignature.argumentDefinitions[0].name);
+        }
 
         [TestMethod]
         public void TestEmptySequence()
