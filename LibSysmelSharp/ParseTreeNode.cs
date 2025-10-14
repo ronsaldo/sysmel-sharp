@@ -13,6 +13,11 @@
             return false;
         }
 
+        public virtual bool IsParseTreeLexicalBlockNode()
+        {
+            return false;
+        }
+
         public virtual bool IsParseTreeLiteralCharacterNode()
         {
             return false;

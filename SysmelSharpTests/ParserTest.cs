@@ -52,6 +52,14 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestBlock()
+        {
+            ParseTreeNode node = ParseString("{}");
+            Assert.IsTrue(node.IsParseTreeLexicalBlockNode());
+        }
+
+
+        [TestMethod]
         public void TestEmptySequence()
         {
             ParseTreeNode node = ParseString("");

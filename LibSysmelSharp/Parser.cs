@@ -143,6 +143,17 @@ namespace LibSysmelSharp
 
             return new ParseTreeListNode(state.SourcePositionFrom(startingPosition), elements.ToArray());
         }
+        private ParseTreeNode ParseBlock()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.LeftCurlyBracket);
+            state.Advance();
+
+            ParseTreeNode expression = ParseExpressionSequenceUntilEndOrDelimiter(TokenKind.RightCurlyBracket);
+            ParseTreeNode expressionWithError = state.ExpectsAddingErrorNode(TokenKind.RightCurlyBracket, "Missing right curly bracket", expression);
+
+            return new ParseTreeLexicalBlockNode(state.SourcePositionFrom(startingPosition), expressionWithError);
+        }
 
         private ParseTreeNode ParseTerm()
         {
@@ -155,6 +166,8 @@ namespace LibSysmelSharp
                 return ParseParentheses();
             case TokenKind.LeftBracket:
                 return ParseList();
+            case TokenKind.LeftCurlyBracket:
+                return ParseBlock();
             default:
                 return ParseLiteral();
             }
