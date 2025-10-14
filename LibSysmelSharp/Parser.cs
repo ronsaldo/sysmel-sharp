@@ -137,9 +137,32 @@ namespace LibSysmelSharp
                 return ParseLiteral();
             }
         }
+
+        bool IsUnaryPostfixToken(TokenKind kind)
+        {
+            return kind == TokenKind.Identifier;
+        }
         private ParseTreeNode ParseUnaryPostfixExpression()
         {
-            return ParseTerm();
+            int startingPosition = state.position;
+            ParseTreeNode receiver = ParseTerm();
+
+            while(IsUnaryPostfixToken(state.PeekKind()))
+            {
+                switch(state.PeekKind())
+                {
+                case TokenKind.Identifier:
+                    {
+                        Token token = state.Next();
+                        string selector = token.GetText();
+                        ParseTreeNode selectorNode = new ParseTreeLiteralSymbolNode(token.sourcePosition, selector);
+                        receiver = new ParseTreeMessageSendNode(state.SourcePositionFrom(startingPosition), receiver, selectorNode, new ParseTreeNode[0]);
+                    }
+                    break;
+                }
+            }
+
+            return receiver;
         }
         private ParseTreeNode ParseQuoteExpression()
         {
