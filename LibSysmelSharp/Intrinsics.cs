@@ -86,6 +86,9 @@
 
         void RegisterIntegerTypePrimitives(NominalType integerType)
         {
+            integerType.AddMethod(new PrimitiveFunction("negated", null, (Value[] arguments) => {
+                return new IntegerValue(arguments[0].sourcePosition, -arguments[0].AsInteger(), integerType);
+            }));
         }
 
         void RegisterPrimitives()

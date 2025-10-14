@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace LibSysmelSharp
 {
@@ -53,6 +54,12 @@ namespace LibSysmelSharp
         public virtual void WithSelectorAddMethod(string selector, Value method)
         {
             GetSysmelType().WithSelectorAddMethod(selector, method);
+        }
+
+        public void AddMethod(AbstractFunction method)
+        {
+            Debug.Assert(method.name != null);
+            WithSelectorAddMethod(method.name, method);
         }
 
         public virtual Value PerformWithArguments(string selector, Value[] arguments)
