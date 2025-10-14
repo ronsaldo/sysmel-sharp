@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SysmelSharpTests
 {
@@ -133,5 +134,23 @@ namespace SysmelSharpTests
             Assert.AreEqual(0, tuple.elements.Length);
         }
 
+        [TestMethod]
+        public void TestTuple()
+        {
+            ParseTreeNode node = ParseString("1, 2, 3");
+            Assert.IsTrue(node.IsParseTreeTupleNode());
+
+            ParseTreeTupleNode tuple = (ParseTreeTupleNode)node;
+            Assert.AreEqual(3, tuple.elements.Length);
+
+            Assert.IsTrue(tuple.elements[0].IsParseTreeLiteralIntegerNode());
+            Assert.AreEqual(1, ((ParseTreeLiteralIntegerNode)tuple.elements[0]).value);
+
+            Assert.IsTrue(tuple.elements[1].IsParseTreeLiteralIntegerNode());
+            Assert.AreEqual(2, ((ParseTreeLiteralIntegerNode)tuple.elements[1]).value);
+
+            Assert.IsTrue(tuple.elements[1].IsParseTreeLiteralIntegerNode());
+            Assert.AreEqual(3, ((ParseTreeLiteralIntegerNode)tuple.elements[2]).value);
+        }
     }
 }

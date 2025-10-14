@@ -158,10 +158,37 @@ namespace LibSysmelSharp
                 return ParseLiteral();
             }
         }
+        private ParseTreeNode ParseAssignmentExpression()
+        {
+            return ParseTerm();
+        }
+
+        private ParseTreeNode ParseCommaExpression()
+        {
+            int startingPosition = state.position;
+            ParseTreeNode firstElement = ParseAssignmentExpression();
+            if (state.PeekKind() != TokenKind.Comma)
+                return firstElement;
+
+            List<ParseTreeNode> tupleElements = new List<ParseTreeNode>();
+            tupleElements.Add(firstElement);
+
+            while (state.PeekKind() == TokenKind.Comma)
+            {
+                state.Advance();
+                ParseTreeNode nextElement = ParseAssignmentExpression();
+                tupleElements.Add(nextElement);
+            }
+
+            ParseTreeTupleNode node = new ParseTreeTupleNode();
+            node.sourcePosition = state.SourcePositionFrom(startingPosition);
+            node.elements = tupleElements.ToArray();
+            return node;
+        }
 
         private ParseTreeNode ParseExpresion()
         {
-            return ParseTerm();
+            return ParseCommaExpression();
         }
 
         private List<ParseTreeNode> ParseExpressionListUntilEndOrDelimiter(TokenKind delimiter)
@@ -204,7 +231,6 @@ namespace LibSysmelSharp
 
             ParseTreeSequenceNode node = new ParseTreeSequenceNode(state.SourcePositionFrom(startingPosition), expressions.ToArray());
             return node;
-
         }
 
         public ParseTreeNode ParseTokenList(SourceCode sourceCode, List<Token> tokenList)
