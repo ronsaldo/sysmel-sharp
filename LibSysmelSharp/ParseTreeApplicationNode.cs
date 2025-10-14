@@ -18,5 +18,9 @@ namespace LibSysmelSharp
             this.arguments = arguments;
         }
 
+        public override bool IsParseTreeApplicationNode()
+        {
+            return true;
+        }
     }
 }

@@ -143,15 +143,57 @@ namespace LibSysmelSharp
         }
         private ParseTreeNode ParseAssociationExpression()
         {
-            return ParseBinaryExpressionSequence();
+            int startingPosition = state.position;
+            ParseTreeNode key = ParseBinaryExpressionSequence();
+            if (state.PeekKind() != TokenKind.Colon)
+                return key;
+
+            state.Advance();
+            ParseTreeNode value = ParseAssociationExpression();
+            return new ParseTreeAssociationNode(state.SourcePositionFrom(startingPosition), key, value);
         }
         private ParseTreeNode ParseKeywordApplication()
         {
-            return ParseTerm();
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.Keyword);
+
+            StringBuilder selectorText = new StringBuilder();
+            List<ParseTreeNode> arguments = new List<ParseTreeNode>();
+
+            while(state.PeekKind() == TokenKind.Keyword)
+            {
+                Token keywordToken = state.Next();
+                selectorText.Append(keywordToken.GetText());
+                ParseTreeNode argumentExpression = ParseAssociationExpression();
+                arguments.Add(argumentExpression);
+            }
+
+            SourcePosition sourcePosition = state.SourcePositionFrom(startingPosition);
+            ParseTreeIdentifierReferenceNode identifierRef = new ParseTreeIdentifierReferenceNode(sourcePosition, selectorText.ToString());
+            return new ParseTreeApplicationNode(sourcePosition, identifierRef, arguments.ToArray());
         }
+
         private ParseTreeNode ParseKeywordMessage()
         {
-            return ParseTerm();
+            int startingPosition = state.position;
+            ParseTreeNode receiver = ParseAssociationExpression();
+            if (state.PeekKind() != TokenKind.Keyword)
+                return receiver;
+
+            StringBuilder selectorTextBuilder = new StringBuilder();
+            List<ParseTreeNode> arguments = new List<ParseTreeNode>();
+            while(state.PeekKind() == TokenKind.Keyword)
+            {
+                Token keyword = state.Next();
+                ParseTreeNode argument = ParseAssociationExpression();
+
+                selectorTextBuilder.Append(keyword.GetText());
+                arguments.Add(argument);
+            }
+
+            SourcePosition sourcePosition = state.SourcePositionFrom(startingPosition);
+            ParseTreeLiteralSymbolNode selectorNode = new ParseTreeLiteralSymbolNode(sourcePosition, selectorTextBuilder.ToString());
+            return new ParseTreeMessageSendNode(sourcePosition, receiver, selectorNode, arguments.ToArray());
         }
 
         private ParseTreeNode ParseMessageCascade()

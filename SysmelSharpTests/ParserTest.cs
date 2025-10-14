@@ -164,5 +164,40 @@ namespace SysmelSharpTests
 
             Assert.IsTrue(assignment.value.IsParseTreeLiteralIntegerNode());
         }
+
+        [TestMethod]
+        public void TestAssociationExpression()
+        {
+            ParseTreeNode node = ParseString("5 : 6");
+            Assert.IsTrue(node.IsParseTreeAssociationNode());
+
+            ParseTreeAssociationNode assoc = (ParseTreeAssociationNode)node;
+            Assert.IsTrue(assoc.key.IsParseTreeLiteralIntegerNode()); ;
+        }
+
+        [TestMethod]
+        public void TestKeywordApplication()
+        {
+            ParseTreeNode node = ParseString("if: true then: 1 else: 2");
+            Assert.IsTrue(node.IsParseTreeApplicationNode());
+
+            ParseTreeApplicationNode application= (ParseTreeApplicationNode)node;
+
+            Assert.IsTrue(application.functional.IsParseTreeIdentifierReferenceNode());
+            Assert.AreEqual(3, application.arguments.Length);
+        }
+
+
+        [TestMethod]
+        public void TestKeywordMessageSend()
+        {
+            ParseTreeNode node = ParseString("42 perform: #+ with: 2");
+            Assert.IsTrue(node.IsParseTreeMessageSendNode());
+
+            ParseTreeMessageSendNode messageSend = (ParseTreeMessageSendNode)node;
+            Assert.IsTrue(messageSend.receiver.IsParseTreeLiteralIntegerNode());
+            Assert.IsTrue(messageSend.selector.IsParseTreeLiteralSymbolNode());
+            Assert.AreEqual(2, messageSend.arguments.Length);
+        }
     }
 }
