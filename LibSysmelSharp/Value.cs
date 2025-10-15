@@ -146,6 +146,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsImmutableDictionaryValue()
+        {
+            return false;
+        }
+
         public virtual bool IsParseTreeNode()
         {
             return false;

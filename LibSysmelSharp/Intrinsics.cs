@@ -28,6 +28,8 @@ namespace LibSysmelSharp
         public NominalType MacroContextType;
 
         public ListType DynamicListType; // TODO: Use an array type.
+        public AssociationType DynamicImmutableDictionaryAssociationType;
+        public ImmutableDictionaryType DynamicImmutableDictionaryType;
 
         public Value? LookIntrinsicGlobal(string symbol)
         {
@@ -67,6 +69,8 @@ namespace LibSysmelSharp
             MacroContextType  = CreateNominalType("MacroContextType");
 
             DynamicListType = GetOrCreateListOfType(DynamicType);
+            DynamicImmutableDictionaryAssociationType = new AssociationType(null, SymbolType, DynamicType);
+            DynamicImmutableDictionaryType = new ImmutableDictionaryType(null, DynamicImmutableDictionaryAssociationType);
 
             RegisterIntrinsicValue("false", BooleanValue.GetFalse());
             RegisterIntrinsicValue("true",  BooleanValue.GetTrue());

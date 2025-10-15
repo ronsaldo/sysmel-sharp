@@ -375,5 +375,46 @@ namespace SysmelSharpTests
             Assert.AreEqual(1, assoc.key.AsInteger());
             Assert.AreEqual(2, assoc.value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestEmptyDictionaryExpression()
+        {
+            Value value = EvaluateString("#{}");
+            Assert.IsTrue(value.IsImmutableDictionaryValue());
+            Assert.IsTrue(value.GetSysmelType().IsImmutableDictionaryType());
+        }
+
+        [TestMethod]
+        public void TestDictionaryExpression()
+        {
+            Value value = EvaluateString("#{first: 1}");
+            Assert.IsTrue(value.IsImmutableDictionaryValue());
+            Assert.IsTrue(value.GetSysmelType().IsImmutableDictionaryType());
+
+            ImmutableDictionaryValue dict = (ImmutableDictionaryValue)value;
+            Assert.AreEqual(1, dict.elements.Length);
+        }
+
+        [TestMethod]
+        public void TestDictionaryExpression2()
+        {
+            Value value = EvaluateString("#{first: 1. Second: 2}");
+            Assert.IsTrue(value.IsImmutableDictionaryValue());
+            Assert.IsTrue(value.GetSysmelType().IsImmutableDictionaryType());
+
+            ImmutableDictionaryValue dict = (ImmutableDictionaryValue)value;
+            Assert.AreEqual(2, dict.elements.Length);
+        }
+
+        [TestMethod]
+        public void TestDictionaryExpression3()
+        {
+            Value value = EvaluateString("#{first: 1. Second: 2. #third : 3}");
+            Assert.IsTrue(value.IsImmutableDictionaryValue());
+            Assert.IsTrue(value.GetSysmelType().IsImmutableDictionaryType());
+
+            ImmutableDictionaryValue dict = (ImmutableDictionaryValue)value;
+            Assert.AreEqual(3, dict.elements.Length);
+        }
     }
 }

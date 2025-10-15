@@ -62,6 +62,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsImmutableDictionaryType()
+        {
+            return false;
+        }
+
         public virtual bool IsListType()
         {
             return false;
