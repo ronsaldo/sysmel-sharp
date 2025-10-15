@@ -1,4 +1,6 @@
-﻿namespace LibSysmelSharp
+﻿using System;
+
+namespace LibSysmelSharp
 {
     public class ParseTreeIdentifierReferenceNode : ParseTreeNode
     {
@@ -17,7 +19,7 @@
             Value? foundValue = environment.LookupRecursively(value);
             if(foundValue == null)
                 throw new SysmelException(sourcePosition, "Failed to find identifier #" + value);
-            return foundValue;
+            return foundValue.AnalyzeAndEvaluateIdentifierReferenceInEnvironment(this, environment);
         }
     }
 }

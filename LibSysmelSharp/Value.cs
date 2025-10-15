@@ -39,6 +39,11 @@ namespace LibSysmelSharp
             return AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, expectedType);
         }
 
+        public virtual Value AnalyzeAndEvaluateIdentifierReferenceInEnvironment(ParseTreeIdentifierReferenceNode identifierNode, Environment environment)
+        {
+            return this;
+        }
+
         public virtual Value AnalyzeAndEvaluateMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, Environment environment)
         {
             Value? method = LookupSelector(selector);
