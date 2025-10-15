@@ -9,6 +9,7 @@ namespace LibSysmelSharp
         private Dictionary<SysmelType, MutableBoxType> mutableBoxTypeCache= new Dictionary<SysmelType, MutableBoxType> ();
         private Dictionary<SysmelType, PointerType> pointerTypeCache = new Dictionary<SysmelType, PointerType>();
         private Dictionary<SysmelType, ReferenceType> refTypeCache = new Dictionary<SysmelType, ReferenceType>();
+        private Dictionary<SysmelType, ListType> listTypeCache = new Dictionary<SysmelType, ListType>();
 
         public UniverseType TypeUniverse0;
 
@@ -26,7 +27,7 @@ namespace LibSysmelSharp
         public NominalType ParseTreeNodeType;
         public NominalType MacroContextType;
 
-        public NominalType DynamicListType; // TODO: Use an array type.
+        public ListType DynamicListType; // TODO: Use an array type.
 
         public Value? LookIntrinsicGlobal(string symbol)
         {
@@ -65,7 +66,7 @@ namespace LibSysmelSharp
             ParseTreeNodeType = CreateNominalType("ParseTreeNode");
             MacroContextType  = CreateNominalType("MacroContextType");
 
-            DynamicListType = CreateNominalType("DynamicList");
+            DynamicListType = GetOrCreateListOfType(DynamicType);
 
             RegisterIntrinsicValue("false", BooleanValue.GetFalse());
             RegisterIntrinsicValue("true",  BooleanValue.GetTrue());
@@ -117,6 +118,16 @@ namespace LibSysmelSharp
             ReferenceType referenceType = new ReferenceType(null, baseType);
             refTypeCache[baseType] = referenceType;
             return referenceType;
+        }
+
+        public ListType GetOrCreateListOfType(SysmelType baseType)
+        {
+            if (refTypeCache.ContainsKey(baseType))
+                return listTypeCache[baseType];
+
+            ListType listType = new ListType(null, baseType);
+            listTypeCache[baseType] = listType;
+            return listType;
         }
 
         public void AddMethod(AbstractFunction method)

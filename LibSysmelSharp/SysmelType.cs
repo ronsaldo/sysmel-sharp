@@ -37,6 +37,11 @@ namespace LibSysmelSharp
             return this == other;
         }
 
+        public virtual bool IsListType()
+        {
+            return false;
+        }
+
         public virtual bool IsMutableBoxType()
         {
             return false;
@@ -70,6 +75,10 @@ namespace LibSysmelSharp
         public virtual ReferenceType Ref()
         {
             return Intrinsics.GetSingleton().GetOrCreateReferenceType(this);
+        }
+        public virtual ListType ListOf()
+        {
+            return Intrinsics.GetSingleton().GetOrCreateListOfType(this);
         }
     }
 }
