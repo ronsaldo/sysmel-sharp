@@ -24,7 +24,7 @@ namespace LibSysmelSharp
         {
             Value[] values = new Value[elements.Length];
             for (int i = 0; i < elements.Length; i++)
-                values[i] = elements[i].AnalyzeAndEvaluateInEnvironment(environment);
+                values[i] = elements[i].AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
 
             return new ListValue(sourcePosition, values, Intrinsics.GetSingleton().DynamicListType);
         }

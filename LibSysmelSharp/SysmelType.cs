@@ -77,6 +77,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsTupleType()
+        {
+            return false;
+        }
+
         public virtual MutableBoxType MutableBox()
         {
             return Intrinsics.GetSingleton().GetOrCreateMutableBoxType(this);

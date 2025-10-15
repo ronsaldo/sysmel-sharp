@@ -276,5 +276,34 @@ namespace SysmelSharpTests
             Value value = EvaluateString("Integer ref");
             Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.Ref(), value);
         }
+
+        [TestMethod]
+        public void TestTuple()
+        {
+            Value value = EvaluateString("42, 32.5");
+            Assert.IsTrue(value.IsTupleValue());
+
+            TupleValue tuple = (TupleValue)value;
+            Assert.AreEqual(2, tuple.elements.Length);
+
+            Assert.IsTrue(tuple.elements[0].IsIntegerValue());
+            Assert.AreEqual(42, tuple.elements[0].AsInteger());
+
+            Assert.IsTrue(tuple.elements[1].IsFloatValue());
+            Assert.AreEqual(32.5, tuple.elements[1].AsFloat());
+        }
+
+
+        [TestMethod]
+        public void TestTupleType()
+        {
+            Value value = EvaluateString("Integer, Float");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsTupleType());
+
+            TupleType tupleType = (TupleType)value;
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, tupleType.elements[0]);
+            Assert.AreEqual(Intrinsics.GetSingleton().FloatType, tupleType.elements[1]);
+        }
     }
 }
