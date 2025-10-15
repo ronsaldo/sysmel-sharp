@@ -210,6 +210,78 @@ namespace LibSysmelSharp
                 return new ParseTreeBlockClosureNode(state.SourcePositionFrom(startingPosition), functionalSignature, expressionWithError);
         }
 
+        private ParseTreeNode ParseImmutableDictionaryAssociation()
+        {
+            int startingPosition = state.position;
+            ParseTreeNode? key = null;
+            ParseTreeNode? value = null;
+
+            if(state.PeekKind() == TokenKind.Keyword)
+            {
+                Token keyToken = state.Next();
+                string keyTokenText = keyToken.GetText();
+                string keyTokenSymbol = keyTokenText;
+                if (keyTokenText.EndsWith(":"))
+                    keyTokenText.Substring(0, keyTokenText.Length - 1);
+
+                key = new ParseTreeLiteralSymbolNode(keyToken.sourcePosition, keyTokenSymbol);
+                if (state.PeekKind() != TokenKind.Dot && state.PeekKind() != TokenKind.RightCurlyBracket)
+                    value = ParseAssociationExpression();
+            }
+            else
+            {
+                key = ParseBinaryExpressionSequence();
+                if (state.PeekKind() == TokenKind.Colon)
+                {
+                    state.Advance();
+                    value = ParseAssociationExpression();
+                }
+            }
+
+            return new ParseTreeAssociationNode(state.SourcePositionFrom(startingPosition), key, value);
+        }
+        private ParseTreeNode ParseImmutableDictionary()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.ImmutableDictionaryStart);
+            state.Advance();
+
+            // Chop the initial dots
+            while (state.PeekKind() == TokenKind.Dot)
+                state.Advance();
+
+            bool expectsExpression = true;
+            List<ParseTreeNode> elements = new List<ParseTreeNode> ();
+            while(!state.AtEnd() && state.PeekKind() != TokenKind.RightCurlyBracket)
+            {
+                if(!expectsExpression)
+                    elements.Add(state.MakeErrorAtCurrentPosition("Expected a dot before the association."));
+
+                //  Parse the association
+                ParseTreeNode expression = ParseImmutableDictionaryAssociation();
+                elements.Add(expression);
+
+                // Chop the trailing dots
+                expectsExpression = false;
+                while (state.PeekKind() == TokenKind.Dot)
+                {
+                    state.Advance();
+                    expectsExpression = true;
+                }
+            }
+
+            if(state.PeekKind() == TokenKind.RightCurlyBracket)
+            {
+                state.Advance();
+            }
+            else
+            {
+                elements.Add(state.MakeErrorAtCurrentPosition("Missing right bracket to close the dictionary."));
+            }
+
+            return new ParseTreeImmutableDictionaryNode(state.SourcePositionFrom(startingPosition), null, elements.ToArray());
+        }
+
         private ParseTreeNode ParseTerm()
         {
             TokenKind kind = state.PeekKind();
@@ -223,6 +295,8 @@ namespace LibSysmelSharp
                 return ParseList();
             case TokenKind.LeftCurlyBracket:
                 return ParseBlock();
+            case TokenKind.ImmutableDictionaryStart:
+                return ParseImmutableDictionary();
             default:
                 return ParseLiteral();
             }

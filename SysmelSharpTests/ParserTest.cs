@@ -258,6 +258,53 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestEmptyImmutableDictionary()
+        {
+            ParseTreeNode node = ParseString("#{}");
+            Assert.IsTrue(node.IsParseTreeImmutableDictionaryNode());
+
+            ParseTreeImmutableDictionaryNode dict = (ParseTreeImmutableDictionaryNode)node;
+            Assert.AreEqual(0, dict.elements.Length);
+        }
+
+        [TestMethod]
+        public void TestImmutableDictionaryExpression()
+        {
+            ParseTreeNode node = ParseString("#{first: 1}");
+            Assert.IsTrue(node.IsParseTreeImmutableDictionaryNode());
+
+            ParseTreeImmutableDictionaryNode dict = (ParseTreeImmutableDictionaryNode)node;
+            Assert.AreEqual(1, dict.elements.Length);
+            Assert.IsTrue(dict.elements[0].IsParseTreeAssociationNode());
+        }
+
+        [TestMethod]
+        public void TestImmutableDictionaryExpression2()
+        {
+            ParseTreeNode node = ParseString("#{first: 1. second: 2}");
+            Assert.IsTrue(node.IsParseTreeImmutableDictionaryNode());
+
+            ParseTreeImmutableDictionaryNode dict = (ParseTreeImmutableDictionaryNode)node;
+            Assert.AreEqual(2, dict.elements.Length);
+            Assert.IsTrue(dict.elements[0].IsParseTreeAssociationNode());
+            Assert.IsTrue(dict.elements[1].IsParseTreeAssociationNode());
+        }
+
+        [TestMethod]
+        public void TestImmutableDictionaryExpression3()
+        {
+            ParseTreeNode node = ParseString("#{first: 1. second: 2. #assoc : 5}");
+            Assert.IsTrue(node.IsParseTreeImmutableDictionaryNode());
+
+            ParseTreeImmutableDictionaryNode dict = (ParseTreeImmutableDictionaryNode)node;
+            Assert.AreEqual(3, dict.elements.Length);
+            Assert.IsTrue(dict.elements[0].IsParseTreeAssociationNode());
+            Assert.IsTrue(dict.elements[1].IsParseTreeAssociationNode());
+            Assert.IsTrue(dict.elements[2].IsParseTreeAssociationNode());
+        }
+
+
+        [TestMethod]
         public void TestKeywordApplication()
         {
             ParseTreeNode node = ParseString("if: true then: 1 else: 2");

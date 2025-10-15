@@ -12,7 +12,7 @@ namespace LibSysmelSharp
             this.key = key;
             this.value = value;
         }
-                public override bool IsParseTreeAssociationNode()
+        public override bool IsParseTreeAssociationNode()
         {
             return true;
         }

@@ -102,6 +102,11 @@
         {
             return false;
         }
+        public virtual bool IsParseTreeImmutableDictionaryNode()
+        {
+            return false;
+        }
+
         public virtual bool IsParseTreeApplicationNode()
         {
             return false;
