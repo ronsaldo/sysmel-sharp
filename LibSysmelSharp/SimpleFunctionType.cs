@@ -44,6 +44,14 @@ namespace LibSysmelSharp
             return argumentTypes.SequenceEqual(other.argumentTypes) && resultType.Equals(other.resultType);
         }
 
+        public override int GetHashCode()
+        {
+            int hashCode = 0;
+            foreach(SysmelType arg in argumentTypes)
+                hashCode ^= arg.GetHashCode();
+            return hashCode ^ resultType.GetHashCode();
+        }
+
         public Value ExpandFunctionalMacro(ParseTreeApplicationNode application, Environment environment, Value functional)
         {
             int argumentCount = application.arguments.Length;

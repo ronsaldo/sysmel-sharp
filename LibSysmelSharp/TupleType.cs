@@ -30,6 +30,14 @@ namespace LibSysmelSharp
             return elements.SequenceEqual(other.elements);
         }
 
+        public override int GetHashCode()
+        {
+            int hashCode = 0;
+            foreach (SysmelType element in elements)
+                hashCode ^= element.GetHashCode();
+            return hashCode;
+        }
+
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();

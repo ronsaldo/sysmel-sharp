@@ -57,6 +57,11 @@ namespace LibSysmelSharp
             return this.Equals(other);
         }
 
+        public virtual bool IsAssociationType()
+        {
+            return false;
+        }
+
         public virtual bool IsListType()
         {
             return false;

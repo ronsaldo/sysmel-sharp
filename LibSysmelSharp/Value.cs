@@ -141,6 +141,11 @@ namespace LibSysmelSharp
             throw new NotSupportedException();
         }
 
+        public virtual bool IsAssociationValue()
+        {
+            return false;
+        }
+
         public virtual bool IsParseTreeNode()
         {
             return false;
