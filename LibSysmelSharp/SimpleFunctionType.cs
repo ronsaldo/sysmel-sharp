@@ -17,7 +17,10 @@ namespace LibSysmelSharp
         public Value ExpandFunctionalMacro(ParseTreeApplicationNode application, Environment environment, Value functional)
         {
             int argumentCount = application.arguments.Length;
-            
+            if (argumentCount + 1 != argumentTypes.Length)
+                throw new SysmelException(application.sourcePosition, "Macro expects" + argumentTypes.Length.ToString() + " arguments instead of" + application.arguments.Length.ToString());
+
+
             MacroContextValue context = new MacroContextValue(application.sourcePosition, environment);
             Value[] macroArguments = new Value[1 + argumentCount];
             macroArguments[0] = context;
@@ -45,7 +48,15 @@ namespace LibSysmelSharp
             if (functional.IsMacroFunction())
                 return ExpandFunctionalMacro(application, environment, functional);
 
-            throw new SysmelException(application.sourcePosition, "Simple function application.");
+            int applicationArgumentCount = application.arguments.Length;
+            if (applicationArgumentCount != argumentTypes.Length)
+                throw new SysmelException(application.sourcePosition, "Expected " + argumentTypes.Length.ToString() + " arguments instead of" + application.arguments.Length.ToString());
+
+            Value[] callArguments = new Value[argumentTypes.Length];
+            for (int i = 0; i < applicationArgumentCount; ++i)
+                callArguments[i] = application.arguments[i].AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, argumentTypes[i]);
+
+            return functional.EvaluateWithArguments(callArguments);
         }
 
         public override Value AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(ParseTreeMessageSendNode messageSend, string selector, Environment environment, Value receiver, Value method)
