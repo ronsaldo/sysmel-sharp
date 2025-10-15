@@ -93,6 +93,10 @@
         {
             return false;
         }
+        public virtual bool IsParseTreeArgumentDefinitionNode()
+        {
+            return false;
+        }
 
         public virtual bool IsParseTreeAssignmentNode()
         {

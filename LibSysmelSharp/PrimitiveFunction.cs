@@ -22,5 +22,9 @@ namespace LibSysmelSharp
             return implementation(callArguments);
         }
 
+        public override bool IsPrimitiveFunctionValue()
+        {
+            return true;
+        }
     }
 }

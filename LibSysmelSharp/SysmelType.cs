@@ -66,6 +66,15 @@ namespace LibSysmelSharp
         {
             return false;
         }
+        public virtual bool IsFunctionType()
+        {
+            return false;
+        }
+        public virtual bool IsDependentFunctionType()
+        {
+            return false;
+        }
+
 
         public virtual bool IsListType()
         {

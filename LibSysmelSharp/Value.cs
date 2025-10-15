@@ -207,6 +207,24 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsArgumentDefinitionValue()
+        {
+            return false;
+        }
+
+        public virtual bool IsAbstractFunctionValue()
+        {
+            return false;
+        }
+        public virtual bool IsPrimitiveFunctionValue()
+        {
+            return false;
+        }
+        public virtual bool IsFunctionValue()
+        {
+            return false;
+        }
+
         public virtual bool IsMacroFunction()
         {
             return false;

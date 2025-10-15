@@ -416,5 +416,37 @@ namespace SysmelSharpTests
             ImmutableDictionaryValue dict = (ImmutableDictionaryValue)value;
             Assert.AreEqual(3, dict.elements.Length);
         }
+
+        [TestMethod]
+        public void TestBlockClosure()
+        {
+            Value value = EvaluateString("{:x | x}");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+        }
+
+        [TestMethod]
+        public void TestBlockClosure2()
+        {
+            Value value = EvaluateString("{:(Integer)x :: Integer | x}");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+        }
+
+        [TestMethod]
+        public void TestBlockClosure3()
+        {
+            Value value = EvaluateString("{:x :: Integer | x}");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+        }
+
+        [TestMethod]
+        public void TestBlockClosure4()
+        {
+            Value value = EvaluateString("{:(Integer)x | x}");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+        }
     }
 }
