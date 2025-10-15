@@ -20,9 +20,9 @@ namespace LibSysmelSharp
             return name;
         }
 
-        public override SysmelType GetSysmelType()
+        public override bool IsVoidType()
         {
-            return Intrinsics.GetSingleton().TypeUniverse0;
+            return this.Equals(Intrinsics.GetSingleton().VoidType);
         }
     }
 }

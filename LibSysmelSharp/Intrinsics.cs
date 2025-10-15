@@ -282,6 +282,13 @@ namespace LibSysmelSharp
                 (Value[] arguments) => {
                     return ((SysmelType)arguments[0]).Ref();
                 }));
+            TypeUniverse0.AddMethod(new PrimitiveFunction("=>", false,
+                new SimpleFunctionType(null, [TypeUniverse0, TypeUniverse0], TypeUniverse0),
+                (Value[] arguments) => {
+                    SysmelType argumentType = (SysmelType)arguments[0];
+                    SysmelType resultType = (SysmelType)arguments[1];
+                    return argumentType.MakeSimpleFunctionWithResultType(resultType);
+                }));
         }
 
         void RegisterPrimitives()

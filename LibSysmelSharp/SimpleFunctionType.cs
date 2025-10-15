@@ -14,6 +14,11 @@ namespace LibSysmelSharp
             this.resultType = resultType;
         }
 
+        public override bool IsSimpleFunctionType()
+        {
+            return true;
+        }
+
         public Value ExpandFunctionalMacro(ParseTreeApplicationNode application, Environment environment, Value functional)
         {
             int argumentCount = application.arguments.Length;

@@ -13,5 +13,10 @@ namespace LibSysmelSharp
         {
             return true;
         }
+
+        public override SimpleFunctionType MakeSimpleFunctionWithResultType(SysmelType resultType)
+        {
+            return new SimpleFunctionType(sourcePosition, elements, resultType);
+        }
     }
 }

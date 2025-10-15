@@ -305,5 +305,47 @@ namespace SysmelSharpTests
             Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, tupleType.elements[0]);
             Assert.AreEqual(Intrinsics.GetSingleton().FloatType, tupleType.elements[1]);
         }
+
+        [TestMethod]
+        public void TestFunctionTypeNoArgs()
+        {
+            Value value = EvaluateString("Void => Integer");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsSimpleFunctionType());
+
+            SimpleFunctionType functionType = (SimpleFunctionType)value;
+            Assert.AreEqual(0, functionType.argumentTypes.Length);
+
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, functionType.resultType);
+        }
+
+        [TestMethod]
+        public void TestFunctionType()
+        {
+            Value value = EvaluateString("Integer => Integer");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsSimpleFunctionType());
+
+            SimpleFunctionType functionType = (SimpleFunctionType)value;
+            Assert.AreEqual(1, functionType.argumentTypes.Length);
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, functionType.argumentTypes[0]);
+            
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, functionType.resultType);
+        }
+
+        [TestMethod]
+        public void TestFunctionTypeTwoArgs()
+        {
+            Value value = EvaluateString("(Integer, Float) => Integer");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsSimpleFunctionType());
+
+            SimpleFunctionType functionType = (SimpleFunctionType)value;
+            Assert.AreEqual(2, functionType.argumentTypes.Length);
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, functionType.argumentTypes[0]);
+            Assert.AreEqual(Intrinsics.GetSingleton().FloatType, functionType.argumentTypes[1]);
+
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, functionType.resultType);
+        }
     }
 }

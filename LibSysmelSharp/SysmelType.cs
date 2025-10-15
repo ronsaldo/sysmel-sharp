@@ -77,7 +77,17 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsVoidType()
+        {
+            return false;
+        }
+
         public virtual bool IsTupleType()
+        {
+            return false;
+        }
+
+        public virtual bool IsSimpleFunctionType()
         {
             return false;
         }
@@ -99,6 +109,17 @@ namespace LibSysmelSharp
         public virtual ListType ListOf()
         {
             return Intrinsics.GetSingleton().GetOrCreateListOfType(this);
+        }
+
+        public virtual SimpleFunctionType MakeSimpleFunctionWithResultType(SysmelType resultType)
+        {
+            if(IsVoidType())
+                return new SimpleFunctionType(sourcePosition, [], resultType);
+            return new SimpleFunctionType(sourcePosition, [this], resultType);
+        }
+        public override SysmelType GetSysmelType()
+        {
+            return Intrinsics.GetSingleton().TypeUniverse0;
         }
     }
 }
