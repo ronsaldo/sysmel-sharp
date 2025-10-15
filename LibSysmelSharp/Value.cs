@@ -24,15 +24,27 @@ namespace LibSysmelSharp
             return AnalyzeAndEvaluateInEnvironment(environment);
         }
 
+        public virtual Value CastAnalyzedAndEvaluatedValueToExpectedType(Value evaluationResult, SysmelType? expectedType)
+        {
+            if (expectedType == null)
+                return evaluationResult;
+            
+            SysmelType valueType = evaluationResult.GetSysmelType();
+            if (expectedType.IsSatisfiedBy(valueType))
+                return evaluationResult;
+
+            if(valueType.IsReferenceType())
+                return CastAnalyzedAndEvaluatedValueToExpectedType(evaluationResult.LoadValue(), expectedType);
+
+            if(expectedType == Intrinsics.GetSingleton().DynamicType)
+                return evaluationResult;
+            throw new SysmelException(sourcePosition, "Expected an expression with type " + expectedType.ToString() + " instead of " + valueType.ToString());
+        }
+
         public virtual Value AnalyzeAndEvaluateInEnvironmentWithExpectedType(Environment environment, SysmelType? expectedType)
         {
             Value evalResult = AnalyzeAndEvaluateInEnvironment(environment);
-            if (expectedType == null)
-                return evalResult;
-            SysmelType valueType = evalResult.GetSysmelType();
-            if (!expectedType.IsSatisfiedBy(valueType))
-                throw new SysmelException(sourcePosition, "Expected an expression with type " + expectedType.ToString() + " instead of " + valueType.ToString());
-            return evalResult;
+            return CastAnalyzedAndEvaluatedValueToExpectedType(evalResult, expectedType);
         }
         public virtual Value AnalyzeAndEvaluateMacroArgumentInEnvironment(Environment environment, SysmelType expectedType)
         {

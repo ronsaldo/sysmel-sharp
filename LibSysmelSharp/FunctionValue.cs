@@ -26,5 +26,28 @@
         {
             return type;
         }
+
+        public override Value EvaluateWithArguments(Value[] callArguments)
+        {
+            LexicalEnvironment argumentsEnvironment = new LexicalEnvironment(definitionEnvironment);
+            foreach(ArgumentDefinitionValue argumentDef in signature.arguments)
+            {
+                if(argumentDef.name != null)
+                {
+                    Value argumentValue = callArguments[argumentDef.index];
+                    argumentsEnvironment.SetSymbolBinding(argumentDef.name, argumentValue);
+                }
+            }
+
+            Value resultType = signature.resultTypeExpression.AnalyzeAndEvaluateInEnvironment(argumentsEnvironment);
+            if (!resultType.IsType())
+                throw new SysmelException(signature.resultTypeExpression.sourcePosition, "Expected a result type expression.");
+
+            SysmelType resultTypeValue = (SysmelType)resultType;
+
+            LexicalEnvironment bodyEnvironment = new LexicalEnvironment(argumentsEnvironment);
+            return definitionBody.AnalyzeAndEvaluateInEnvironmentWithExpectedType(bodyEnvironment, resultTypeValue);
+        }
+
     }
 }

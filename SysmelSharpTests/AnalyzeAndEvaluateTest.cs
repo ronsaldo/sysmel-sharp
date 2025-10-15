@@ -329,7 +329,7 @@ namespace SysmelSharpTests
             SimpleFunctionType functionType = (SimpleFunctionType)value;
             Assert.AreEqual(1, functionType.argumentTypes.Length);
             Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, functionType.argumentTypes[0]);
-            
+
             Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, functionType.resultType);
         }
 
@@ -352,7 +352,7 @@ namespace SysmelSharpTests
         public void TestFunctionTypeEquality()
         {
             Value firstValue = EvaluateString("(Integer, Float) => Integer");
-            Value secondValue= EvaluateString("(Integer, Float) => Integer");
+            Value secondValue = EvaluateString("(Integer, Float) => Integer");
             Assert.AreEqual(firstValue, secondValue);
         }
 
@@ -447,6 +447,46 @@ namespace SysmelSharpTests
             Value value = EvaluateString("{:(Integer)x | x}");
             Assert.IsTrue(value.IsFunctionValue());
             Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+        }
+
+        [TestMethod]
+        public void TestBlockClosureEvaluation()
+        {
+            Value value = EvaluateString("{:x | x}(42)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestBlockClosureEvaluation2()
+        {
+            Value value = EvaluateString("{:(Integer)x :: Integer | x}(42)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestBlockClosureEvaluation3()
+        {
+            Value value = EvaluateString("{:x :: Integer | x}(42)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestBlockClosureEvaluation4()
+        {
+            Value value = EvaluateString("{:(Integer)x | x}(42)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestBlockClosureEvaluation5()
+        {
+            Value value = EvaluateString("{:(Integer)x :(Integer)y | x + y}(42. 3)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(45, value.AsInteger());
         }
     }
 }
