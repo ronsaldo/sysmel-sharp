@@ -40,7 +40,11 @@ namespace LibSysmelSharp
 
             if (isMutable)
             {
-                throw new NotImplementedException();
+                SysmelType valueType = initialValue.GetSysmelType();
+                MutableValueBox boxValue = new MutableValueBox(sourcePosition, initialValue, valueType.MutableBox());
+                ReferenceLikeValue referenceValue = new ReferenceLikeValue(sourcePosition, boxValue, 0, valueType.Ref());
+                environment.SetSymbolBinding(nameSymbolValue, referenceValue);
+                return referenceValue;
             }
             else
             {

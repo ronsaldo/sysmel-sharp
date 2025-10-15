@@ -12,6 +12,11 @@ namespace LibSysmelSharp
         {
         }
 
+        public virtual SysmelType GetBaseType()
+        {
+            throw new NotSupportedException();
+        }
+
         public override Value? LookupSelector(string selector)
         {
             return null;
@@ -32,5 +37,39 @@ namespace LibSysmelSharp
             return this == other;
         }
 
+        public virtual bool IsMutableBoxType()
+        {
+            return false;
+        }
+
+        public virtual bool IsPointerLikeType()
+        {
+            return false;
+        }
+
+        public virtual bool IsPointerType()
+        {
+            return false;
+        }
+
+        public virtual bool IsReferenceType()
+        {
+            return false;
+        }
+
+        public virtual MutableBoxType MutableBox()
+        {
+            return Intrinsics.GetSingleton().GetOrCreateMutableBoxType(this);
+        }
+
+        public virtual PointerType Pointer()
+        {
+            return Intrinsics.GetSingleton().GetOrCreatePointerType(this);
+        }
+
+        public virtual ReferenceType Ref()
+        {
+            return Intrinsics.GetSingleton().GetOrCreateReferenceType(this);
+        }
     }
 }

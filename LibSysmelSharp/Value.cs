@@ -39,7 +39,6 @@ namespace LibSysmelSharp
             return AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, expectedType);
         }
 
-
         public virtual Value AnalyzeAndEvaluateMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, Environment environment)
         {
             Value? method = LookupSelector(selector);
@@ -69,6 +68,18 @@ namespace LibSysmelSharp
         public virtual Value AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(ParseTreeMessageSendNode messageSend, string selector, Environment environment, Value receiver, Value method)
         {
             throw new SysmelException(messageSend.sourcePosition, "Found method does not have a functional type.");
+        }
+
+        public virtual Value AnalyzeAndEvaluateAssignmentInEnvironment(ParseTreeAssignmentNode assignmentNode, Environment environment)
+        {
+            SysmelType storageType = GetSysmelType();
+            if(!storageType.IsReferenceType())
+                throw new SysmelException(assignmentNode.sourcePosition, "Storage does not support assignments.");
+            
+            SysmelType baseType = storageType.GetBaseType();
+            Value valueToStore = assignmentNode.value.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, baseType);
+            this.StoreValue(valueToStore);
+            return this;
         }
 
         public virtual Value? LookupSelector(string selector)
@@ -185,10 +196,44 @@ namespace LibSysmelSharp
         {
             return false;
         }
+        public virtual bool IsPointerLikeValue()
+        {
+            return false;
+        }
+        public virtual bool IsPointerValue()
+        {
+            return false;
+        }
+
+        public virtual bool IsReferenceLikeValue()
+        {
+            return false;
+        }
 
         public virtual SysmelType GetSysmelType()
         {
             throw new NotImplementedException();
         }
+
+        public virtual Value LoadValue()
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual Value LoadValueWithFieldIndex(int fieldIndex)
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual void StoreValue(Value valueToStore)
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual void StoreValueWithFieldIndex(Value valueToStore, int fieldIndex)
+        {
+            throw new NotSupportedException();
+        }
+
     }
 }

@@ -6,6 +6,9 @@ namespace LibSysmelSharp
     {
         static private Intrinsics? uniqueInstance;
         private Dictionary<string, Value> globalIntrinsicDictionary = new Dictionary<string, Value>();
+        private Dictionary<SysmelType, MutableBoxType> mutableBoxTypeCache= new Dictionary<SysmelType, MutableBoxType> ();
+        private Dictionary<SysmelType, PointerType> pointerTypeCache = new Dictionary<SysmelType, PointerType>();
+        private Dictionary<SysmelType, ReferenceType> refTypeCache = new Dictionary<SysmelType, ReferenceType>();
 
         public UniverseType TypeUniverse0;
 
@@ -84,6 +87,36 @@ namespace LibSysmelSharp
             }
 
             return uniqueInstance;
+        }
+
+        public MutableBoxType GetOrCreateMutableBoxType(SysmelType baseType)
+        {
+            if(mutableBoxTypeCache.ContainsKey(baseType))
+                return mutableBoxTypeCache[baseType];
+
+            MutableBoxType newBoxType = new MutableBoxType(null, baseType);
+            mutableBoxTypeCache[baseType] = newBoxType;
+            return newBoxType;
+        }
+
+        public PointerType GetOrCreatePointerType(SysmelType baseType)
+        {
+            if (pointerTypeCache.ContainsKey(baseType))
+                return pointerTypeCache[baseType];
+
+            PointerType newPointerType = new PointerType(null, baseType);
+            pointerTypeCache[baseType] = newPointerType;
+            return newPointerType;
+        }
+
+        public ReferenceType GetOrCreateReferenceType(SysmelType baseType)
+        {
+            if (refTypeCache.ContainsKey(baseType))
+                return refTypeCache[baseType];
+
+            ReferenceType referenceType = new ReferenceType(null, baseType);
+            refTypeCache[baseType] = referenceType;
+            return referenceType;
         }
 
         public void AddMethod(AbstractFunction method)

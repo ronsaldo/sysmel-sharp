@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibSysmelSharp
 {
@@ -21,5 +22,12 @@ namespace LibSysmelSharp
         {
             return true;
         }
+
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            Value storeValue = store.AnalyzeAndEvaluateInEnvironment(environment);
+            return storeValue.AnalyzeAndEvaluateAssignmentInEnvironment(this, environment);
+        }
+
     }
 }

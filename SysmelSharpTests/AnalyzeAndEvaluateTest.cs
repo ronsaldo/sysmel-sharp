@@ -223,5 +223,37 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(42, value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestLetMutableWithMacro()
+        {
+            Value reference = EvaluateString("let: #x mutableWith: 42. x");
+            Assert.IsTrue(reference.IsReferenceLikeValue());
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.Ref(), reference.GetSysmelType());
+
+            Value loadedValue = reference.LoadValue();
+            Assert.IsTrue(loadedValue.IsIntegerValue());
+            Assert.AreEqual(42, loadedValue.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestLetMutableWithMacro2()
+        {
+            Value reference = EvaluateString("let: #x mutableWith: 42. x := 5. x");
+            Assert.IsTrue(reference.IsReferenceLikeValue());
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.Ref(), reference.GetSysmelType());
+
+            Value loadedValue = reference.LoadValue();
+            Assert.IsTrue(loadedValue.IsIntegerValue());
+            Assert.AreEqual(5, loadedValue.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestLetMutableWithMacro3()
+        {
+            Value value = EvaluateString("let: #x mutableWith: 42. x := 5. x + 7");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(12, value.AsInteger());
+        }
     }
 }
