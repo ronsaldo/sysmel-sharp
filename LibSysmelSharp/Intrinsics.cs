@@ -122,7 +122,7 @@ namespace LibSysmelSharp
 
         public ListType GetOrCreateListOfType(SysmelType baseType)
         {
-            if (refTypeCache.ContainsKey(baseType))
+            if (listTypeCache.ContainsKey(baseType))
                 return listTypeCache[baseType];
 
             ListType listType = new ListType(null, baseType);
@@ -263,14 +263,32 @@ namespace LibSysmelSharp
                     long rightValue = arguments[1].AsInteger();
                     return BooleanValue.GetWithValue(leftValue >= rightValue);
                 }));
+        }
 
-
+        void RegisterTypePrimitives()
+        {
+            TypeUniverse0.AddMethod(new PrimitiveFunction("list", false,
+                new SimpleFunctionType(null, [TypeUniverse0], TypeUniverse0),
+                (Value[] arguments) => {
+                    return ((SysmelType)arguments[0]).ListOf();
+                }));
+            TypeUniverse0.AddMethod(new PrimitiveFunction("pointer", false,
+                new SimpleFunctionType(null, [TypeUniverse0], TypeUniverse0),
+                (Value[] arguments) => {
+                    return ((SysmelType)arguments[0]).Pointer();
+                }));
+            TypeUniverse0.AddMethod(new PrimitiveFunction("ref", false,
+                new SimpleFunctionType(null, [TypeUniverse0], TypeUniverse0),
+                (Value[] arguments) => {
+                    return ((SysmelType)arguments[0]).Ref();
+                }));
         }
 
         void RegisterPrimitives()
         {
             RegisterControlFlowMacros();
             RegisterDefinitionMacros();
+            RegisterTypePrimitives();
             RegisterIntegerTypePrimitives(IntegerType);
         }
     }

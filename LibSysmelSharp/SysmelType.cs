@@ -22,6 +22,21 @@ namespace LibSysmelSharp
             return null;
         }
 
+        public override Value PerformWithArguments(string selector, Value[] arguments)
+        {
+            Value? foundMethod = LookupSelector(selector);
+            if(foundMethod == null)
+            {
+                foundMethod = GetSysmelType().LookupSelector(selector);
+                if (foundMethod == null)
+                    throw new SysmelException(sourcePosition, "Message not understood: #" + selector);
+            }
+
+            Value[] receiverArgument = new Value[] { this };
+            Value[] callArguments = receiverArgument.Concat(arguments).ToArray();
+            return foundMethod.EvaluateWithArguments(callArguments);
+        }
+
         public virtual string? GetName()
         {
             return null;

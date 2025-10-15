@@ -255,5 +255,26 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(12, value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestListType()
+        {
+            Value value = EvaluateString("Integer list");
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.ListOf(), value);
+        }
+
+        [TestMethod]
+        public void TestPointerType()
+        {
+            Value value = EvaluateString("Integer pointer");
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.Pointer(), value);
+        }
+
+        [TestMethod]
+        public void TestRefType()
+        {
+            Value value = EvaluateString("Integer ref");
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.Ref(), value);
+        }
     }
 }
