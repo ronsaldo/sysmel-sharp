@@ -364,5 +364,16 @@ namespace SysmelSharpTests
             Assert.AreEqual(firstValue, secondValue);
         }
 
+        [TestMethod]
+        public void TestAssociation()
+        {
+            Value value = EvaluateString("1 : 2");
+            Assert.IsTrue(value.IsAssociationValue());
+            Assert.IsTrue(value.GetSysmelType().IsAssociationType());
+
+            AssociationValue assoc = (AssociationValue)value;
+            Assert.AreEqual(1, assoc.key.AsInteger());
+            Assert.AreEqual(2, assoc.value.AsInteger());
+        }
     }
 }
