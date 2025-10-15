@@ -24,9 +24,11 @@ namespace LibSysmelSharp
             return AnalyzeAndEvaluateInEnvironment(environment);
         }
 
-        public virtual Value AnalyzeAndEvaluateInEnvironmentWithExpectedType(Environment environment, SysmelType expectedType)
+        public virtual Value AnalyzeAndEvaluateInEnvironmentWithExpectedType(Environment environment, SysmelType? expectedType)
         {
             Value evalResult = AnalyzeAndEvaluateInEnvironment(environment);
+            if (expectedType == null)
+                return evalResult;
             SysmelType valueType = evalResult.GetSysmelType();
             if (!expectedType.IsSatisfiedBy(valueType))
                 throw new SysmelException(sourcePosition, "Expected an expression with type " + expectedType.ToString() + " instead of " + valueType.ToString());

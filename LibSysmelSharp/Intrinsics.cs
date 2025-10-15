@@ -113,6 +113,26 @@ namespace LibSysmelSharp
                 }));
         }
 
+        void RegisterDefinitionMacros()
+        {
+            AddMethod(new PrimitiveFunction("let:with:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode nameExpression= (ParseTreeNode)arguments[1];
+                    ParseTreeNode initialValueExpression = (ParseTreeNode)arguments[2];
+                    return new ParseTreeVariableDefinitionNode(context.sourcePosition, nameExpression, null, initialValueExpression, false);
+                }));
+            AddMethod(new PrimitiveFunction("let:mutableWith:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode initialValueExpression = (ParseTreeNode)arguments[2];
+                    return new ParseTreeVariableDefinitionNode(context.sourcePosition, nameExpression, null, initialValueExpression, true);
+                }));
+        }
+
         void RegisterIntegerTypePrimitives(NominalType integerType)
         {
             integerType.AddMethod(new PrimitiveFunction("negated", false,
@@ -206,6 +226,7 @@ namespace LibSysmelSharp
         void RegisterPrimitives()
         {
             RegisterControlFlowMacros();
+            RegisterDefinitionMacros();
             RegisterIntegerTypePrimitives(IntegerType);
         }
     }

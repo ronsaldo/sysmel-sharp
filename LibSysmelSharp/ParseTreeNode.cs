@@ -143,5 +143,10 @@
         {
             return false;
         }
+
+        public virtual bool IsParseTreeVariableDefinitionNode()
+        {
+            return false;
+        }
     }
 }

@@ -215,5 +215,13 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(0, value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestLetWithMacro()
+        {
+            Value value = EvaluateString("let: #x with: 42. x");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
     }
 }
