@@ -347,5 +347,22 @@ namespace SysmelSharpTests
 
             Assert.AreEqual(Intrinsics.GetSingleton().IntegerType, functionType.resultType);
         }
+
+        [TestMethod]
+        public void TestFunctionTypeEquality()
+        {
+            Value firstValue = EvaluateString("(Integer, Float) => Integer");
+            Value secondValue= EvaluateString("(Integer, Float) => Integer");
+            Assert.AreEqual(firstValue, secondValue);
+        }
+
+        [TestMethod]
+        public void TestTupleTypeEquality()
+        {
+            Value firstValue = EvaluateString("Integer, Float");
+            Value secondValue = EvaluateString("Integer, Float");
+            Assert.AreEqual(firstValue, secondValue);
+        }
+
     }
 }

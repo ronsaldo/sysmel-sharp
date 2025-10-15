@@ -17,6 +17,11 @@ namespace LibSysmelSharp
             throw new NotSupportedException();
         }
 
+        public virtual SysmelType? GetSuperType()
+        {
+            return null;
+        }
+
         public override Value? LookupSelector(string selector)
         {
             return null;
@@ -49,7 +54,7 @@ namespace LibSysmelSharp
 
         public virtual bool IsSatisfiedBy(SysmelType other)
         {
-            return this == other;
+            return this.Equals(other);
         }
 
         public virtual bool IsListType()

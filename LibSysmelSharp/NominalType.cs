@@ -24,5 +24,10 @@ namespace LibSysmelSharp
         {
             return this.Equals(Intrinsics.GetSingleton().VoidType);
         }
+        
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }

@@ -13,6 +13,11 @@ namespace LibSysmelSharp
             methodList = new List<Value>();
         }
 
+        public override SysmelType? GetSuperType()
+        {
+            return superType;
+        }
+
         public override void WithSelectorAddMethod(string selector, Value method)
         {
             methodDict[selector] = method;
