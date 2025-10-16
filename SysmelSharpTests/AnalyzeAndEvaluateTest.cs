@@ -257,6 +257,46 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestLetMetabuilder()
+        {
+            Value value = EvaluateString("let var := 42. var");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestMutableLetMetabuilder()
+        {
+            Value reference = EvaluateString("let var mutable := 42. var");
+            Assert.IsTrue(reference.IsReferenceLikeValue());
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.Ref(), reference.GetSysmelType());
+
+            Value loadedValue = reference.LoadValue();
+            Assert.IsTrue(loadedValue.IsIntegerValue());
+            Assert.AreEqual(42, loadedValue.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestMutableLetMetabuilder2()
+        {
+            Value reference = EvaluateString("let var mutable := 42. var := 5. var");
+            Assert.IsTrue(reference.IsReferenceLikeValue());
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.Ref(), reference.GetSysmelType());
+
+            Value loadedValue = reference.LoadValue();
+            Assert.IsTrue(loadedValue.IsIntegerValue());
+            Assert.AreEqual(5, loadedValue.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestMutableLetMetabuilder3()
+        {
+            Value value = EvaluateString("let var mutable := 42. var := 5. var + 7");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(12, value.AsInteger());
+        }
+
+        [TestMethod]
         public void TestListType()
         {
             Value value = EvaluateString("Integer list");
