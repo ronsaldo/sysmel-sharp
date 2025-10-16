@@ -109,6 +109,11 @@ namespace LibSysmelSharp
             throw new SysmelException(sourcePosition, "Invalid argument spec.");
         }
 
+        public virtual Value AnalyzeAndEvaluateDictionaryInstanceInEnvironment(ParseTreeImmutableDictionaryNode dictionary, Environment environment)
+        {
+            throw new SysmelException(sourcePosition, "No dictionary type expression.");
+        }
+
         public virtual void EnsureAnalysis()
         {
         }

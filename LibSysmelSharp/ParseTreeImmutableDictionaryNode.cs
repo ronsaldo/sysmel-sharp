@@ -30,8 +30,8 @@ namespace LibSysmelSharp
 
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
-            // TODO: Implement this case.
-            Debug.Assert(dictionaryType == null);
+            if(dictionaryType != null)
+                return dictionaryType.AnalyzeAndEvaluateInEnvironment(environment).AnalyzeAndEvaluateDictionaryInstanceInEnvironment(this, environment);
 
             int elementCount = elements.Length;
             if(elementCount == 0)
@@ -57,8 +57,8 @@ namespace LibSysmelSharp
 
         public override Value AnalyzeAndEvaluateInEnvironmentWithEnumBaseType(Environment environment, SysmelType baseType)
         {
-            // TODO: Implement this case.
-            Debug.Assert(dictionaryType == null);
+            if (dictionaryType != null)
+                return dictionaryType.AnalyzeAndEvaluateInEnvironment(environment).AnalyzeAndEvaluateDictionaryInstanceInEnvironment(this, environment);
 
             int elementCount = elements.Length;
             if (elementCount == 0)

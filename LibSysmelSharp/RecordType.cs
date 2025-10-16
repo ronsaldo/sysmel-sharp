@@ -1,15 +1,31 @@
-﻿namespace LibSysmelSharp
+﻿using static System.Net.Mime.MediaTypeNames;
+
+namespace LibSysmelSharp
 {
     public class RecordType : SimpleType
     {
         public string name;
         public FieldDefinition[] fields;
+        public Dictionary<string, FieldDefinition> fieldsByName;
 
         public RecordType(SourcePosition? sourcePosition, string name, FieldDefinition[] fields) : base(sourcePosition)
         {
             this.name = name;
             this.fields = fields;
+            BuildFieldsByName();
         }
+
+        public void BuildFieldsByName()
+        {
+            this.fieldsByName = new Dictionary<string, FieldDefinition>();
+            for (int i = 0; i < fields.Length; ++i)
+            {
+                FieldDefinition field = this.fields[i];
+                field.index = i;
+                this.fieldsByName[field.name] = field;
+            }
+        }
+
         public override bool IsRecordType()
         {
             return true;
@@ -34,6 +50,45 @@
 
             return new RecordValue(application.sourcePosition, recordElements, this);
         }
+
+        public override Value AnalyzeAndEvaluateDictionaryInstanceInEnvironment(ParseTreeImmutableDictionaryNode dictionary, Environment environment)
+        {
+            int fieldCount = fields.Length;
+            Value[] recordFields = new Value[fieldCount];
+            bool[] initializedRecordFields = new bool[fieldCount];
+
+            // Initialize the dictionary fields.
+            foreach(ParseTreeNode dictionaryElementNode in dictionary.elements)
+            {
+                if (!dictionaryElementNode.IsParseTreeAssociationNode())
+                    throw new SysmelException(dictionaryElementNode.sourcePosition, "Expected an association with the record field name and value.");
+
+                ParseTreeAssociationNode associationNode = (ParseTreeAssociationNode)dictionaryElementNode;
+                string fieldName = associationNode.key.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();
+
+                if(!fieldsByName.ContainsKey(fieldName))
+                    throw new SysmelException(dictionaryElementNode.sourcePosition, "Record does not have a field named #" + fieldName + ".");
+
+                FieldDefinition field = fieldsByName[fieldName];
+                Value? fieldValue = null;
+                if (associationNode.value == null)
+                    fieldValue = field.type.MakeDefaultValue();
+                else
+                    fieldValue = associationNode.value.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, field.type);
+
+                recordFields[field.index] = fieldValue;
+                initializedRecordFields[field.index] = true;
+            }
+            // Initialize the other fields
+            for(int i = 0; i < fieldCount; ++i)
+            {
+                if (!initializedRecordFields[i])
+                    recordFields[i] = fields[i].type.MakeDefaultValue();
+            }
+
+            return new RecordValue(dictionary.sourcePosition, recordFields, this);
+        }
+
 
         public override string ToString()
         {

@@ -29,5 +29,9 @@ namespace LibSysmelSharp
         {
             return name;
         }
+        public override Value MakeDefaultValue()
+        {
+            return NilValue.GetSingleton();
+        }
     }
 }

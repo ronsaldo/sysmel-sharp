@@ -822,5 +822,12 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsRecordValue());
         }
 
+        [TestMethod]
+        public void TestRecord2()
+        {
+            Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. MyDynamicPair#{first: 1. second: 2}");
+            Assert.IsTrue(value.IsRecordValue());
+
+        }
     }
 }
