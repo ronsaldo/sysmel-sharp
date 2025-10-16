@@ -241,6 +241,12 @@ namespace LibSysmelSharp
         {
             return false;
         }
+
+        public virtual bool IsByteArrayValue()
+        {
+            return false;
+        }
+
         public virtual bool IsTupleValue()
         {
             return false;

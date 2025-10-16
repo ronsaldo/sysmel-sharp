@@ -143,6 +143,27 @@ namespace LibSysmelSharp
 
             return new ParseTreeListNode(state.SourcePositionFrom(startingPosition), elements.ToArray());
         }
+
+        private ParseTreeNode ParseByteArray()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.ByteArrayStart);
+            state.Advance();
+
+            List<ParseTreeNode> elements = ParseExpressionListUntilEndOrDelimiter(TokenKind.RightBracket);
+
+            if (state.PeekKind() == TokenKind.RightBracket)
+            {
+                state.Advance();
+            }
+            else
+            {
+                elements.Add(state.MakeErrorAtCurrentPosition("Expected a right bracket."));
+            }
+
+            return new ParseTreeByteArrayNode(state.SourcePositionFrom(startingPosition), elements.ToArray());
+        }
+
         ParseTreeArgumentDefinitionNode ParseBlockArgument()
         {
             int startingPosition = state.position;
@@ -295,7 +316,9 @@ namespace LibSysmelSharp
                 return ParseList();
             case TokenKind.LeftCurlyBracket:
                 return ParseBlock();
-            case TokenKind.ImmutableDictionaryStart:
+            case TokenKind.ByteArrayStart:
+                return ParseByteArray();
+                case TokenKind.ImmutableDictionaryStart:
                 return ParseImmutableDictionary();
             default:
                 return ParseLiteral();

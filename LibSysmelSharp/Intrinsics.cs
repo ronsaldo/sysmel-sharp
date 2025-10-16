@@ -28,7 +28,25 @@ namespace LibSysmelSharp
         public NominalType MacroContextType;
         public NominalType MetaBuilderType;
 
+        public NominalType Char8Type;
+        public NominalType Char16Type;
+        public NominalType Char32Type;
+
+        public NominalType UInt8Type;
+        public NominalType UInt16Type;
+        public NominalType UInt32Type;
+        public NominalType UInt64Type;
+
+        public NominalType Int8Type;
+        public NominalType Int16Type;
+        public NominalType Int32Type;
+        public NominalType Int64Type;
+
+        public NominalType Float32Type;
+        public NominalType Float64Type;
+
         public ListType DynamicListType; // TODO: Use an array type.
+        public ListType ByteArrayType; // TODO: Use an array type.
         public AssociationType DynamicImmutableDictionaryAssociationType;
         public ImmutableDictionaryType DynamicImmutableDictionaryType;
 
@@ -82,11 +100,29 @@ namespace LibSysmelSharp
             StringType    = CreateNominalType("String");
             SymbolType    = CreateNominalType("Symbol");
 
+            Char8Type  = CreateNominalType("Char8");
+            Char16Type = CreateNominalType("Char16");
+            Char32Type = CreateNominalType("Char32");
+
+            UInt8Type  = CreateNominalType("UInt8");
+            UInt16Type = CreateNominalType("UInt16");
+            UInt32Type = CreateNominalType("UInt32");
+            UInt64Type = CreateNominalType("UInt64");
+
+            Int8Type  = CreateNominalType("Int8");
+            Int16Type = CreateNominalType("Int16");
+            Int32Type = CreateNominalType("Int32");
+            Int64Type = CreateNominalType("Int64");
+
+            Float32Type = CreateNominalType("Float32");
+            Float64Type = CreateNominalType("Float64");
+
             ParseTreeNodeType = CreateNominalType("ParseTreeNode");
             MacroContextType  = CreateNominalType("MacroContext");
             MetaBuilderType = CreateNominalType("MetaBuilder");
 
             DynamicListType = GetOrCreateListOfType(DynamicType);
+            ByteArrayType = GetOrCreateListOfType(UInt8Type);
             DynamicImmutableDictionaryAssociationType = new AssociationType(null, SymbolType, DynamicType);
             DynamicImmutableDictionaryType = new ImmutableDictionaryType(null, DynamicImmutableDictionaryAssociationType);
 

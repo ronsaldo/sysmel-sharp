@@ -26,5 +26,19 @@ namespace LibSysmelSharp
         {
             return type;
         }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append("[");
+            for(int i = 0; i < elements.Length; ++i)
+            {
+                if (i > 0)
+                    builder.Append(". ");
+                builder.Append(elements[i].ToString());
+            }
+            builder.Append("]");
+            return builder.ToString();
+        }
     }
 }

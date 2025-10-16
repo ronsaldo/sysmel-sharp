@@ -153,6 +153,29 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestEmptyByteArray()
+        {
+            Value value = EvaluateString("#[]");
+            Assert.IsTrue(value.IsByteArrayValue());
+
+            ByteArrayValue listValue = (ByteArrayValue)value;
+            Assert.AreEqual(0, listValue.elements.Length);
+        }
+
+        [TestMethod]
+        public void TestByteArray()
+        {
+            Value value = EvaluateString("#[1 . 2]");
+            Assert.IsTrue(value.IsByteArrayValue());
+
+            ByteArrayValue listValue = (ByteArrayValue)value;
+            Assert.AreEqual(2, listValue.elements.Length);
+
+            Assert.AreEqual(1, listValue.elements[0]);
+            Assert.AreEqual(2, listValue.elements[1]);
+        }
+
+        [TestMethod]
         public void TestBinaryExpression()
         {
             Value value = EvaluateString("1 + 2");

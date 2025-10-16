@@ -35,6 +35,11 @@
             return false;
         }
 
+        public virtual bool IsParseTreeByteArrayNode()
+        {
+            return false;
+        }
+
         public virtual bool IsParseTreeFunctionNode()
         {
             return false;

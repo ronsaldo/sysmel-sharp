@@ -207,6 +207,26 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestEmptyByteArray()
+        {
+            ParseTreeNode node = ParseString("#[]");
+            Assert.IsTrue(node.IsParseTreeByteArrayNode());
+
+            ParseTreeByteArrayNode list = (ParseTreeByteArrayNode)node;
+            Assert.AreEqual(0, list.elements.Length);
+        }
+
+        [TestMethod]
+        public void TestByteArray()
+        {
+            ParseTreeNode node = ParseString("#[1 . 2]");
+            Assert.IsTrue(node.IsParseTreeByteArrayNode());
+
+            ParseTreeByteArrayNode list = (ParseTreeByteArrayNode)node;
+            Assert.AreEqual(2, list.elements.Length);
+        }
+
+        [TestMethod]
         public void TestEmptyTuple()
         {
             ParseTreeNode node = ParseString("()");
