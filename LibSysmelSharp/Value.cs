@@ -99,6 +99,11 @@ namespace LibSysmelSharp
             return this;
         }
 
+        public virtual ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)
+        {
+            throw new SysmelException(sourcePosition, "Invalid argument spec.");
+        }
+
         public virtual Value? LookupSelector(string selector)
         {
             return GetSysmelType().LookupSelector(selector);

@@ -544,5 +544,17 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(42, value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestFunction()
+        {
+            Value value = EvaluateString("function two() => Integer := 2");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+
+            value = EvaluateString("function two() => Integer := 2. two()");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+        }
     }
 }

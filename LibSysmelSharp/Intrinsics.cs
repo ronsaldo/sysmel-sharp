@@ -81,7 +81,9 @@ namespace LibSysmelSharp
 
             RegisterIntrinsicValue("let", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
                 return new LetMetaBuilder(sourcePosition);
-
+            }));
+            RegisterIntrinsicValue("function", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
+                return new FunctionMetaBuilder(sourcePosition);
             }));
         }
 

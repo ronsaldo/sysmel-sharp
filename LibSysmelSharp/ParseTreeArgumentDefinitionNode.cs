@@ -22,6 +22,11 @@ namespace LibSysmelSharp
             return true;
         }
 
+        public override ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)
+        {
+            return this;
+        }
+
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
             FunctionalSignatureAnalysisEnvironment analysisEnvironment = (FunctionalSignatureAnalysisEnvironment)environment;

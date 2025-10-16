@@ -35,6 +35,11 @@
             return false;
         }
 
+        public virtual bool IsParseTreeFunctionNode()
+        {
+            return false;
+        }
+
         public virtual bool IsParseTreeFunctionalSignatureNode()
         {
             return false;
