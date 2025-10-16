@@ -11,7 +11,7 @@
             this.cases = cases;
         }
 
-        public override bool IsParseSwitchNode()
+        public override bool IsParseTreeSwitchNode()
         {
             return true;
         }

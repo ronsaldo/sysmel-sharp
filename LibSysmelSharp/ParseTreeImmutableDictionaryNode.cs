@@ -48,5 +48,32 @@ namespace LibSysmelSharp
             ImmutableDictionaryType dictType = new ImmutableDictionaryType(sourcePosition, assocType);
             return new ImmutableDictionaryValue(sourcePosition, dictType, elementValues);
         }
+
+        public override Value AnalyzeAndEvaluateInEnvironmentWithEnumBaseType(Environment environment, SysmelType baseType)
+        {
+            // TODO: Implement this case.
+            Debug.Assert(dictionaryType == null);
+
+            int elementCount = elements.Length;
+            if (elementCount == 0)
+                return new ImmutableDictionaryValue(sourcePosition, Intrinsics.GetSingleton().DynamicImmutableDictionaryType, new AssociationValue[0]);
+
+            AssociationValue[] elementValues = new AssociationValue[elementCount];
+            for (int i = 0; i < elementCount; ++i)
+            {
+                Value element = elements[i].AnalyzeAndEvaluateInEnvironmentWithEnumBaseType(environment, baseType);
+                if (!element.IsAssociationValue())
+                    throw new SysmelException(elements[i].sourcePosition, "Immutable dictionaries are constructed with associations.");
+
+                elementValues[i] = (AssociationValue)element;
+            }
+
+            Debug.Assert(elementValues[0].GetSysmelType().IsAssociationType());
+            AssociationType assocType = (AssociationType)elementValues[0].GetSysmelType();
+            //TODO: make sure that all of the elements have matching association type.
+
+            ImmutableDictionaryType dictType = new ImmutableDictionaryType(sourcePosition, assocType);
+            return new ImmutableDictionaryValue(sourcePosition, dictType, elementValues);
+        }
     }
 }

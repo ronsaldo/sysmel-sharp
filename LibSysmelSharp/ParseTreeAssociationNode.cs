@@ -30,5 +30,19 @@ namespace LibSysmelSharp
             AssociationType associationType = new AssociationType(sourcePosition, keyValue.GetSysmelType(), valueValue.GetSysmelType());
             return new AssociationValue(sourcePosition, associationType, keyValue, valueValue);
         }
+
+        public override Value AnalyzeAndEvaluateInEnvironmentWithEnumBaseType(Environment environment, SysmelType baseType)
+        {
+            Value keyValue = key.AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
+            Value valueValue = NilValue.GetSingleton();
+            if (value != null)
+                valueValue = value.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, baseType);
+
+            if (keyValue.IsType() && valueValue.IsType())
+                return new AssociationType(sourcePosition, (SysmelType)keyValue, (SysmelType)valueValue);
+
+            AssociationType associationType = new AssociationType(sourcePosition, keyValue.GetSysmelType(), valueValue.GetSysmelType());
+            return new AssociationValue(sourcePosition, associationType, keyValue, valueValue);
+        }
     }
 }

@@ -18,6 +18,11 @@ namespace LibSysmelSharp
             return this;
         }
 
+        public virtual Value AnalyzeAndEvaluateInEnvironmentWithEnumBaseType(Environment environment, SysmelType baseType)
+        {
+            return AnalyzeAndEvaluateInEnvironment(environment);
+
+        }
         public virtual Value AnalyzeAndEvaluateInEnvironmentWithDecayedType(Environment environment)
         {
             // TODO: Load references.
@@ -284,6 +289,11 @@ namespace LibSysmelSharp
         }
 
         public virtual bool IsReferenceLikeValue()
+        {
+            return false;
+        }
+
+        public virtual bool IsEnumValue()
         {
             return false;
         }

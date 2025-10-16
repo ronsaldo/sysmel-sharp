@@ -127,6 +127,29 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsEnumType()
+        {
+            return false;
+        }
+
+        public virtual bool IsRecordType()
+        {
+            return false;
+        }
+        public virtual bool IsIntegerType()
+        {
+            return true;
+        }
+
+        public virtual Value MakeDefaultValue()
+        {
+            throw new NotImplementedException();
+        }
+        public virtual Value MakePlusOneValue(Value sourceValue)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual MutableBoxType MutableBox()
         {
             return Intrinsics.GetSingleton().GetOrCreateMutableBoxType(this);

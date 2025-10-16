@@ -20,7 +20,7 @@ namespace LibSysmelSharp
 
         public NominalType BooleanType;
         public NominalType CharacterType;
-        public NominalType IntegerType;
+        public IntegerType IntegerType;
         public NominalType FloatType;
         public NominalType StringType;
         public NominalType SymbolType;
@@ -30,19 +30,19 @@ namespace LibSysmelSharp
         public NominalType MacroContextType;
         public NominalType MetaBuilderType;
 
-        public NominalType Char8Type;
-        public NominalType Char16Type;
-        public NominalType Char32Type;
+        public IntegerType Char8Type;
+        public IntegerType Char16Type;
+        public IntegerType Char32Type;
 
-        public NominalType UInt8Type;
-        public NominalType UInt16Type;
-        public NominalType UInt32Type;
-        public NominalType UInt64Type;
+        public IntegerType UInt8Type;
+        public IntegerType UInt16Type;
+        public IntegerType UInt32Type;
+        public IntegerType UInt64Type;
 
-        public NominalType Int8Type;
-        public NominalType Int16Type;
-        public NominalType Int32Type;
-        public NominalType Int64Type;
+        public IntegerType Int8Type;
+        public IntegerType Int16Type;
+        public IntegerType Int32Type;
+        public IntegerType Int64Type;
 
         public NominalType Float32Type;
         public NominalType Float64Type;
@@ -81,6 +81,14 @@ namespace LibSysmelSharp
             globalIntrinsicDictionary[name] = type;
             return type;
         }
+
+        IntegerType CreateIntegerType(string name, int valueSize, int valueAlignment, bool isSigned)
+        {
+            IntegerType type = new IntegerType(name, valueSize, valueAlignment, isSigned);
+            globalIntrinsicDictionary[name] = type;
+            return type;
+        }
+
         void RegisterIntrinsicValue(string name, Value value)
         {
             globalIntrinsicDictionary[name] = value;
@@ -97,24 +105,24 @@ namespace LibSysmelSharp
 
             BooleanType   = CreateNominalType("Boolean");
             CharacterType = CreateNominalType("Character");
-            IntegerType   = CreateNominalType("Integer");
+            IntegerType   = CreateIntegerType("Integer", 8, 8, true);
             FloatType     = CreateNominalType("Float");
             StringType    = CreateNominalType("String");
             SymbolType    = CreateNominalType("Symbol");
 
-            Char8Type  = CreateNominalType("Char8");
-            Char16Type = CreateNominalType("Char16");
-            Char32Type = CreateNominalType("Char32");
+            Char8Type  = CreateIntegerType("Char8",  1, 1, false);
+            Char16Type = CreateIntegerType("Char16", 2, 2, false);
+            Char32Type = CreateIntegerType("Char32", 4, 4, false);
 
-            UInt8Type  = CreateNominalType("UInt8");
-            UInt16Type = CreateNominalType("UInt16");
-            UInt32Type = CreateNominalType("UInt32");
-            UInt64Type = CreateNominalType("UInt64");
+            UInt8Type  = CreateIntegerType("UInt8",  1, 1, false);
+            UInt16Type = CreateIntegerType("UInt16", 2, 2, false);
+            UInt32Type = CreateIntegerType("UInt32", 4, 4, false);
+            UInt64Type = CreateIntegerType("UInt64", 8, 8, false);
 
-            Int8Type  = CreateNominalType("Int8");
-            Int16Type = CreateNominalType("Int16");
-            Int32Type = CreateNominalType("Int32");
-            Int64Type = CreateNominalType("Int64");
+            Int8Type  = CreateIntegerType("Int8",  1, 1, true);
+            Int16Type = CreateIntegerType("Int16", 2, 2, true);
+            Int32Type = CreateIntegerType("Int32", 4, 4, true);
+            Int64Type = CreateIntegerType("Int64", 8, 8, true);
 
             Float32Type = CreateNominalType("Float32");
             Float64Type = CreateNominalType("Float64");
@@ -293,6 +301,15 @@ namespace LibSysmelSharp
                     ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
                     ParseTreeNode initialValueExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeVariableDefinitionNode(context.sourcePosition, nameExpression, null, initialValueExpression, true);
+                }));
+            AddMethod(new PrimitiveFunction("Enum:withBaseType:values:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode baseType = (ParseTreeNode)arguments[2];
+                    ParseTreeNode values = (ParseTreeNode)arguments[3];
+                    return new ParseTreeEnumDefinitionNode(context.sourcePosition, nameExpression, baseType, values);
                 }));
         }
 

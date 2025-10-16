@@ -722,5 +722,64 @@ namespace SysmelSharpTests
             Assert.IsTrue(loadedValue.IsIntegerValue());
             Assert.AreEqual(10, loadedValue.AsInteger());
         }
+
+        [TestMethod]
+        public void TestEnumType()
+        {
+            Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsEnumType());
+            
+            EnumType enumType = (EnumType)value;
+            Assert.AreEqual(1, enumType.nameAndValues["First"].AsInteger());
+            Assert.AreEqual(2, enumType.nameAndValues["Second"].AsInteger());
+            Assert.AreEqual(3, enumType.nameAndValues["Third"].AsInteger());
+
+        }
+
+        [TestMethod]
+        public void TestEnumTypeAccess()
+        {
+            Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. TestEnum Third");
+            Assert.IsTrue(value.IsEnumValue());
+            Assert.AreEqual(3, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestEnumTypeAccess2()
+        {
+            Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. TestEnum Third value");
+            Assert.IsFalse(value.IsEnumValue());
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(3, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestEnumTypeEquality()
+        {
+            Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. TestEnum Third = TestEnum Third");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.IsTrue(value.AsBoolean());
+
+            value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. TestEnum Third = TestEnum Second");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.IsFalse(value.AsBoolean());
+        }
+
+        [TestMethod]
+        public void TestEnumTypeEquality2()
+        {
+            Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. TestEnum Third ~= TestEnum Second");
+            Assert.IsTrue(value.IsBooleanValue());
+            Assert.IsTrue(value.AsBoolean());
+        }
+
+        [TestMethod]
+        public void TestEnumTypeHash()
+        {
+            Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. TestEnum Third hash");
+            Assert.IsTrue(value.IsIntegerValue());
+        }
+
     }
 }

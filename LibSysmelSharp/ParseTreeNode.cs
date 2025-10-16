@@ -178,7 +178,12 @@
             return false;
         }
 
-        public virtual bool IsParseSwitchNode()
+        public virtual bool IsParseTreeSwitchNode()
+        {
+            return false;
+        }
+
+        public virtual bool IsParseTreeEnumDefinitionNode()
         {
             return false;
         }

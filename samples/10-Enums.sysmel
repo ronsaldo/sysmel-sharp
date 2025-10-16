@@ -6,6 +6,9 @@ Enum: #TestEnum withBaseType: Integer values: #{
 
 printLine(TestEnum).
 printLine(TestEnum First).
+printLine(TestEnum First value).
 printLine(TestEnum Second).
+printLine(TestEnum Second value).
 printLine(TestEnum Third).
+printLine(TestEnum Third value).
 
