@@ -194,5 +194,10 @@
         {
             return false;
         }
+
+        public virtual ParseTreeNode CopyWithPostfixReceiver(ParseTreeNode newReceiver)
+        {
+            throw new NotSupportedException();
+        }
     }
 }

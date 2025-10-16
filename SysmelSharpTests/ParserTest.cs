@@ -323,6 +323,18 @@ namespace SysmelSharpTests
             Assert.IsTrue(dict.elements[2].IsParseTreeAssociationNode());
         }
 
+        [TestMethod]
+        public void TestImmutableDictionaryExpressionWithType()
+        {
+            ParseTreeNode node = ParseString("RecordType#{first: 1}");
+            Assert.IsTrue(node.IsParseTreeImmutableDictionaryNode());
+
+            ParseTreeImmutableDictionaryNode dict = (ParseTreeImmutableDictionaryNode)node;
+            Assert.IsTrue(dict.dictionaryType != null);
+            Assert.IsTrue(dict.dictionaryType.IsParseTreeIdentifierReferenceNode());
+            Assert.AreEqual(1, dict.elements.Length);
+            Assert.IsTrue(dict.elements[0].IsParseTreeAssociationNode());
+        }
 
         [TestMethod]
         public void TestKeywordApplication()

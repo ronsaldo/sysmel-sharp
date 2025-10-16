@@ -327,7 +327,7 @@ namespace LibSysmelSharp
 
         bool IsUnaryPostfixToken(TokenKind kind)
         {
-            return kind == TokenKind.Identifier || kind == TokenKind.LeftParent;
+            return kind == TokenKind.Identifier || kind == TokenKind.LeftParent || kind == TokenKind.ImmutableDictionaryStart;
         }
         private ParseTreeNode ParseUnaryPostfixExpression()
         {
@@ -360,6 +360,12 @@ namespace LibSysmelSharp
                         }
 
                         receiver = new ParseTreeApplicationNode(state.SourcePositionFrom(startingPosition), receiver, callArguments.ToArray());
+                    }
+                    break;
+                case TokenKind.ImmutableDictionaryStart:
+                    {
+                        ParseTreeNode dictionary = ParseImmutableDictionary();
+                        receiver = dictionary.CopyWithPostfixReceiver(receiver);
                     }
                     break;
                 }

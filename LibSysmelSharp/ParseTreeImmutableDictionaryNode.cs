@@ -22,6 +22,12 @@ namespace LibSysmelSharp
         {
             return true;
         }
+
+        public override ParseTreeNode CopyWithPostfixReceiver(ParseTreeNode newReceiver)
+        {
+            return new ParseTreeImmutableDictionaryNode(sourcePosition, newReceiver, elements);
+        }
+
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
             // TODO: Implement this case.

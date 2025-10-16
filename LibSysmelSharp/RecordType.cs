@@ -34,5 +34,10 @@
 
             return new RecordValue(application.sourcePosition, recordElements, this);
         }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }
