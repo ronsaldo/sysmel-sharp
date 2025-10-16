@@ -12,7 +12,7 @@ namespace LibSysmelSharp
         public ParseTreeFunctionalSignatureNode functionalSignature;
         public ParseTreeNode body;
 
-        public ParseTreeFunctionNode(SourcePosition sourcePosition, ParseTreeNode? nameExpression, ParseTreeFunctionalSignatureNode functionalSignature, ParseTreeNode body) : base(sourcePosition)
+        public ParseTreeFunctionNode(SourcePosition? sourcePosition, ParseTreeNode? nameExpression, ParseTreeFunctionalSignatureNode functionalSignature, ParseTreeNode body) : base(sourcePosition)
         {
             this.nameExpression = nameExpression;
             this.functionalSignature = functionalSignature;

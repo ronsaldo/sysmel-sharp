@@ -12,7 +12,7 @@ namespace LibSysmelSharp
         public ParseTreeNode? resultTypeExpression;
         public string? selector;
 
-        public ParseTreeFunctionalSignatureNode(SourcePosition sourcePosition, ParseTreeArgumentDefinitionNode[] argumentDefinitions, ParseTreeNode? resultTypeExpression, string? selector) : base(sourcePosition)
+        public ParseTreeFunctionalSignatureNode(SourcePosition? sourcePosition, ParseTreeArgumentDefinitionNode[] argumentDefinitions, ParseTreeNode? resultTypeExpression, string? selector) : base(sourcePosition)
         {
             this.argumentDefinitions = argumentDefinitions;
             this.resultTypeExpression = resultTypeExpression;
