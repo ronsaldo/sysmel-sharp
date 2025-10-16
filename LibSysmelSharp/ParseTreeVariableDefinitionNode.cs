@@ -8,12 +8,12 @@ namespace LibSysmelSharp
 {
     public class ParseTreeVariableDefinitionNode : ParseTreeNode
     {
-        public ParseTreeNode nameExpression;
+        public ParseTreeNode? nameExpression;
         public ParseTreeNode? typeExpression;
         public ParseTreeNode? initialValueExpression;
         public bool isMutable;
         
-        public ParseTreeVariableDefinitionNode(SourcePosition? sourcePosition, ParseTreeNode nameExpression, ParseTreeNode? typeExpression, ParseTreeNode initialValueExpression, bool isMutable) : base(sourcePosition)
+        public ParseTreeVariableDefinitionNode(SourcePosition? sourcePosition, ParseTreeNode? nameExpression, ParseTreeNode? typeExpression, ParseTreeNode initialValueExpression, bool isMutable) : base(sourcePosition)
         {
             this.nameExpression = nameExpression;
             this.typeExpression = typeExpression;
@@ -28,8 +28,13 @@ namespace LibSysmelSharp
 
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
-            Value nameValue = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType);
-            string nameSymbolValue = nameValue.AsSymbol();
+            string? nameSymbolValue = null;
+            if(nameExpression != null)
+            {
+                Value nameValue = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType);
+                nameSymbolValue = nameValue.AsSymbol();
+            }
+
             SysmelType? typeValue = null;
             if (typeExpression != null)
                 typeValue = (SysmelType)typeExpression.AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
@@ -43,12 +48,14 @@ namespace LibSysmelSharp
                 SysmelType valueType = initialValue.GetSysmelType();
                 MutableValueBox boxValue = new MutableValueBox(sourcePosition, initialValue, valueType.MutableBox());
                 ReferenceLikeValue referenceValue = new ReferenceLikeValue(sourcePosition, boxValue, 0, valueType.Ref());
-                environment.SetSymbolBinding(nameSymbolValue, referenceValue);
+                if(nameSymbolValue != null)
+                    environment.SetSymbolBinding(nameSymbolValue, referenceValue);
                 return referenceValue;
             }
             else
             {
-                environment.SetSymbolBinding(nameSymbolValue, initialValue);
+                if (nameSymbolValue != null)
+                    environment.SetSymbolBinding(nameSymbolValue, initialValue);
                 return initialValue;
             }
         }

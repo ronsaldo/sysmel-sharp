@@ -163,6 +163,16 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsMetaBuilder()
+        {
+            return false;
+        }
+
+        public virtual bool IsMetaBuilderFactory()
+        {
+            return false;
+        }
+
         public virtual bool IsParseTreeNode()
         {
             return false;

@@ -4,7 +4,7 @@
     {
         public string value = "";
 
-        public ParseTreeLiteralSymbolNode(SourcePosition sourcePosition, string value) : base(sourcePosition)
+        public ParseTreeLiteralSymbolNode(SourcePosition? sourcePosition, string value) : base(sourcePosition)
         {
             this.value = value;
         }

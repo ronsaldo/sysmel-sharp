@@ -26,6 +26,7 @@ namespace LibSysmelSharp
 
         public NominalType ParseTreeNodeType;
         public NominalType MacroContextType;
+        public NominalType MetaBuilderType;
 
         public ListType DynamicListType; // TODO: Use an array type.
         public AssociationType DynamicImmutableDictionaryAssociationType;
@@ -66,7 +67,8 @@ namespace LibSysmelSharp
             SymbolType    = CreateNominalType("Symbol");
 
             ParseTreeNodeType = CreateNominalType("ParseTreeNode");
-            MacroContextType  = CreateNominalType("MacroContextType");
+            MacroContextType  = CreateNominalType("MacroContext");
+            MetaBuilderType = CreateNominalType("MetaBuilder");
 
             DynamicListType = GetOrCreateListOfType(DynamicType);
             DynamicImmutableDictionaryAssociationType = new AssociationType(null, SymbolType, DynamicType);
@@ -76,6 +78,11 @@ namespace LibSysmelSharp
             RegisterIntrinsicValue("true",  BooleanValue.GetTrue());
             RegisterIntrinsicValue("nil",   NilValue.GetSingleton());
             RegisterIntrinsicValue("void",  VoidValue.GetSingleton());
+
+            RegisterIntrinsicValue("let", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
+                return new LetMetaBuilder(sourcePosition);
+
+            }));
         }
 
         public static void Reset()
