@@ -223,6 +223,14 @@ namespace LibSysmelSharp
                     ParseTreeNode trueExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeIfSelectionNode(context.sourcePosition, condition, trueExpression, null);
                 }));
+            AddMethod(new PrimitiveFunction("switch:withCases:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode value = (ParseTreeNode)arguments[1];
+                    ParseTreeNode cases = (ParseTreeNode)arguments[2];
+                    return new ParseTreeSwitchNode(context.sourcePosition, value, cases);
+                }));
             AddMethod(new PrimitiveFunction("while:do:", true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {

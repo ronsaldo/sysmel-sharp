@@ -243,7 +243,7 @@ namespace LibSysmelSharp
                 string keyTokenText = keyToken.GetText();
                 string keyTokenSymbol = keyTokenText;
                 if (keyTokenText.EndsWith(":"))
-                    keyTokenText.Substring(0, keyTokenText.Length - 1);
+                    keyTokenSymbol = keyTokenText.Substring(0, keyTokenText.Length - 1);
 
                 key = new ParseTreeLiteralSymbolNode(keyToken.sourcePosition, keyTokenSymbol);
                 if (state.PeekKind() != TokenKind.Dot && state.PeekKind() != TokenKind.RightCurlyBracket)

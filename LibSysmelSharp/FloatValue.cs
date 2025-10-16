@@ -36,5 +36,19 @@ namespace LibSysmelSharp
         {
             return value.ToString();
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not FloatValue)
+                return false;
+
+            FloatValue other = (FloatValue)obj;
+            return value == other.value && type.Equals(other.type);
+        }
+
+        public override int GetHashCode()
+        {
+            return value.GetHashCode() ^ type.GetHashCode();
+        }
     }
 }

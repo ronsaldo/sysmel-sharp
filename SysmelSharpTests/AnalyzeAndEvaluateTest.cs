@@ -251,6 +251,19 @@ namespace SysmelSharpTests
             Assert.AreEqual(0, value.AsInteger());
         }
 
+
+        [TestMethod]
+        public void TestSwitchWithCases()
+        {
+            Value value = EvaluateString("switch: 2 withCases: #{0: -1. 2:-4 . _: 42}");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(-4, value.AsInteger());
+
+            value = EvaluateString("switch: 5 withCases: #{0: -1. 2:-4 . _: 42}");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
+
         [TestMethod]
         public void TestLetWithMacro()
         {

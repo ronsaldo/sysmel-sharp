@@ -13,7 +13,7 @@
             this.condition = condition;
         }
 
-        public override bool IsDoWhileLoopNode()
+        public override bool IsParseTreeDoWhileLoopNode()
         {
             return true;
         }

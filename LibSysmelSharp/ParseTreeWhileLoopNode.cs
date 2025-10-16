@@ -13,7 +13,7 @@
             this.continueExpression = continueExpression;
         }
 
-        public override bool IsWhileLoopNode()
+        public override bool IsParseTreeWhileLoopNode()
         {
             return true;
         }

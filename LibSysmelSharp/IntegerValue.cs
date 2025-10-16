@@ -36,5 +36,18 @@ namespace LibSysmelSharp
             return value.ToString();
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj is not IntegerValue)
+                return false;
+            
+            IntegerValue other = (IntegerValue)obj;
+            return value == other.value && type.Equals(other.type);
+        }
+
+        public override int GetHashCode()
+        {
+            return value.GetHashCode() ^ type.GetHashCode();
+        }
     }
 }

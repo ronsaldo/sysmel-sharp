@@ -31,5 +31,19 @@ namespace LibSysmelSharp
         {
             return "\"" + value + "\"";
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not StringValue)
+                return false;
+
+            StringValue other = (StringValue)obj;
+            return value == other.value && type.Equals(other.type);
+        }
+
+        public override int GetHashCode()
+        {
+            return value.GetHashCode() ^ type.GetHashCode();
+        }
     }
 }

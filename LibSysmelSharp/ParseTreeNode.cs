@@ -168,14 +168,19 @@
             return false;
         }
 
-        public virtual bool IsDoWhileLoopNode()
+        public virtual bool IsParseTreeDoWhileLoopNode()
         {
-            return true;
+            return false;
         }
 
-        public virtual bool IsWhileLoopNode()
+        public virtual bool IsParseTreeWhileLoopNode()
         {
-            return true;
+            return false;
+        }
+
+        public virtual bool IsParseSwitchNode()
+        {
+            return false;
         }
     }
 }
