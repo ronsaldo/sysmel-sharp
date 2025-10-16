@@ -781,5 +781,38 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
         }
 
+        [TestMethod]
+        public void TestRecordType()
+        {
+            Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsRecordType());
+
+            RecordType recordType = (RecordType)value;
+            Assert.AreEqual(2, recordType.fields.Length);
+
+            Assert.AreEqual("first", recordType.fields[0].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, recordType.fields[0].type);
+
+            Assert.AreEqual("second", recordType.fields[1].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, recordType.fields[1].type);
+        }
+
+        [TestMethod]
+        public void TestRecordType2()
+        {
+            Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first:. second:}");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsRecordType());
+
+            RecordType recordType = (RecordType)value;
+            Assert.AreEqual(2, recordType.fields.Length);
+
+            Assert.AreEqual("first", recordType.fields[0].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, recordType.fields[0].type);
+
+            Assert.AreEqual("second", recordType.fields[1].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, recordType.fields[1].type);
+        }
     }
 }

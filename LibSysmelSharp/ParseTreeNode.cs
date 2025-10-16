@@ -182,8 +182,15 @@
         {
             return false;
         }
-
+        public virtual bool IsParseTreeClassDefinitionNode()
+        {
+            return false;
+        }
         public virtual bool IsParseTreeEnumDefinitionNode()
+        {
+            return false;
+        }
+        public virtual bool IsParseTreeRecordDefinitionNode()
         {
             return false;
         }

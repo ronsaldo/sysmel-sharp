@@ -311,6 +311,14 @@ namespace LibSysmelSharp
                     ParseTreeNode values = (ParseTreeNode)arguments[3];
                     return new ParseTreeEnumDefinitionNode(context.sourcePosition, nameExpression, baseType, values);
                 }));
+            AddMethod(new PrimitiveFunction("Record:withFields:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[2];
+                    return new ParseTreeRecordDefinitionNode(context.sourcePosition, nameExpression, fieldsExpression);
+                }));
         }
 
         void RegisterIntegerTypePrimitives(NominalType integerType)

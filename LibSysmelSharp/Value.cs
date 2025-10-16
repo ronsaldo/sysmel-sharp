@@ -293,6 +293,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsFieldDefinition()
+        {
+            return false;
+        }
+
         public virtual bool IsEnumValue()
         {
             return false;
