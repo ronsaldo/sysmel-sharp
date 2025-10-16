@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 
 namespace LibSysmelSharp
 {
@@ -236,6 +237,23 @@ namespace LibSysmelSharp
                     ParseTreeNode bodyExpression = (ParseTreeNode)arguments[2];
                     ParseTreeNode continueExpression = (ParseTreeNode)arguments[3];
                     return new ParseTreeWhileLoopNode(context.sourcePosition, condition, bodyExpression, continueExpression);
+                }));
+            AddMethod(new PrimitiveFunction("do:while:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode bodyExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode condition = (ParseTreeNode)arguments[2];
+                    return new ParseTreeDoWhileLoopNode(context.sourcePosition, bodyExpression, null, condition);
+                }));
+            AddMethod(new PrimitiveFunction("do:continueWith:while:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode bodyExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode continueExpression = (ParseTreeNode)arguments[2];
+                    ParseTreeNode condition = (ParseTreeNode)arguments[3];
+                    return new ParseTreeDoWhileLoopNode(context.sourcePosition, bodyExpression, continueExpression, condition);
                 }));
 
 
