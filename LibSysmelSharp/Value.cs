@@ -303,6 +303,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsRecordValue()
+        {
+            return false;
+        }
+
         public virtual SysmelType GetSysmelType()
         {
             throw new NotImplementedException();

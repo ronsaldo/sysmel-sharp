@@ -814,5 +814,13 @@ namespace SysmelSharpTests
             Assert.AreEqual("second", recordType.fields[1].name);
             Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, recordType.fields[1].type);
         }
+
+        [TestMethod]
+        public void TestRecord()
+        {
+            Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. MyDynamicPair(1. 2)");
+            Assert.IsTrue(value.IsRecordValue());
+        }
+
     }
 }
