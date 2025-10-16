@@ -1,0 +1,19 @@
+Record: #TestPair withFields: #{
+    first: Integer.
+    second: Integer
+}.
+
+printLine(TestPair).
+printLine(TestPair()).
+printLine(TestPair(1 . 2)).
+printLine(TestPair#{first: 42. second: 8}).
+printLine(TestPair#{second: 8. first: 42}).
+
+printLine(TestPair#{first: 42. second: 8} first).
+printLine(TestPair#{first: 42. second: 8} second).
+
+printLine(TestPair#{first: 42. second: 8} first: 5).
+printLine(TestPair#{first: 42. second: 8} second: 6).
+
+printLine(TestPair#{first: 42. second: 8} first: 7; second: 9).
+printLine(TestPair() first: 7; second: 9).
