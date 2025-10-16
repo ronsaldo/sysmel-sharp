@@ -31,5 +31,10 @@ namespace LibSysmelSharp
             return true;
         }
 
+        public override string ToString()
+        {
+            return value.ToString();
+        }
+
     }
 }

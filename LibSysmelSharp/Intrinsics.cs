@@ -328,11 +328,41 @@ namespace LibSysmelSharp
                 }));
         }
 
+        void RegisterIOPrimitive()
+        {
+            AddMethod(new PrimitiveFunction("write", false,
+                new SimpleFunctionType(null, [DynamicType], VoidType),
+                (Value[] arguments) => {
+                    System.Console.Write(arguments[0].AsString());
+                    return VoidValue.GetSingleton();
+                }));
+            AddMethod(new PrimitiveFunction("writeLine", false,
+                new SimpleFunctionType(null, [DynamicType], VoidType),
+                (Value[] arguments) => {
+                    System.Console.WriteLine(arguments[0].AsString());
+                    return VoidValue.GetSingleton();
+                }));
+
+            AddMethod(new PrimitiveFunction("print", false,
+                new SimpleFunctionType(null, [DynamicType], VoidType),
+                (Value[] arguments) => {
+                    System.Console.Write(arguments[0].ToString());
+                    return VoidValue.GetSingleton();
+                }));
+            AddMethod(new PrimitiveFunction("printLine", false,
+                new SimpleFunctionType(null, [DynamicType], VoidType),
+                (Value[] arguments) => {
+                    System.Console.WriteLine(arguments[0].ToString());
+                    return VoidValue.GetSingleton();
+                }));
+        }
+
         void RegisterPrimitives()
         {
             RegisterControlFlowMacros();
             RegisterDefinitionMacros();
             RegisterTypePrimitives();
+            RegisterIOPrimitive();
             RegisterIntegerTypePrimitives(IntegerType);
         }
     }

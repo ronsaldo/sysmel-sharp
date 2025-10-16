@@ -160,7 +160,10 @@ namespace LibSysmelSharp
 
         public virtual string AsString()
         {
-            throw new NotSupportedException();
+            string ?str = ToString();
+            if (str != null)
+                return str;
+            return "a Value";
         }
         public virtual string AsSymbol()
         {

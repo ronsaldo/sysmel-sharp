@@ -61,7 +61,8 @@ namespace SysmelSharp
                     evaluateFileNamed(args[i]);
                 }
             }
-            Console.WriteLine("Hello, World!");
+
+            Intrinsics.GetSingleton().RunPendingAnalysis();
         }
     }
 }
