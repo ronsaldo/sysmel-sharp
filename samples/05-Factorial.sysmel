@@ -1,7 +1,7 @@
-let: #factorial recursiveWith: {:(Integer)n :: Integer |
+function factorial(n: Integer) => Integer := {
     if: n <= 0
     then: 1
-    else: factorial(n - 1) *n 
+    else: factorial(n - 1) *n     
 }.
 
 printLine(factorial(10))
