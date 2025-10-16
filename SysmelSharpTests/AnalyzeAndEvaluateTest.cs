@@ -655,5 +655,29 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(6, value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestWhileLoop()
+        {
+            Value reference = EvaluateString("let: #i mutableWith: 0. while: i < 10 do: {i := i + 1}. i");
+            Assert.IsTrue(reference.IsReferenceLikeValue());
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.Ref(), reference.GetSysmelType());
+
+            Value loadedValue = reference.LoadValue();
+            Assert.IsTrue(loadedValue.IsIntegerValue());
+            Assert.AreEqual(10, loadedValue.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestWhileContinueWithLoop()
+        {
+            Value reference = EvaluateString("let: #i mutableWith: 0. while: i < 10 do: {} continueWith: {i := i + 1}. i");
+            Assert.IsTrue(reference.IsReferenceLikeValue());
+            Assert.AreEqual(Intrinsics.GetSingleton().IntegerType.Ref(), reference.GetSysmelType());
+
+            Value loadedValue = reference.LoadValue();
+            Assert.IsTrue(loadedValue.IsIntegerValue());
+            Assert.AreEqual(10, loadedValue.AsInteger());
+        }
     }
 }

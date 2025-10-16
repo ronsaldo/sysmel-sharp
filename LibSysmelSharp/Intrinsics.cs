@@ -220,6 +220,24 @@ namespace LibSysmelSharp
                     ParseTreeNode trueExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeIfSelectionNode(context.sourcePosition, condition, trueExpression, null);
                 }));
+            AddMethod(new PrimitiveFunction("while:do:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode condition = (ParseTreeNode)arguments[1];
+                    ParseTreeNode bodyExpression = (ParseTreeNode)arguments[2];
+                    return new ParseTreeWhileLoopNode(context.sourcePosition, condition, bodyExpression, null);
+                }));
+            AddMethod(new PrimitiveFunction("while:do:continueWith:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode condition = (ParseTreeNode)arguments[1];
+                    ParseTreeNode bodyExpression = (ParseTreeNode)arguments[2];
+                    ParseTreeNode continueExpression = (ParseTreeNode)arguments[3];
+                    return new ParseTreeWhileLoopNode(context.sourcePosition, condition, bodyExpression, continueExpression);
+                }));
+
 
             AddMethod(new PrimitiveFunction("return:", true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),

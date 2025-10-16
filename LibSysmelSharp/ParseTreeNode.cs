@@ -167,5 +167,15 @@
         {
             return false;
         }
+
+        public virtual bool IsDoWhileLoopNode()
+        {
+            return true;
+        }
+
+        public virtual bool IsWhileLoopNode()
+        {
+            return true;
+        }
     }
 }
