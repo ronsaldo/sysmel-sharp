@@ -604,5 +604,18 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(5, value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestBlockClosureReturn()
+        {
+            Value value = EvaluateString("{:x | return: 42. x}");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+
+            value = EvaluateString("{:x | return: 42. x}(5)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
+
     }
 }

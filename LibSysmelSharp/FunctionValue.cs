@@ -45,8 +45,18 @@
 
             SysmelType resultTypeValue = (SysmelType)resultType;
 
+            Value resultValue = VoidValue.GetSingleton();
             LexicalEnvironment bodyEnvironment = new LexicalEnvironment(argumentsEnvironment);
-            return definitionBody.AnalyzeAndEvaluateInEnvironmentWithExpectedType(bodyEnvironment, resultTypeValue);
+            try
+            {
+                resultValue = definitionBody.AnalyzeAndEvaluateInEnvironmentWithExpectedType(bodyEnvironment, resultTypeValue);
+            }
+            catch (SysmelReturnException re)
+            {
+                resultValue = re.resultValue.AnalyzeAndEvaluateInEnvironmentWithExpectedType(bodyEnvironment, resultTypeValue);
+            }
+
+            return resultValue;
         }
 
     }
