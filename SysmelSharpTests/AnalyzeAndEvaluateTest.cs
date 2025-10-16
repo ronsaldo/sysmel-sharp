@@ -629,6 +629,12 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestFunctionDump()
+        {
+            EvaluateString("function two() => Integer := 2. two dump");
+        }
+
+        [TestMethod]
         public void TestBlockClosureReturn()
         {
             Value value = EvaluateString("{:x | return: 42. x}");

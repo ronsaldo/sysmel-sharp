@@ -25,6 +25,7 @@ namespace LibSysmelSharp
         public NominalType StringType;
         public NominalType SymbolType;
 
+        public NominalType FunctionType;
         public NominalType ParseTreeNodeType;
         public NominalType MacroContextType;
         public NominalType MetaBuilderType;
@@ -118,9 +119,10 @@ namespace LibSysmelSharp
             Float32Type = CreateNominalType("Float32");
             Float64Type = CreateNominalType("Float64");
 
+            FunctionType      = CreateNominalType("Function");
             ParseTreeNodeType = CreateNominalType("ParseTreeNode");
             MacroContextType  = CreateNominalType("MacroContext");
-            MetaBuilderType = CreateNominalType("MetaBuilder");
+            MetaBuilderType   = CreateNominalType("MetaBuilder");
 
             DynamicListType = GetOrCreateListOfType(DynamicType);
             ByteArrayType = GetOrCreateListOfType(UInt8Type);
@@ -373,6 +375,19 @@ namespace LibSysmelSharp
                     return BooleanValue.GetWithValue(leftValue >= rightValue);
                 }));
         }
+        void RegisterFunctionPrimitives()
+        {
+            FunctionType.AddMethod(new PrimitiveFunction("dump", false,
+                new SimpleFunctionType(null, [FunctionType], VoidType),
+                (Value[] arguments) => {
+                    Value functionValue = arguments[0];
+                    functionValue.DumpToConsole();
+
+                    return VoidValue.GetSingleton();
+                }));
+
+        }
+
         void RegisterStringPrimitives()
         {
             StringType.AddMethod(new PrimitiveFunction("=", false,
@@ -464,6 +479,7 @@ namespace LibSysmelSharp
         {
             RegisterControlFlowMacros();
             RegisterDefinitionMacros();
+            RegisterFunctionPrimitives();
             RegisterStringPrimitives();
             RegisterTypePrimitives();
             RegisterIOPrimitive();

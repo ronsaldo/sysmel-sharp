@@ -54,7 +54,18 @@ namespace LibSysmelSharp
 
         public virtual bool IsSatisfiedBy(SysmelType other)
         {
-            return this.Equals(other);
+            return other.IsSubtypeOf(this);
+        }
+
+        public virtual bool IsSubtypeOf(SysmelType other)
+        {
+            if (this.Equals(other))
+                return true;
+
+            SysmelType? supertype = GetSuperType();
+            if(supertype != null)
+                return supertype.IsSubtypeOf(other);
+            return false;
         }
 
         public virtual bool IsAssociationType()

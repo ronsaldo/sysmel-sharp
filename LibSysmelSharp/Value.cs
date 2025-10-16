@@ -313,5 +313,9 @@ namespace LibSysmelSharp
             throw new NotSupportedException();
         }
 
+        public virtual void DumpToConsole()
+        {
+            System.Console.WriteLine(ToString());
+        }
     }
 }

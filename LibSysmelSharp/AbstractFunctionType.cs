@@ -10,5 +10,18 @@
         {
             return true;
         }
+        public override SysmelType? GetSuperType()
+        {
+            return Intrinsics.GetSingleton().FunctionType;
+        }
+
+        public override Value? LookupSelector(string selector)
+        {
+            SysmelType? superType = GetSuperType();
+            if (superType != null)
+                return superType.LookupSelector(selector);
+            return null;
+        }
+
     }
 }
