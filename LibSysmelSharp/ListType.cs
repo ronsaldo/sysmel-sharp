@@ -10,5 +10,13 @@
         {
             return true;
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not ListType)
+                return false;
+
+            return base.Equals(obj);
+        }
     }
 }

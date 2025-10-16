@@ -32,6 +32,22 @@ namespace LibSysmelSharp
         public AssociationType DynamicImmutableDictionaryAssociationType;
         public ImmutableDictionaryType DynamicImmutableDictionaryType;
 
+        public Queue<Value> pendingAnalysisQueue = new Queue<Value> ();
+
+        public void AddValueWithPendingAnalysis(Value value)
+        {
+            pendingAnalysisQueue.Enqueue(value);
+        }
+
+        public void RunPendingAnalysis()
+        {
+            while(pendingAnalysisQueue.Count > 0)
+            {
+                Value value = pendingAnalysisQueue.Dequeue();
+                value.EnsureAnalysis();
+            }
+        }
+
         public Value? LookIntrinsicGlobal(string symbol)
         {
             if (!globalIntrinsicDictionary.ContainsKey(symbol))

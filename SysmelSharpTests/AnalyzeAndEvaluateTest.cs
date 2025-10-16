@@ -15,6 +15,18 @@ namespace SysmelSharpTests
             return parseTree.AnalyzeAndEvaluateInEnvironment(environment);
         }
 
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Intrinsics.Reset();
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            Intrinsics.GetSingleton().RunPendingAnalysis();
+        }
+
         [TestMethod]
         public void TestIntrinsicType()
         {

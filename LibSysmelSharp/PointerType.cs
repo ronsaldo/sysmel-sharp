@@ -1,4 +1,6 @@
-﻿namespace LibSysmelSharp
+﻿using System.Xml.Linq;
+
+namespace LibSysmelSharp
 {
     public class PointerType: PointerLikeType
     {
@@ -10,5 +12,13 @@
         {
             return true;
         }
+        public override bool Equals(object? obj)
+        {
+            if (obj is not PointerType)
+                return false;
+
+            return base.Equals(obj);
+        }
+
     }
 }

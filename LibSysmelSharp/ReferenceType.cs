@@ -15,5 +15,13 @@
         {
             return this;
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not ReferenceType)
+                return false;
+
+            return base.Equals(obj);
+        }
     }
 }

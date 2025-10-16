@@ -1,4 +1,6 @@
-﻿namespace LibSysmelSharp
+﻿using System.Xml.Linq;
+
+namespace LibSysmelSharp
 {
     public class PointerLikeType : DerivedType
     {
@@ -10,5 +12,7 @@
         {
             return true;
         }
+
+
     }
 }

@@ -104,6 +104,15 @@ namespace LibSysmelSharp
             throw new SysmelException(sourcePosition, "Invalid argument spec.");
         }
 
+        public virtual void EnsureAnalysis()
+        {
+        }
+
+        public void EnqueuePendingAnalysis()
+        {
+            Intrinsics.GetSingleton().AddValueWithPendingAnalysis(this);
+        }
+
         public virtual Value? LookupSelector(string selector)
         {
             return GetSysmelType().LookupSelector(selector);
