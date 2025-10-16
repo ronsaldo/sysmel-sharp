@@ -1,4 +1,6 @@
-﻿namespace SysmelSharp
+﻿using LibSysmelSharp;
+
+namespace SysmelSharp
 {
     internal class Program
     {
@@ -12,9 +14,19 @@
             Console.WriteLine("SysmelSharp 0.1");
         }
 
+        static Value EvaluateSourceCode(SourceCode sourceCode)
+        {
+            List<Token> tokenList = new Scanner().ScanSourceCode(sourceCode);
+            ParseTreeNode parseTree = new Parser().ParseTokenList(sourceCode, tokenList);
+            LibSysmelSharp.Environment environment = new LexicalEnvironment(new IntrinsicsEnvironment(new EmptyEnvironment()));
+            return parseTree.AnalyzeAndEvaluateInEnvironment(environment);
+        }
+
         static void evaluateString(string script)
         {
-            Console.WriteLine("TODO: evaluate script " + script);
+            SourceCode sourceCode = SourceCode.ForString("cli", script);
+            Value evalResult = EvaluateSourceCode(sourceCode);
+            Console.WriteLine(evalResult.ToString());
         }
         static void evaluateFileNamed(string filename)
         {
