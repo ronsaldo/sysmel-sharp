@@ -827,7 +827,18 @@ namespace SysmelSharpTests
         {
             Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. MyDynamicPair#{first: 1. second: 2}");
             Assert.IsTrue(value.IsRecordValue());
+        }
 
+        [TestMethod]
+        public void TestRecordFieldAccess()
+        {
+            Value value = EvaluateString("Record: #MyPair withFields: #{first: Integer. second: Integer}. MyPair#{first: 1. second: 2} first");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(1, value.AsInteger());
+
+            value = EvaluateString("Record: #MyPair withFields: #{first: Integer. second: Integer}. MyPair#{first: 1. second: 2} second");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
         }
     }
 }

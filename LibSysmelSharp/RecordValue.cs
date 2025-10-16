@@ -23,6 +23,16 @@ namespace LibSysmelSharp
             return type;
         }
 
+        public override Value LoadValueWithFieldIndex(int fieldIndex)
+        {
+            return elements[fieldIndex];
+        }
+
+        public override void StoreValueWithFieldIndex(Value valueToStore, int fieldIndex)
+        {
+            elements[fieldIndex] = valueToStore;
+        }
+
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();

@@ -89,6 +89,17 @@ namespace LibSysmelSharp
             return new RecordValue(dictionary.sourcePosition, recordFields, this);
         }
 
+        public override Value? LookupSelector(string selector)
+        {
+            string fieldName = selector;
+            if (fieldName.EndsWith(':'))
+                fieldName = fieldName.Substring(0, fieldName.Length - 1);
+            if (fieldsByName.ContainsKey(fieldName))
+                return fieldsByName[fieldName];
+
+            return base.LookupSelector(selector);
+        }
+
 
         public override string ToString()
         {

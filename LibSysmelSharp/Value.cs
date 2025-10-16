@@ -66,6 +66,8 @@ namespace LibSysmelSharp
             Value? method = LookupSelector(selector);
             if(method != null)
             {
+                if(method.IsFieldDefinition())
+                    return method.AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(messageSend, selector, environment, this, method);
                 SysmelType functionType = method.GetSysmelType();
                 return functionType.AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(messageSend, selector, environment, this, method);
 

@@ -25,6 +25,7 @@ namespace LibSysmelSharp
         public NominalType StringType;
         public NominalType SymbolType;
 
+        public NominalType FieldType;
         public NominalType FunctionType;
         public NominalType ParseTreeNodeType;
         public NominalType MacroContextType;
@@ -127,6 +128,7 @@ namespace LibSysmelSharp
             Float32Type = CreateNominalType("Float32");
             Float64Type = CreateNominalType("Float64");
 
+            FieldType         = CreateNominalType("FieldType");
             FunctionType      = CreateNominalType("Function");
             ParseTreeNodeType = CreateNominalType("ParseTreeNode");
             MacroContextType  = CreateNominalType("MacroContext");
