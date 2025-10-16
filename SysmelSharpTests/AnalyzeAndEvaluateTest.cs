@@ -617,5 +617,20 @@ namespace SysmelSharpTests
             Assert.AreEqual(42, value.AsInteger());
         }
 
+        [TestMethod]
+        public void TestStringConcat()
+        {
+            Value value = EvaluateString("\"Hello \" -- \"World\"");
+            Assert.IsTrue(value.IsStringValue());
+            Assert.AreEqual("Hello World", value.AsString());
+        }
+
+        [TestMethod]
+        public void TestStringSize()
+        {
+            Value value = EvaluateString("\"Hello \" size");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(6, value.AsInteger());
+        }
     }
 }

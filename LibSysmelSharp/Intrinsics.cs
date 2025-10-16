@@ -301,6 +301,37 @@ namespace LibSysmelSharp
                     return BooleanValue.GetWithValue(leftValue >= rightValue);
                 }));
         }
+        void RegisterStringPrimitives()
+        {
+            StringType.AddMethod(new PrimitiveFunction("=", false,
+                new SimpleFunctionType(null, [StringType, StringType], StringType),
+                (Value[] arguments) => {
+                    string leftString = arguments[0].AsString();
+                    string rightString = arguments[1].AsString();
+                    return BooleanValue.GetWithValue(leftString == rightString);
+                }));
+            StringType.AddMethod(new PrimitiveFunction("~=", false,
+                new SimpleFunctionType(null, [StringType, StringType], StringType),
+                (Value[] arguments) => {
+                    string leftString = arguments[0].AsString();
+                    string rightString = arguments[1].AsString();
+                    return BooleanValue.GetWithValue(leftString != rightString);
+                }));
+            StringType.AddMethod(new PrimitiveFunction("--", false,
+                new SimpleFunctionType(null, [StringType, StringType], StringType),
+                (Value[] arguments) => {
+                    string leftString = arguments[0].AsString();
+                    string rightString = arguments[1].AsString();
+                    return new StringValue(null, leftString + rightString, StringType);
+                }));
+            StringType.AddMethod(new PrimitiveFunction("size", false,
+                new SimpleFunctionType(null, [StringType], IntegerType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsString();
+                    return new IntegerValue(null, str.Length, IntegerType);
+                }));
+
+        }
 
         void RegisterTypePrimitives()
         {
@@ -361,6 +392,7 @@ namespace LibSysmelSharp
         {
             RegisterControlFlowMacros();
             RegisterDefinitionMacros();
+            RegisterStringPrimitives();
             RegisterTypePrimitives();
             RegisterIOPrimitive();
             RegisterIntegerTypePrimitives(IntegerType);
