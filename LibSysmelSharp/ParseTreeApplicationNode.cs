@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,19 @@ namespace LibSysmelSharp
         {
             Value functionalValue = functional.AnalyzeAndEvaluateInEnvironment(environment);
             return functionalValue.AnalyzeAndEvaluateApplicationInEnvironment(this, environment);
+        }
+
+        public override ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)
+        {
+            Debug.Assert(arguments.Length == 1);
+            Debug.Assert(functional.IsParseTreeIdentifierReferenceNode());
+
+            ParseTreeIdentifierReferenceNode functionalIdentifier = (ParseTreeIdentifierReferenceNode)functional;
+            string argumentName = functionalIdentifier.value;
+            if (argumentName.EndsWith(":"))
+                argumentName = argumentName.Substring(0, argumentName.Length - 1);
+
+            return new ParseTreeArgumentDefinitionNode(sourcePosition, argumentName, arguments[0]);
         }
     }
 }

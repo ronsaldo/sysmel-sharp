@@ -21,5 +21,10 @@ namespace LibSysmelSharp
                 throw new SysmelException(sourcePosition, "Failed to find identifier #" + value);
             return foundValue.AnalyzeAndEvaluateIdentifierReferenceInEnvironment(this, environment);
         }
+
+        public override ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)
+        {
+            return new ParseTreeArgumentDefinitionNode(sourcePosition, value, null);
+        }
     }
 }

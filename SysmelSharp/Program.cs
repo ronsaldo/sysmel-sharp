@@ -30,7 +30,8 @@ namespace SysmelSharp
         }
         static void evaluateFileNamed(string filename)
         {
-            Console.WriteLine("TODO: evaluate file named " + filename);
+            SourceCode sourceCode = SourceCode.ForFileNamed(filename);
+            EvaluateSourceCode(sourceCode);
         }
 
         static void Main(string[] args)

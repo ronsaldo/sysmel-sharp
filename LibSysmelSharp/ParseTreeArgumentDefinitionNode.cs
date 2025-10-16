@@ -11,7 +11,7 @@ namespace LibSysmelSharp
         public string? name;
         public ParseTreeNode? typeExpression;
 
-        public ParseTreeArgumentDefinitionNode(SourcePosition sourcePosition, string? name, ParseTreeNode? typeExpression) : base(sourcePosition)
+        public ParseTreeArgumentDefinitionNode(SourcePosition? sourcePosition, string? name, ParseTreeNode? typeExpression) : base(sourcePosition)
         {
             this.name = name;
             this.typeExpression = typeExpression;

@@ -556,5 +556,41 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(2, value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestFunction2()
+        {
+            Value value = EvaluateString("function identity(value: Integer) => Integer := value");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+
+            value = EvaluateString("function identity(value: Integer) => Integer := value. identity(2)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestFunction3()
+        {
+            Value value = EvaluateString("function identity(value) := value");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+
+            value = EvaluateString("function identity(value) := value. identity(2)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestFunction4()
+        {
+            Value value = EvaluateString("function add(first: Integer. second: Integer) => Integer := first + second");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+
+            value = EvaluateString("function add(first: Integer. second: Integer) => Integer := first + second. add(2. 3)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(5, value.AsInteger());
+        }
     }
 }
