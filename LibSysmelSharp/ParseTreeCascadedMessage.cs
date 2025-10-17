@@ -22,5 +22,10 @@ namespace LibSysmelSharp
             return true;
         }
 
+        public override ParseTreeMessageSendNode AsParseTreeMessageSendNodeWithReceiver(ParseTreeNode receiver)
+        {
+            return new ParseTreeMessageSendNode(sourcePosition, receiver, selector, arguments);
+        }
+
     }
 }

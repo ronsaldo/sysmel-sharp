@@ -63,6 +63,10 @@ namespace LibSysmelSharp
 
         public virtual Value AnalyzeAndEvaluateMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, Environment environment)
         {
+            // HACK: Use a macro or something else here.
+            if (selector == "yourself")
+                return this;
+
             Value? method = LookupSelector(selector);
             if(method != null)
             {

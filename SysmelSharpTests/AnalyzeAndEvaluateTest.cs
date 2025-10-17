@@ -782,6 +782,22 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestMessageCascade()
+        {
+            Value value = EvaluateString("42 negated; + 2");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(44, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestMessageCascade2()
+        {
+            Value value = EvaluateString("42 negated; + 2; yourself");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(42, value.AsInteger());
+        }
+
+        [TestMethod]
         public void TestRecordType()
         {
             Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}");

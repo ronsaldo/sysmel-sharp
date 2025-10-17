@@ -83,6 +83,10 @@
         {
             return false;
         }
+        public virtual bool IsParseTreeLiteralValueNode()
+        {
+            return false;
+        }
 
         public virtual bool IsParseTreeSequenceNode()
         {
@@ -204,6 +208,11 @@
         {
             outReceiver = this;
             firstCascadedMessage = null;
+        }
+
+        public virtual ParseTreeMessageSendNode AsParseTreeMessageSendNodeWithReceiver(ParseTreeNode receiver)
+        {
+            throw new NotSupportedException();
         }
     }
 }

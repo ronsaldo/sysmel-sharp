@@ -9,17 +9,32 @@ namespace LibSysmelSharp
     public class ParseTreeMessageCascadeNode : ParseTreeNode
     {
         public ParseTreeNode receiver;
-        public ParseTreeNode[] cascadedMessage;
+        public ParseTreeNode[] cascadedMessages;
 
-        public ParseTreeMessageCascadeNode(SourcePosition? sourcePosition, ParseTreeNode receiver, ParseTreeNode[] cascadedMessage) : base(sourcePosition)
+        public ParseTreeMessageCascadeNode(SourcePosition? sourcePosition, ParseTreeNode receiver, ParseTreeNode[] cascadedMessages) : base(sourcePosition)
         {
             this.receiver = receiver;
-            this.cascadedMessage = cascadedMessage;
+            this.cascadedMessages = cascadedMessages;
         }
 
         public override bool IsParseTreeMessageCascadeNode()
         {
             return true;
+        }
+
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            Value receiverValue = receiver.AnalyzeAndEvaluateInEnvironment(environment);
+            ParseTreeLiteralValueNode receiverValueNode = new ParseTreeLiteralValueNode(receiver.sourcePosition, receiverValue);
+
+            Value result = receiverValue;
+            foreach(ParseTreeNode cascadedMessage in cascadedMessages)
+            {
+                ParseTreeNode cascadedMessageWithReceiver = cascadedMessage.AsParseTreeMessageSendNodeWithReceiver(receiverValueNode);
+                result = cascadedMessageWithReceiver.AnalyzeAndEvaluateInEnvironment(environment);
+            }
+
+            return result;
         }
     }
 }

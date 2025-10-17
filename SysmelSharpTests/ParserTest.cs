@@ -370,7 +370,7 @@ namespace SysmelSharpTests
             Assert.IsTrue(cascade.receiver.IsParseTreeLiteralIntegerNode());
             Assert.AreEqual(42, ((ParseTreeLiteralIntegerNode)cascade.receiver).value);
 
-            Assert.AreEqual(4, cascade.cascadedMessage.Length);
+            Assert.AreEqual(4, cascade.cascadedMessages.Length);
 
         }
         [TestMethod]
