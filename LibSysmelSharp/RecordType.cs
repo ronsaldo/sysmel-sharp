@@ -12,6 +12,7 @@ namespace LibSysmelSharp
         {
             this.name = name;
             this.fields = fields;
+            this.fieldsByName = new Dictionary<string, FieldDefinition>();
             BuildFieldsByName();
         }
 

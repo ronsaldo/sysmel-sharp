@@ -165,6 +165,8 @@ namespace LibSysmelSharp
             BehaviorClassType    = CreateClassType("Behavior", ObjectClassType, [], []);
             ClassClassType       = CreateClassType("Class", BehaviorClassType, [], []);
             MetaclassClassType   = CreateClassType("Metaclass", BehaviorClassType, [], []);
+            // Class short circuit
+            ProtoObjectClassType.type.superclass = ClassClassType;
 
             RegisterIntrinsicValue("false", BooleanValue.GetFalse());
             RegisterIntrinsicValue("true",  BooleanValue.GetTrue());
@@ -347,6 +349,24 @@ namespace LibSysmelSharp
                     ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeRecordDefinitionNode(context.sourcePosition, nameExpression, fieldsExpression);
+                }));
+
+            AddMethod(new PrimitiveFunction("Class:withFields:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[2];
+                    return new ParseTreeClassDefinitionNode(context.sourcePosition, nameExpression, null, null, fieldsExpression);
+                }));
+            AddMethod(new PrimitiveFunction("Class:withSuperclass:fields:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode superclassExpression = (ParseTreeNode)arguments[2];
+                    ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[3];
+                    return new ParseTreeClassDefinitionNode(context.sourcePosition, nameExpression, superclassExpression, null, fieldsExpression);
                 }));
         }
 

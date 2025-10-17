@@ -19,8 +19,18 @@
             BuildFieldsByName();
         }
 
+        public void SetFields(FieldDefinition[] fields)
+        {
+            this.fields = fields;
+            this.allFields = fields;
+            if (superclass != null)
+                this.allFields = superclass.allFields.Concat(fields).ToArray();
+            this.BuildFieldsByName();
+        }
+
         void BuildFieldsByName()
         {
+            this.fieldsByName = new Dictionary<string, FieldDefinition>();
             int fieldCount = allFields.Length;
             for(int i = 0; i < fieldCount; ++i)
             {

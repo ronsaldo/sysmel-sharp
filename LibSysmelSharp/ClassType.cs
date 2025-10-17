@@ -22,5 +22,10 @@ namespace LibSysmelSharp
         {
             return true;
         }
+
+        public override SysmelType GetSysmelType()
+        {
+            return type;
+        }
     }
 }
