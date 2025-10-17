@@ -422,5 +422,49 @@ namespace SysmelSharpTests
             ParseTreeNode node = ParseString("`@quote");
             Assert.IsTrue(node.IsParseTreeSpliceNode());
         }
+
+        [TestMethod]
+        public void TestUnaryMethod()
+        {
+            ParseTreeNode node = ParseString("!{unary}");
+            Assert.IsTrue(node.IsParseTreeMethodNode());
+
+            ParseTreeMethodNode methodNode = (ParseTreeMethodNode)node;
+            Assert.AreEqual(0, methodNode.functionalSignature.argumentDefinitions.Length);
+            Assert.AreEqual("unary", methodNode.functionalSignature.selector);
+        }
+
+        [TestMethod]
+        public void TestBinaryMethod()
+        {
+            ParseTreeNode node = ParseString("!{+ operand self}");
+            Assert.IsTrue(node.IsParseTreeMethodNode());
+
+            ParseTreeMethodNode methodNode = (ParseTreeMethodNode)node;
+            Assert.AreEqual(1, methodNode.functionalSignature.argumentDefinitions.Length);
+            Assert.AreEqual("+", methodNode.functionalSignature.selector);
+        }
+
+        [TestMethod]
+        public void TestKeywordMethod()
+        {
+            ParseTreeNode node = ParseString("!{test: first with: second}");
+            Assert.IsTrue(node.IsParseTreeMethodNode());
+
+            ParseTreeMethodNode methodNode = (ParseTreeMethodNode)node;
+            Assert.AreEqual(2, methodNode.functionalSignature.argumentDefinitions.Length);
+            Assert.AreEqual("test:with:", methodNode.functionalSignature.selector);
+        }
+
+        [TestMethod]
+        public void TestAddMethod()
+        {
+            ParseTreeNode node = ParseString("ProtoObject !{myYourself self}");
+            Assert.IsTrue(node.IsParseTreeAddMethodNode());
+
+            ParseTreeAddMethodNode addMethodNode = (ParseTreeAddMethodNode)node;
+            Assert.IsTrue(addMethodNode.owner.IsParseTreeIdentifierReferenceNode());
+            Assert.IsTrue(addMethodNode.method.IsParseTreeMethodNode());
+        }
     }
 }

@@ -231,6 +231,80 @@ namespace LibSysmelSharp
             else
                 return new ParseTreeBlockClosureNode(state.SourcePositionFrom(startingPosition), functionalSignature, expressionWithError);
         }
+        ParseTreeNode? ParseOptionalTypeExpression()
+        {
+            if (state.PeekKind() == TokenKind.LeftParent)
+                return ParseParentheses();
+            return null;
+        }
+
+        ParseTreeArgumentDefinitionNode ParseMethodArgument()
+        {
+            int startingPosition = state.position;
+            ParseTreeNode? typeExpression = null;
+            if (state.PeekKind() == TokenKind.LeftParent)
+                typeExpression = ParseParentheses();
+
+            Token identifierToken = state.Next();
+            return new ParseTreeArgumentDefinitionNode(state.SourcePositionFrom(startingPosition), identifierToken.GetText(), typeExpression);
+        }
+
+        ParseTreeFunctionalSignatureNode ParseMethodHeader()
+        {
+            int startingPosition = state.position;
+            ParseTreeNode? receiverType = ParseOptionalTypeExpression();
+
+            List<ParseTreeArgumentDefinitionNode> arguments = new List<ParseTreeArgumentDefinitionNode>();
+            StringBuilder selectorBuilder = new StringBuilder();
+
+            TokenKind headerTokenKind = state.PeekKind();
+            if(headerTokenKind == TokenKind.Identifier)
+            {
+                selectorBuilder.Append(state.Next().GetText());
+            }
+            else if(IsBinaryOperatorToken(headerTokenKind))
+            {
+                selectorBuilder.Append(state.Next().GetText());
+                arguments.Add(ParseMethodArgument());
+            }
+            else if(headerTokenKind == TokenKind.Keyword)
+            {
+                while(state.PeekKind() == TokenKind.Keyword)
+                {
+                    Token keywordToken = state.Next();
+                    selectorBuilder.Append(keywordToken.GetText());
+                    arguments.Add(ParseMethodArgument());
+                }
+            }
+            else
+            {
+                throw new SysmelException(state.SourcePositionFrom(startingPosition), "Expected a method header.");
+            }
+
+            ParseTreeNode? resultTypeExpression = null;
+            if(state.PeekKind() == TokenKind.ColonColon)
+            {
+                state.Advance();
+                resultTypeExpression = ParseAssociationExpression();
+            }
+            return new ParseTreeFunctionalSignatureNode(state.SourcePositionFrom(startingPosition), arguments.ToArray(), resultTypeExpression, selectorBuilder.ToString());
+        }
+
+        public ParseTreeMethodNode ParseMethod()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.MethodStart);
+            state.Advance();
+
+            ParseTreeFunctionalSignatureNode methodHeader = ParseMethodHeader();
+
+            ParseTreeNode bodySequence = ParseExpressionSequenceUntilEndOrDelimiter(TokenKind.RightCurlyBracket);
+            ParseTreeNode bodyWithError = state.ExpectsAddingErrorNode(TokenKind.RightCurlyBracket, "Missing right curly bracket.", bodySequence);
+
+            string? selector = methodHeader.selector;
+            Debug.Assert(selector != null);
+            return new ParseTreeMethodNode(state.SourcePositionFrom(startingPosition), methodHeader, selector, bodyWithError);
+        }
 
         private ParseTreeNode ParseImmutableDictionaryAssociation()
         {
@@ -319,8 +393,10 @@ namespace LibSysmelSharp
                 return ParseBlock();
             case TokenKind.ByteArrayStart:
                 return ParseByteArray();
-                case TokenKind.ImmutableDictionaryStart:
+            case TokenKind.ImmutableDictionaryStart:
                 return ParseImmutableDictionary();
+            case TokenKind.MethodStart:
+                return ParseMethod();
             default:
                 return ParseLiteral();
             }
@@ -328,7 +404,10 @@ namespace LibSysmelSharp
 
         bool IsUnaryPostfixToken(TokenKind kind)
         {
-            return kind == TokenKind.Identifier || kind == TokenKind.LeftParent || kind == TokenKind.ImmutableDictionaryStart;
+            return kind == TokenKind.Identifier
+                || kind == TokenKind.LeftParent
+                || kind == TokenKind.ImmutableDictionaryStart
+                || kind == TokenKind.MethodStart;
         }
         private ParseTreeNode ParseUnaryPostfixExpression()
         {
@@ -367,6 +446,13 @@ namespace LibSysmelSharp
                     {
                         ParseTreeNode dictionary = ParseImmutableDictionary();
                         receiver = dictionary.CopyWithPostfixReceiver(receiver);
+                    }
+                    break;
+                case TokenKind.MethodStart:
+                    {
+                        ParseTreeMethodNode method = ParseMethod();
+                        ParseTreeAddMethodNode addMethod = new ParseTreeAddMethodNode(state.SourcePositionFrom(startingPosition), receiver, method);
+                        receiver = addMethod;
                     }
                     break;
                 }

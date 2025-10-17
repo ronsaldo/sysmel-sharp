@@ -148,6 +148,17 @@
         {
             return false;
         }
+
+        public virtual bool IsParseTreeAddMethodNode()
+        {
+            return false;
+        }
+
+        public virtual bool IsParseTreeMethodNode()
+        {
+            return false;
+        }
+
         public virtual bool IsParseTreeQuoteNode()
         {
             return false;

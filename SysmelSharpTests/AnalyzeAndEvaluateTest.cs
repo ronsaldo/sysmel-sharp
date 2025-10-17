@@ -916,5 +916,33 @@ namespace SysmelSharpTests
             Assert.AreEqual(0, instance.elements[0].AsInteger());
             Assert.AreEqual(0, instance.elements[1].AsInteger());
         }
+
+        [TestMethod]
+        public void TestMethod()
+        {
+            Value value = EvaluateString("!{identity self}");
+            Assert.IsTrue(value.IsFunctionValue());
+        }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            Value value = EvaluateString("!{(Integer)identity :: Integer. self}");
+            Assert.IsTrue(value.IsFunctionValue());
+        }
+
+        [TestMethod]
+        public void TestMethod3()
+        {
+            Value value = EvaluateString("!{(Integer)identity self}");
+            Assert.IsTrue(value.IsFunctionValue());
+        }
+
+        [TestMethod]
+        public void TestMethod4()
+        {
+            Value value = EvaluateString("!{identity :: Integer. self}");
+            Assert.IsTrue(value.IsFunctionValue());
+        }
     }
 }
