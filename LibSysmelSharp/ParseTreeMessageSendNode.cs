@@ -30,5 +30,11 @@ namespace LibSysmelSharp
             Value selectorValue = selector.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType);
             return receiverValue.AnalyzeAndEvaluateMessageSendInEnvironment(this, selectorValue.AsSymbol(), environment);
         }
+
+        public override void SplitReceiverForCascade(out ParseTreeNode outReceiver, out ParseTreeNode? firstCascadedMessage)
+        {
+            outReceiver = receiver;
+            firstCascadedMessage = new ParseTreeCascadedMessage(sourcePosition, selector, arguments);
+        }
     }
 }

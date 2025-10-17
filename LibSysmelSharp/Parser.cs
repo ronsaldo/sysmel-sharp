@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -514,9 +515,84 @@ namespace LibSysmelSharp
             return new ParseTreeMessageSendNode(sourcePosition, receiver, selectorNode, arguments.ToArray());
         }
 
+        private ParseTreeNode ParseKeywordCascadedMessage()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.Keyword);
+
+            StringBuilder selectorBuilder = new StringBuilder();
+            List<ParseTreeNode> arguments = new List<ParseTreeNode>();
+
+            while(state.PeekKind() == TokenKind.Keyword)
+            {
+                Token keyword = state.Next();
+                ParseTreeNode argument = ParseAssociationExpression();
+
+                selectorBuilder.Append(keyword.GetText());
+                arguments.Add(argument);
+            }
+
+            ParseTreeNode selectorLiteral = new ParseTreeLiteralSymbolNode(state.SourcePositionFrom(startingPosition), selectorBuilder.ToString());
+            return new ParseTreeCascadedMessage(state.SourcePositionFrom(startingPosition), selectorLiteral, arguments.ToArray());
+        }
+
+        private ParseTreeNode ParseBinaryCascadedMessage()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(IsBinaryOperatorToken(state.PeekKind()));
+
+            Token operatorToken = state.Next();
+            ParseTreeNode operatorArgument = ParseAssociationExpression();
+
+            ParseTreeNode selectorLiteral = new ParseTreeLiteralSymbolNode(state.SourcePositionFrom(startingPosition), operatorToken.GetText());
+            return new ParseTreeCascadedMessage(state.SourcePositionFrom(startingPosition), selectorLiteral, [operatorArgument]);
+        }
+
+        private ParseTreeNode ParseUnaryCascadedMessage()
+        {
+            int startingPosition = state.position;
+            Debug.Assert(state.PeekKind() == TokenKind.Identifier);
+
+            Token identifierToken = state.Next();
+
+            ParseTreeNode selectorLiteral = new ParseTreeLiteralSymbolNode(state.SourcePositionFrom(startingPosition), identifierToken.GetText());
+            return new ParseTreeCascadedMessage(state.SourcePositionFrom(startingPosition), selectorLiteral, []);
+        }
+
+        private ParseTreeNode ParseCascadedMessage()
+        {
+            TokenKind kind = state.PeekKind();
+            if(kind == TokenKind.Keyword)
+                return ParseKeywordCascadedMessage();
+            if (IsBinaryOperatorToken(kind))
+                return ParseBinaryCascadedMessage();
+            if (kind == TokenKind.Identifier)
+                return ParseUnaryCascadedMessage();
+
+            return state.AdvanceWithExpectedError("Expected a cascaded message.");
+        }
+
         private ParseTreeNode ParseMessageCascade()
         {
-            return ParseKeywordMessage();
+            int startingPosition = state.position;
+            ParseTreeNode receiver = ParseKeywordMessage();
+            if(state.PeekKind() != TokenKind.Semicolon)
+                return receiver;
+
+            List<ParseTreeNode> cascadedMessages = new List<ParseTreeNode>();
+            ParseTreeNode? firstCascaded = null;
+            receiver.SplitReceiverForCascade(out receiver, out firstCascaded);
+
+            if (firstCascaded != null)
+                cascadedMessages.Add(firstCascaded);
+
+            while(state.PeekKind() == TokenKind.Semicolon)
+            {
+                state.Advance();
+                cascadedMessages.Add(ParseCascadedMessage());
+            }
+
+            return new ParseTreeMessageCascadeNode(state.SourcePositionFrom(startingPosition), receiver, cascadedMessages.ToArray());
         }
 
         private ParseTreeNode ParseLowPrecedenceExpression()

@@ -199,5 +199,11 @@
         {
             throw new NotSupportedException();
         }
+
+        public virtual void SplitReceiverForCascade(out ParseTreeNode outReceiver, out ParseTreeNode? firstCascadedMessage)
+        {
+            outReceiver = this;
+            firstCascadedMessage = null;
+        }
     }
 }

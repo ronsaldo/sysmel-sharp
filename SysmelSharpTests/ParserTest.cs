@@ -361,6 +361,19 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestMessageCascade()
+        {
+            ParseTreeNode node = ParseString("42 perform: #+ with: 2; perform: #- with: 5; + 7; yourself");
+            Assert.IsTrue(node.IsParseTreeMessageCascadeNode());
+
+            ParseTreeMessageCascadeNode cascade = (ParseTreeMessageCascadeNode)node;
+            Assert.IsTrue(cascade.receiver.IsParseTreeLiteralIntegerNode());
+            Assert.AreEqual(42, ((ParseTreeLiteralIntegerNode)cascade.receiver).value);
+
+            Assert.AreEqual(4, cascade.cascadedMessage.Length);
+
+        }
+        [TestMethod]
         public void TestBinaryExpression()
         {
             ParseTreeNode node = ParseString("1 + 2");
