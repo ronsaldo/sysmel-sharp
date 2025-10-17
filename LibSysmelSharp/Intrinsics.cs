@@ -53,6 +53,12 @@ namespace LibSysmelSharp
         public AssociationType DynamicImmutableDictionaryAssociationType;
         public ImmutableDictionaryType DynamicImmutableDictionaryType;
 
+        public ClassType ProtoObjectClassType;
+        public ClassType ObjectClassType;
+        public ClassType BehaviorClassType;
+        public ClassType ClassClassType;
+        public ClassType MetaclassClassType;
+
         public Queue<Value> pendingAnalysisQueue = new Queue<Value> ();
 
         public void AddValueWithPendingAnalysis(Value value)
@@ -88,6 +94,20 @@ namespace LibSysmelSharp
             IntegerType type = new IntegerType(name, valueSize, valueAlignment, isSigned);
             globalIntrinsicDictionary[name] = type;
             return type;
+        }
+
+        ClassType CreateClassType(string name, BehaviorType? superclass, FieldDefinition[] metaFields, FieldDefinition[] fields)
+        {
+            BehaviorType? metaSuperclass = null;
+            if (superclass != null)
+                metaSuperclass = (BehaviorType)superclass.GetSysmelType();
+
+            MetaclassType metaclass = new MetaclassType(null, metaSuperclass, metaFields);
+            
+            ClassType clazz = new ClassType(null, name, superclass, metaclass, fields);
+            metaclass.thisClass = clazz;
+            globalIntrinsicDictionary[name] = clazz;
+            return clazz;
         }
 
         void RegisterIntrinsicValue(string name, Value value)
@@ -138,6 +158,13 @@ namespace LibSysmelSharp
             ByteArrayType = GetOrCreateListOfType(UInt8Type);
             DynamicImmutableDictionaryAssociationType = new AssociationType(null, SymbolType, DynamicType);
             DynamicImmutableDictionaryType = new ImmutableDictionaryType(null, DynamicImmutableDictionaryAssociationType);
+
+
+            ProtoObjectClassType = CreateClassType("ProtoObject", null, [], []);
+            ObjectClassType      = CreateClassType("Object", ProtoObjectClassType, [], []);
+            BehaviorClassType    = CreateClassType("Behavior", ObjectClassType, [], []);
+            ClassClassType       = CreateClassType("Class", BehaviorClassType, [], []);
+            MetaclassClassType   = CreateClassType("Metaclass", BehaviorClassType, [], []);
 
             RegisterIntrinsicValue("false", BooleanValue.GetFalse());
             RegisterIntrinsicValue("true",  BooleanValue.GetTrue());

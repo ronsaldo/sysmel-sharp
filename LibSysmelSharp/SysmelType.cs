@@ -138,7 +138,20 @@ namespace LibSysmelSharp
         }
         public virtual bool IsIntegerType()
         {
-            return true;
+            return false;
+        }
+        
+        public virtual bool IsBehaviorType()
+        {
+            return false;
+        }
+        public virtual bool IsClassType()
+        {
+            return false;
+        }
+        public virtual bool IsMetaclassType()
+        {
+            return false;
         }
 
         public virtual Value MakeDefaultValue()
