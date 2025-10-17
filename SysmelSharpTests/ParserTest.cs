@@ -430,7 +430,7 @@ namespace SysmelSharpTests
             Assert.IsTrue(node.IsParseTreeMethodNode());
 
             ParseTreeMethodNode methodNode = (ParseTreeMethodNode)node;
-            Assert.AreEqual(0, methodNode.functionalSignature.argumentDefinitions.Length);
+            Assert.AreEqual(1, methodNode.functionalSignature.argumentDefinitions.Length);
             Assert.AreEqual("unary", methodNode.functionalSignature.selector);
         }
 
@@ -441,7 +441,7 @@ namespace SysmelSharpTests
             Assert.IsTrue(node.IsParseTreeMethodNode());
 
             ParseTreeMethodNode methodNode = (ParseTreeMethodNode)node;
-            Assert.AreEqual(1, methodNode.functionalSignature.argumentDefinitions.Length);
+            Assert.AreEqual(2, methodNode.functionalSignature.argumentDefinitions.Length);
             Assert.AreEqual("+", methodNode.functionalSignature.selector);
         }
 
@@ -452,7 +452,7 @@ namespace SysmelSharpTests
             Assert.IsTrue(node.IsParseTreeMethodNode());
 
             ParseTreeMethodNode methodNode = (ParseTreeMethodNode)node;
-            Assert.AreEqual(2, methodNode.functionalSignature.argumentDefinitions.Length);
+            Assert.AreEqual(3, methodNode.functionalSignature.argumentDefinitions.Length);
             Assert.AreEqual("test:with:", methodNode.functionalSignature.selector);
         }
 

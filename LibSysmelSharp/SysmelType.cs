@@ -27,6 +27,11 @@ namespace LibSysmelSharp
             return null;
         }
 
+        public virtual FieldDefinition? LookupFieldName(string selector)
+        {
+            return null;
+        }
+
         public override Value PerformWithArguments(string selector, Value[] arguments)
         {
             Value? foundMethod = LookupSelector(selector);

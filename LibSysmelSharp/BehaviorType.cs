@@ -65,6 +65,13 @@
             return null;
         }
 
+        public override FieldDefinition? LookupFieldName(string selector)
+        {
+            if (fieldsByName.ContainsKey(selector))
+                return fieldsByName[selector];
+            return null;
+        }
+
         public override Value MakeDefaultValue()
         {
             return NilValue.GetSingleton();

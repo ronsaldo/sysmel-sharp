@@ -287,7 +287,8 @@ namespace LibSysmelSharp
                 state.Advance();
                 resultTypeExpression = ParseAssociationExpression();
             }
-            return new ParseTreeFunctionalSignatureNode(state.SourcePositionFrom(startingPosition), arguments.ToArray(), resultTypeExpression, selectorBuilder.ToString());
+            return new ParseTreeFunctionalSignatureNode(state.SourcePositionFrom(startingPosition), arguments.ToArray(), resultTypeExpression, selectorBuilder.ToString())
+                    .AddSelfWithType(receiverType);
         }
 
         public ParseTreeMethodNode ParseMethod()

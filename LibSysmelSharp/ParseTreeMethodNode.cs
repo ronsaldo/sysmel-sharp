@@ -18,7 +18,7 @@
             return true;
         }
 
-        public Value AnalyzeAndEvaluateInEnvironmentAddignToOwner(Environment environment, Value? owner)
+        public Value AnalyzeAndEvaluateInEnvironmentAddingToOwner(Environment environment, Value? owner)
         {
             DependentFunctionType functionTypeWithSignature = (DependentFunctionType)functionalSignature.AnalyzeAndEvaluateInEnvironment(environment);
 
@@ -32,7 +32,12 @@
 
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
-            return AnalyzeAndEvaluateInEnvironmentAddignToOwner(environment, null);
+            return AnalyzeAndEvaluateInEnvironmentAddingToOwner(environment, null);
+        }
+
+        public ParseTreeMethodNode CopyWithSelfType(SysmelType newSelfType)
+        {
+            return new ParseTreeMethodNode(sourcePosition, functionalSignature.CopyWithSelfType(newSelfType), selector, body);
         }
     }
 }

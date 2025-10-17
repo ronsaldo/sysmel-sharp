@@ -25,8 +25,12 @@ namespace LibSysmelSharp
         }
         public virtual Value AnalyzeAndEvaluateInEnvironmentWithDecayedType(Environment environment)
         {
-            // TODO: Load references.
-            return AnalyzeAndEvaluateInEnvironment(environment);
+            Value evaluatedValue = AnalyzeAndEvaluateInEnvironment(environment);
+            SysmelType valueType = evaluatedValue.GetSysmelType();
+            if (valueType.IsReferenceType())
+                return evaluatedValue.LoadValue();
+
+            return evaluatedValue;
         }
 
         public virtual Value CastAnalyzedAndEvaluatedValueToExpectedType(Value evaluationResult, SysmelType? expectedType)
@@ -133,7 +137,12 @@ namespace LibSysmelSharp
         {
             return GetSysmelType().LookupSelector(selector);
         }
-        
+
+        public virtual FieldDefinition? LookupFieldName(string selector)
+        {
+            return GetSysmelType().LookupFieldName(selector);
+        }
+
         public virtual void WithSelectorAddMethod(string selector, Value method)
         {
             GetSysmelType().WithSelectorAddMethod(selector, method);

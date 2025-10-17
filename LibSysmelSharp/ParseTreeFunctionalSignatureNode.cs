@@ -43,5 +43,27 @@ namespace LibSysmelSharp
 
             return new DependentFunctionType(sourcePosition, selector, argumentValues, resultType);
         }
+
+        public ParseTreeFunctionalSignatureNode CopyWithSelfType(SysmelType newSelfType)
+        {
+            int argumentCount = argumentDefinitions.Length;
+            ParseTreeArgumentDefinitionNode[] newArgumentDefinitions = new ParseTreeArgumentDefinitionNode[argumentCount];
+            argumentDefinitions.CopyTo(newArgumentDefinitions, 0);
+
+            ParseTreeArgumentDefinitionNode oldSelf = argumentDefinitions[0];
+            ParseTreeArgumentDefinitionNode selfWithType = new ParseTreeArgumentDefinitionNode(oldSelf.sourcePosition, oldSelf.name,
+                    new ParseTreeLiteralValueNode(null, newSelfType));
+            newArgumentDefinitions[0] = selfWithType;
+
+            return new ParseTreeFunctionalSignatureNode(sourcePosition, newArgumentDefinitions, resultTypeExpression, selector);
+        }
+
+        public ParseTreeFunctionalSignatureNode AddSelfWithType(ParseTreeNode? selfType)
+        {
+            ParseTreeArgumentDefinitionNode selfArgument = new ParseTreeArgumentDefinitionNode(sourcePosition, "self", selfType);
+            ParseTreeArgumentDefinitionNode[] listWithSelf = { selfArgument};
+            argumentDefinitions = listWithSelf.Concat(argumentDefinitions).ToArray();
+            return this;
+        }
     }
 }

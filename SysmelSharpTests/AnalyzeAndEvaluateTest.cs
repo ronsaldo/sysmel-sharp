@@ -944,5 +944,13 @@ namespace SysmelSharpTests
             Value value = EvaluateString("!{identity :: Integer. self}");
             Assert.IsTrue(value.IsFunctionValue());
         }
+
+        [TestMethod]
+        public void TestClassAddMethod()
+        {
+            Value value = EvaluateString("Class: #MyClass withSuperclass: Object fields: #{first: Integer. second: Integer}. MyClass!{sum first + second}. MyClass new sum");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(0, value.AsInteger());
+        }
     }
 }

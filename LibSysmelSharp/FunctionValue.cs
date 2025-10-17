@@ -29,24 +29,24 @@
 
         public override Value EvaluateWithArguments(Value[] callArguments)
         {
-            LexicalEnvironment argumentsEnvironment = new LexicalEnvironment(definitionEnvironment);
+            FunctionActivationEnvironment activationEnvironment = new FunctionActivationEnvironment(definitionEnvironment);
             foreach(ArgumentDefinitionValue argumentDef in signature.arguments)
             {
                 if(argumentDef.name != null)
                 {
                     Value argumentValue = callArguments[argumentDef.index];
-                    argumentsEnvironment.SetSymbolBinding(argumentDef.name, argumentValue);
+                    activationEnvironment.SetSymbolBinding(argumentDef.name, argumentValue);
                 }
             }
 
-            Value resultType = signature.resultTypeExpression.AnalyzeAndEvaluateInEnvironment(argumentsEnvironment);
+            Value resultType = signature.resultTypeExpression.AnalyzeAndEvaluateInEnvironment(activationEnvironment);
             if (!resultType.IsType())
                 throw new SysmelException(signature.resultTypeExpression.sourcePosition, "Expected a result type expression.");
 
             SysmelType resultTypeValue = (SysmelType)resultType;
 
             Value resultValue = VoidValue.GetSingleton();
-            LexicalEnvironment bodyEnvironment = new LexicalEnvironment(argumentsEnvironment);
+            LexicalEnvironment bodyEnvironment = new LexicalEnvironment(activationEnvironment);
             try
             {
                 resultValue = definitionBody.AnalyzeAndEvaluateInEnvironmentWithExpectedType(bodyEnvironment, resultTypeValue);
