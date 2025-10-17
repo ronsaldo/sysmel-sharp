@@ -556,6 +556,43 @@ namespace LibSysmelSharp
                     return VoidValue.GetSingleton();
                 }));
         }
+        void RegisterObjectTypePrimitives()
+        {
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("initialize", false,
+                new SimpleFunctionType(null, [ProtoObjectClassType], VoidType),
+                (Value[] arguments) => {
+                    return VoidValue.GetSingleton();
+                }));
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("yourself", false,
+                new SimpleFunctionType(null, [ProtoObjectClassType], ProtoObjectClassType),
+                (Value[] arguments) => {
+                    return arguments[0];
+                }));
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("class", false,
+                new SimpleFunctionType(null, [ProtoObjectClassType], BehaviorClassType),
+                (Value[] arguments) => {
+                    SysmelType type = arguments[0].GetSysmelType();
+                    Debug.Assert(type.IsBehaviorType());
+                    return type;
+                }));
+
+            // TODO: use a dependent type for the new result.
+            BehaviorClassType.AddMethod(new PrimitiveFunction("basicNew", false,
+                new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType),
+                (Value[] arguments) => {
+                    BehaviorType behavior = (BehaviorType)arguments[0];
+                    return behavior.BasicNew();
+                }));
+            BehaviorClassType.AddMethod(new PrimitiveFunction("new", false,
+                new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType),
+                (Value[] arguments) => {
+                    BehaviorType behavior = (BehaviorType)arguments[0];
+                    return behavior.New();
+                }));
+
+
+
+        }
 
         void RegisterPrimitives()
         {
@@ -566,6 +603,7 @@ namespace LibSysmelSharp
             RegisterTypePrimitives();
             RegisterIOPrimitive();
             RegisterIntegerTypePrimitives(IntegerType);
+            RegisterObjectTypePrimitives();
         }
     }
 }

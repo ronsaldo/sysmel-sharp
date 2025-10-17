@@ -319,6 +319,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsClassInstanceValue()
+        {
+            return false;
+        }
+
         public virtual SysmelType GetSysmelType()
         {
             throw new NotImplementedException();

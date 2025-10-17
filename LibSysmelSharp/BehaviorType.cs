@@ -5,12 +5,16 @@
         public BehaviorType? superclass;
         public FieldDefinition[] fields;
         public Dictionary<string, FieldDefinition> fieldsByName;
+        public Dictionary<string, Value> methodDict;
+        public List<Value> methodList;
         public FieldDefinition[] allFields;
 
         public BehaviorType(SourcePosition? sourcePosition, BehaviorType? superclass, FieldDefinition[] fields) : base(sourcePosition)
         {
             this.superclass = superclass;
             this.fields = fields;
+            this.methodDict = new Dictionary<string, Value>();
+            this.methodList = new List<Value>();
             this.allFields = fields;
             if(superclass != null)
                 this.allFields = superclass.allFields.Concat(fields).ToArray();
@@ -44,6 +48,44 @@
         {
             return true;
         }
-        
+
+        public override void WithSelectorAddMethod(string selector, Value method)
+        {
+            methodDict[selector] = method;
+            methodList.Add(method);
+        }
+
+        public override Value? LookupSelector(string selector)
+        {
+            if (methodDict.ContainsKey(selector))
+                return methodDict[selector];
+
+            if (superclass != null)
+                return superclass.LookupSelector(selector);
+            return null;
+        }
+
+        public override Value MakeDefaultValue()
+        {
+            return NilValue.GetSingleton();
+        }
+
+        public ClassInstanceValue BasicNew()
+        {
+            int fieldCount = allFields.Length;
+            Value[] instanceFields = new Value[fieldCount];
+            for (int i = 0; i < fieldCount; ++i)
+                instanceFields[i] = allFields[i].type.MakeDefaultValue();
+
+            return new ClassInstanceValue(sourcePosition, instanceFields, this);
+        }
+
+        public ClassInstanceValue New()
+        {
+            ClassInstanceValue instance = BasicNew();
+            instance.PerformWithArguments("initialize", []);
+            return instance;
+        }
+
     }
 }
