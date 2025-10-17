@@ -873,5 +873,22 @@ namespace SysmelSharpTests
             Assert.AreEqual("second", classType.fields[1].name);
             Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[1].type);
         }
+
+        [TestMethod]
+        public void TestClassDefinition2()
+        {
+            Value value = EvaluateString("Class: #MyClass withSuperclass: Object fields: #{first: Dynamic. second: Dynamic}.");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsClassType());
+
+            ClassType classType = (ClassType)value;
+            Assert.AreEqual(2, classType.fields.Length);
+
+            Assert.AreEqual("first", classType.fields[0].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[0].type);
+
+            Assert.AreEqual("second", classType.fields[1].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[1].type);
+        }
     }
 }
