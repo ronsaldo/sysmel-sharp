@@ -14,26 +14,6 @@ namespace SysmelSharp
             Console.WriteLine("SysmelSharp 0.1");
         }
 
-        static Value EvaluateSourceCode(SourceCode sourceCode)
-        {
-            List<Token> tokenList = new Scanner().ScanSourceCode(sourceCode);
-            ParseTreeNode parseTree = new Parser().ParseTokenList(sourceCode, tokenList);
-            LibSysmelSharp.Environment environment = new LexicalEnvironment(new IntrinsicsEnvironment(new EmptyEnvironment()));
-            return parseTree.AnalyzeAndEvaluateInEnvironment(environment);
-        }
-
-        static void evaluateString(string script)
-        {
-            SourceCode sourceCode = SourceCode.ForString("cli", script);
-            Value evalResult = EvaluateSourceCode(sourceCode);
-            Console.WriteLine(evalResult.ToString());
-        }
-        static void evaluateFileNamed(string filename)
-        {
-            SourceCode sourceCode = SourceCode.ForFileNamed(filename);
-            EvaluateSourceCode(sourceCode);
-        }
-
         static void Main(string[] args)
         {
             for (int i = 0; i < args.Length; ++i)
@@ -53,12 +33,12 @@ namespace SysmelSharp
                     }
                     else if(arg == "-eval")
                     {
-                        evaluateString(args[++i]);
+                        SysmelFrontEnd.EvaluateString(args[++i]);
                     }
                 }
                 else
                 {
-                    evaluateFileNamed(args[i]);
+                    SysmelFrontEnd.EvaluateFileNamed(args[i]);
                 }
             }
 

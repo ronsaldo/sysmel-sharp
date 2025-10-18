@@ -2,7 +2,8 @@
   "profiles": {
     "SysmelSharp": {
       "commandName": "Project",
-      "commandLineArgs": "-eval \"1+1\""
+      "commandLineArgs": "module-sources/Runtime/Package.sysmel",
+      "workingDirectory": "C:\\projects\\SysmelSharp"
     }
   }
 }

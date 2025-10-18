@@ -27,7 +27,7 @@ namespace LibSysmelSharp
             return null;
         }
 
-        public virtual FieldDefinition? LookupFieldName(string selector)
+        public override FieldDefinition? LookupFieldName(string selector)
         {
             return null;
         }

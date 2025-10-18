@@ -87,6 +87,10 @@
         {
             return false;
         }
+        public virtual bool IsParseTreeLoadFileOnce()
+        {
+            return false;
+        }
 
         public virtual bool IsParseTreeSequenceNode()
         {

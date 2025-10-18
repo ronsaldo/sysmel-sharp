@@ -368,6 +368,14 @@ namespace LibSysmelSharp
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[3];
                     return new ParseTreeClassDefinitionNode(context.sourcePosition, nameExpression, superclassExpression, null, fieldsExpression);
                 }));
+
+            AddMethod(new PrimitiveFunction("loadFileOnce:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode fileNameExpression = (ParseTreeNode)arguments[1];
+                    return new ParseTreeLoadFileOnce(context.sourcePosition, fileNameExpression);
+                }));
         }
 
         void RegisterIntegerTypePrimitives(NominalType integerType)
