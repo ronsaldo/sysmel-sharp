@@ -37,6 +37,8 @@ namespace LibSysmelSharp
         {
             if (expectedType == null)
                 return evaluationResult;
+            if (expectedType.IsVoidType())
+                return VoidValue.GetSingleton();
             
             SysmelType valueType = evaluationResult.GetSysmelType();
             if (expectedType.IsSatisfiedBy(valueType))

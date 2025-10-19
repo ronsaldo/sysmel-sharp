@@ -1,27 +1,26 @@
 namespace System definition: {
 namespace Collections definition: {
 
-forall(V: Type) List := class withSuperclass: Object fields: #{
+forall(V: Type) ArrayList := class withSuperclass: Object fields: #{
     size: Integer.
     capacity: Integer.
     data: V list.
 }.
 
-List !{
+ArrayList !{
 initialize :: Void.
     size := 0.
     capacity := 32.
     data := V list new: capacity.
-    void
 }.
 
-List !{
+ArrayList !{
 size :: Integer.
     size
 }.
 
-let testList := List(Integer) new.
-printLine(testList size).
+let testArrayList := ArrayList(Integer) new.
+printLine(testArrayList size).
 }.
 }.
 
