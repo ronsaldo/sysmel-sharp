@@ -1,4 +1,6 @@
-﻿namespace LibSysmelSharp
+﻿using System.Diagnostics;
+
+namespace LibSysmelSharp
 {
     public class FunctionValue : Value
     {
@@ -9,9 +11,9 @@
         public ParseTreeNode definitionBody;
         public SysmelType type;
         public bool isTemplate;
-        public Dictionary<MemoizedFunctionKey, Value> memoizedValues;
-        public List<Value> instances;
-        public List<Value> extensions;
+        public Dictionary<MemoizedFunctionKey, TemplateInstance> memoizedValues;
+        public List<TemplateInstance> instances;
+        public List<TemplateExtensionMethod> extensions;
 
         public FunctionValue(SourcePosition? sourcePosition, string? name, DependentFunctionType signature, Environment definitionEnvironment, ParseTreeNode definitionBody) : base(sourcePosition)
         {
@@ -21,9 +23,9 @@
             this.definitionBody = definitionBody;
             this.type = signature.TryToSimplifyFunctionType();
             this.isTemplate = signature.isForAll;
-            this.memoizedValues = new Dictionary<MemoizedFunctionKey, Value>();
-            this.instances = new List<Value>();
-            this.extensions = new List<Value>();
+            this.memoizedValues = new Dictionary<MemoizedFunctionKey, TemplateInstance>();
+            this.instances = new List<TemplateInstance>();
+            this.extensions = new List<TemplateExtensionMethod>();
         }
 
         public override bool IsFunctionValue()
@@ -57,7 +59,7 @@
             {
                 memoizationKey = new MemoizedFunctionKey(callArguments);
                 if (memoizedValues.ContainsKey(memoizationKey))
-                    return memoizedValues[memoizationKey];
+                    return memoizedValues[memoizationKey].instanceValue;
             }
 
             FunctionActivationEnvironment activationEnvironment = new FunctionActivationEnvironment(definitionEnvironment);
@@ -89,12 +91,53 @@
 
             if (isTemplate && memoizationKey != null)
             {
+                TemplateInstance instance = new TemplateInstance(memoizationKey, resultValue);
                 resultValue.SetOwner(this);
-                memoizedValues[memoizationKey] = resultValue;
-                instances.Add(resultValue);
+                memoizedValues[memoizationKey] = instance;
+                instances.Add(instance);
+
+                ApplyExtensionsToTemplateInstance(instance);
             }
 
             return resultValue;
+        }
+
+        public override Value AddExtensionMethodWithEnvironment(ParseTreeMethodNode methodNode, Environment environment)
+        {
+            TemplateExtensionMethod extensionMethod = new TemplateExtensionMethod(methodNode, environment);
+            AddNewExtension(extensionMethod);
+            return this;
+        }
+
+        void ApplyExtensionToTemplateInstance(TemplateInstance instanceValue, TemplateExtensionMethod extensionMethod)
+        {
+            FunctionActivationEnvironment activationEnvironment = new FunctionActivationEnvironment(extensionMethod.environment);
+            foreach (ArgumentDefinitionValue argumentDef in signature.arguments)
+            {
+                if (argumentDef.name != null)
+                {
+                    Value argumentValue = instanceValue.instanceArguments.arguments[argumentDef.index];
+                    activationEnvironment.SetSymbolBinding(argumentDef.name, argumentValue);
+                }
+            }
+
+            LexicalEnvironment extensionBodyEnvironment = new LexicalEnvironment(activationEnvironment);
+            extensionMethod.methodNode.AnalyzeAndEvaluateInEnvironmentAddingToOwner(extensionBodyEnvironment, instanceValue.instanceValue);
+        }
+
+        void ApplyExtensionsToTemplateInstance(TemplateInstance instanceValue)
+        {
+            foreach (TemplateExtensionMethod extension in extensions)
+                ApplyExtensionToTemplateInstance(instanceValue, extension);
+        }
+
+        public void AddNewExtension(TemplateExtensionMethod extensionValue)
+        {
+            if (!isTemplate)
+                throw new SysmelException(extensionValue.methodNode.sourcePosition, "Cannot add template extensions method to non-template " + ToString());
+            extensions.Add(extensionValue);
+            foreach (TemplateInstance instance in instances)
+                ApplyExtensionToTemplateInstance(instance, extensionValue);
         }
 
     }

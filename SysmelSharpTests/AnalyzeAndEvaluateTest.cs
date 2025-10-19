@@ -1107,5 +1107,23 @@ namespace SysmelSharpTests
             Value secondValue = EvaluateString("MyBox(Integer)");
             Assert.AreSame(firstValue, secondValue);
         }
+
+        [TestMethod]
+        public void TestGenericMethod()
+        {
+            Value templateValue = EvaluateString("public: [ForAll: (V: Type) in: #MyBox withDefinition: (RecordWithFields: #{boxedValue: V})]. MyBox");
+            Assert.IsTrue(templateValue.IsFunctionValue());
+            Assert.IsTrue(templateValue.IsTemplate());
+
+            Value addMethodValue = EvaluateString("MyBox !{value :: V. boxedValue}");
+            Assert.AreEqual(templateValue, addMethodValue);
+
+            Value instanceValue = EvaluateString("MyBox(Integer)(42)");
+            Assert.IsTrue(instanceValue.IsRecordValue());
+
+            Value instanceValueAccess = EvaluateString("MyBox(Integer)(42) value");
+            Assert.IsTrue(instanceValueAccess.IsIntegerValue());
+            Assert.AreEqual(42, instanceValueAccess.AsInteger());
+        }
     }
 }

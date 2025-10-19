@@ -19,8 +19,11 @@
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
             Value ownerValue = owner.AnalyzeAndEvaluateInEnvironment(environment);
+            if (ownerValue.IsTemplate())
+                return ownerValue.AddExtensionMethodWithEnvironment(method, environment);
+
             if (!ownerValue.IsType())
-                throw new SysmelException(sourcePosition, "Expected a type for adding a method.");
+                throw new SysmelException(sourcePosition, "Expected a type or template for adding a method.");
 
             ParseTreeMethodNode methodWithOwnerSelf = method.CopyWithSelfType((SysmelType)ownerValue);
             methodWithOwnerSelf.AnalyzeAndEvaluateInEnvironmentAddingToOwner(environment, (SysmelType)ownerValue);

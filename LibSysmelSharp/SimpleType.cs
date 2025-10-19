@@ -22,6 +22,8 @@ namespace LibSysmelSharp
         {
             methodDict[selector] = method;
             methodList.Add(method);
+
+            method.SetOwner(this);
         }
 
         public override Value? LookupSelector(string selector)

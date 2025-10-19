@@ -171,6 +171,11 @@ namespace LibSysmelSharp
         {
             throw new NotSupportedException();
         }
+        
+        public virtual Value AddExtensionMethodWithEnvironment(ParseTreeMethodNode methodNode, Environment environment)
+        {
+            throw new NotSupportedException();
+        }
 
         public virtual Value PerformWithArguments(string selector, Value[] arguments)
         {

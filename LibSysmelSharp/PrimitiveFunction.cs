@@ -11,6 +11,7 @@ namespace LibSysmelSharp
     public class PrimitiveFunction : AbstractFunction
     {
         public PrimitiveFunctionDelegate implementation;
+        public Value? owner = null;
 
         public PrimitiveFunction(string name, bool isMacro, SysmelType functionType, PrimitiveFunctionDelegate implementation) : base(null, name, isMacro, functionType)
         {
@@ -25,6 +26,11 @@ namespace LibSysmelSharp
         public override bool IsPrimitiveFunctionValue()
         {
             return true;
+        }
+
+        public override void SetOwner(Value anOwner)
+        {
+            this.owner = anOwner;
         }
     }
 }
