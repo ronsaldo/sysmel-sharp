@@ -11,7 +11,7 @@ namespace SysmelSharpTests
             SourceCode sourceCode = SourceCode.ForString("test", sourceString);
             List<Token> tokenList = new Scanner().ScanSourceCode(sourceCode);
             ParseTreeNode parseTree = new Parser().ParseTokenList(sourceCode, tokenList);
-            LibSysmelSharp.Environment environment = new LexicalEnvironment(new IntrinsicsEnvironment(new EmptyEnvironment()));
+            LibSysmelSharp.Environment environment = new LexicalEnvironment(new NamespaceEnvironment(Intrinsics.GetSingleton().globalNamespace, new EmptyEnvironment()));
             return parseTree.AnalyzeAndEvaluateInEnvironment(environment);
         }
 

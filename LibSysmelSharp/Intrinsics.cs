@@ -6,7 +6,8 @@ namespace LibSysmelSharp
     public class Intrinsics
     {
         static private Intrinsics? uniqueInstance;
-        private Dictionary<string, Value> globalIntrinsicDictionary = new Dictionary<string, Value>();
+        public Namespace globalNamespace;
+        
         private Dictionary<SysmelType, MutableBoxType> mutableBoxTypeCache= new Dictionary<SysmelType, MutableBoxType> ();
         private Dictionary<SysmelType, PointerType> pointerTypeCache = new Dictionary<SysmelType, PointerType>();
         private Dictionary<SysmelType, ReferenceType> refTypeCache = new Dictionary<SysmelType, ReferenceType>();
@@ -75,24 +76,17 @@ namespace LibSysmelSharp
             }
         }
 
-        public Value? LookIntrinsicGlobal(string symbol)
-        {
-            if (!globalIntrinsicDictionary.ContainsKey(symbol))
-                return null;
-            return globalIntrinsicDictionary[symbol];
-        }
-
         NominalType CreateNominalType(string name)
         {
             NominalType type = new NominalType(null, name);
-            globalIntrinsicDictionary[name] = type;
+            globalNamespace.SetSymbolBinding(name, type);
             return type;
         }
 
         IntegerType CreateIntegerType(string name, int valueSize, int valueAlignment, bool isSigned)
         {
             IntegerType type = new IntegerType(name, valueSize, valueAlignment, isSigned);
-            globalIntrinsicDictionary[name] = type;
+            globalNamespace.SetSymbolBinding(name, type);
             return type;
         }
 
@@ -106,19 +100,20 @@ namespace LibSysmelSharp
             
             ClassType clazz = new ClassType(null, name, superclass, metaclass, fields);
             metaclass.thisClass = clazz;
-            globalIntrinsicDictionary[name] = clazz;
+            globalNamespace.SetSymbolBinding(name, clazz);
             return clazz;
         }
 
         void RegisterIntrinsicValue(string name, Value value)
         {
-            globalIntrinsicDictionary[name] = value;
+            globalNamespace.SetSymbolBinding(name, value);
         }
 
         internal Intrinsics()
         {
+            globalNamespace = new Namespace(null, "__global__", null);
             TypeUniverse0 = new UniverseType(null, 0);
-            globalIntrinsicDictionary["Type"] = TypeUniverse0;
+            globalNamespace.SetSymbolBinding("Type", TypeUniverse0);
 
             VoidType            = CreateNominalType("Void");
             UndefinedObjectType = CreateNominalType("UndefinedObject");
@@ -240,7 +235,7 @@ namespace LibSysmelSharp
         public void AddMethod(AbstractFunction method)
         {
             Debug.Assert(method.name != null);
-            globalIntrinsicDictionary[method.name] = method;
+            globalNamespace.SetSymbolBinding(method.name, method);
         }
 
         void RegisterControlFlowMacros()

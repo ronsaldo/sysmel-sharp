@@ -323,6 +323,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsNamespace()
+        {
+            return false;
+        }
+
         public virtual bool IsRecordValue()
         {
             return false;

@@ -92,6 +92,12 @@
             return false;
         }
 
+        public virtual bool IsParseNamespaceNode()
+        {
+            return false;
+
+        }
+
         public virtual bool IsParseTreeSequenceNode()
         {
             return false;
