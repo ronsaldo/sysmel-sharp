@@ -8,5 +8,7 @@
         }
 
         public abstract Value? LookupRecursively(string symbol);
+
+        public abstract Namespace? LookNamespace();
     }
 }

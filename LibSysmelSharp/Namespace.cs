@@ -35,5 +35,20 @@ namespace LibSysmelSharp
                 return symbolDictionary[symbol];
             return null;
         }
+
+        public Namespace GetOrCreateChildNamespace(SourcePosition? sourcePosition, string childName)
+        {
+            if(symbolDictionary.ContainsKey(childName))
+            {
+                Value child = symbolDictionary[childName];
+                if (!child.IsNamespace())
+                    throw new SysmelException(sourcePosition, "Namespace name #" + childName + " clashes");
+                return (Namespace)child;
+            }
+
+            Namespace newNamespace = new Namespace(sourcePosition, childName, this);
+            SetSymbolBinding(childName, newNamespace);
+            return newNamespace;
+        }
     }
 }

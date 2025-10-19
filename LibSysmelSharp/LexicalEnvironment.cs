@@ -25,6 +25,10 @@ namespace LibSysmelSharp
 
             return parent.LookupRecursively(symbol);
         }
+        public override Namespace? LookNamespace()
+        {
+            return parent.LookNamespace();
+        }
 
     }
 }

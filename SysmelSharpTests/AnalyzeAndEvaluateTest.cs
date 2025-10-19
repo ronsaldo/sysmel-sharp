@@ -952,5 +952,15 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(0, value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestNamespace()
+        {
+            Value value = EvaluateString("namespace: #TestNamespace definition: {}");
+            Assert.IsTrue(value.IsNamespace());
+
+            Namespace nspace = (Namespace)value;
+            Assert.AreEqual("TestNamespace", nspace.name);
+        }
     }
 }

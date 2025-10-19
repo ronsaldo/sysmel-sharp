@@ -6,5 +6,10 @@
         {
             return null;
         }
+
+        public override Namespace? LookNamespace()
+        {
+            return null;
+        }
     }
 }

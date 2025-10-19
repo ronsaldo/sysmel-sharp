@@ -363,6 +363,14 @@ namespace LibSysmelSharp
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[3];
                     return new ParseTreeClassDefinitionNode(context.sourcePosition, nameExpression, superclassExpression, null, fieldsExpression);
                 }));
+            AddMethod(new PrimitiveFunction("namespace:definition:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode bodyExpression = (ParseTreeNode)arguments[2];
+                    return new ParseTreeNamespaceNode(context.sourcePosition, nameExpression, bodyExpression);
+                }));
 
             AddMethod(new PrimitiveFunction("loadFileOnce:", true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),

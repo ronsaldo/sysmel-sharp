@@ -19,5 +19,10 @@
 
             return parent.LookupRecursively(symbol);
         }
+
+        public override Namespace? LookNamespace()
+        {
+            return nspace;
+        }
     }
 }
