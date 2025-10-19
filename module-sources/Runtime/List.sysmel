@@ -1,1 +1,27 @@
-printLine("TODO: List")
+namespace System definition: {
+namespace Collections definition: {
+
+forall(V: Type) List := class withSuperclass: Object fields: #{
+    size: Integer.
+    capacity: Integer.
+    data: V list.
+}.
+
+List !{
+initialize :: Void.
+    size := 0.
+    capacity := 32.
+    data := V list new: capacity.
+    void
+}.
+
+List !{
+size :: Integer.
+    size
+}.
+
+let testList := List(Integer) new.
+printLine(testList size).
+}.
+}.
+

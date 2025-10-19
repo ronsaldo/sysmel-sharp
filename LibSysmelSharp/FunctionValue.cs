@@ -52,6 +52,15 @@ namespace LibSysmelSharp
             this.owner = anOwner;
         }
 
+        public override string ToString()
+        {
+            if (name != null)
+                return name;
+            if (isTemplate)
+                return "a Template";
+            else
+                return "a Function";
+        }
         public override Value EvaluateWithArguments(Value[] callArguments)
         {
             MemoizedFunctionKey? memoizationKey = null;

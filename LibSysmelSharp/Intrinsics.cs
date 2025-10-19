@@ -624,6 +624,34 @@ namespace LibSysmelSharp
                     SysmelType resultType = (SysmelType)arguments[1];
                     return argumentType.MakeSimpleFunctionWithResultType(resultType);
                 }));
+
+            // TODO: Use a proper dependent type here
+            TypeUniverse0.AddMethod(new PrimitiveFunction("basicNew", false,
+                new SimpleFunctionType(null, [TypeUniverse0], DynamicType),
+                (Value[] arguments) => {
+                    SysmelType selfType = (SysmelType)arguments[0];
+                    return selfType.BasicNew();
+                }));
+            TypeUniverse0.AddMethod(new PrimitiveFunction("basicNew:", false,
+                new SimpleFunctionType(null, [TypeUniverse0, IntegerType], DynamicType),
+                (Value[] arguments) => {
+                    SysmelType selfType = (SysmelType)arguments[0];
+                    long size = arguments[1].AsInteger();
+                    return selfType.BasicNewWithSize(size);
+                }));
+            TypeUniverse0.AddMethod(new PrimitiveFunction("new", false,
+                new SimpleFunctionType(null, [TypeUniverse0], DynamicType),
+                (Value[] arguments) => {
+                    SysmelType selfType = (SysmelType)arguments[0];
+                    return selfType.New();
+                }));
+            TypeUniverse0.AddMethod(new PrimitiveFunction("new:", false,
+                new SimpleFunctionType(null, [TypeUniverse0, IntegerType], DynamicType),
+                (Value[] arguments) => {
+                    SysmelType selfType = (SysmelType)arguments[0];
+                    long size = arguments[1].AsInteger();
+                    return selfType.NewWithSize(size);
+                }));
         }
 
         void RegisterIOPrimitive()
@@ -687,9 +715,6 @@ namespace LibSysmelSharp
                     BehaviorType behavior = (BehaviorType)arguments[0];
                     return behavior.New();
                 }));
-
-
-
         }
 
         void RegisterPrimitives()

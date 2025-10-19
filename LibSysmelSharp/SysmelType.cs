@@ -170,6 +170,28 @@ namespace LibSysmelSharp
             throw new NotImplementedException();
         }
 
+        public virtual Value BasicNew()
+        {
+            return BasicNewWithSize(0);
+        }
+        public virtual Value BasicNewWithSize(long size)
+        {
+            return MakeDefaultValue();
+        }
+
+        public virtual Value New()
+        {
+            return NewWithSize(0);
+        }
+        public virtual Value NewWithSize(long size)
+        {
+            Value result = BasicNewWithSize(size);
+            if (LookupSelector("initialize") != null)
+                result.PerformWithArguments("initialize", []);
+            return result;
+        }
+
+
         public virtual MutableBoxType MutableBox()
         {
             return Intrinsics.GetSingleton().GetOrCreateMutableBoxType(this);

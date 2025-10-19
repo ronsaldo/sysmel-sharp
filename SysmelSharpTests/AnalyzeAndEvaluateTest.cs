@@ -352,6 +352,26 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestListTypeBasicNew()
+        {
+            Value value = EvaluateString("Integer list basicNew: 42");
+            Assert.IsTrue(value.IsListValue());
+
+            ListValue list = (ListValue)value;
+            Assert.AreEqual(list.elements.Length, 42);
+        }
+
+        [TestMethod]
+        public void TestListTypeNew()
+        {
+            Value value = EvaluateString("Integer list new: 42");
+            Assert.IsTrue(value.IsListValue());
+
+            ListValue list = (ListValue)value;
+            Assert.AreEqual(list.elements.Length, 42);
+        }
+
+        [TestMethod]
         public void TestPointerType()
         {
             Value value = EvaluateString("Integer pointer");

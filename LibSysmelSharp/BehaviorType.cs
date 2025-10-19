@@ -77,7 +77,7 @@
             return NilValue.GetSingleton();
         }
 
-        public ClassInstanceValue BasicNew()
+        public override ClassInstanceValue BasicNew()
         {
             int fieldCount = allFields.Length;
             Value[] instanceFields = new Value[fieldCount];
@@ -87,7 +87,7 @@
             return new ClassInstanceValue(sourcePosition, instanceFields, this);
         }
 
-        public ClassInstanceValue New()
+        public override ClassInstanceValue New()
         {
             ClassInstanceValue instance = BasicNew();
             instance.PerformWithArguments("initialize", []);

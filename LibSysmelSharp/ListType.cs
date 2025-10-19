@@ -22,5 +22,15 @@
         {
             return base.GetHashCode();
         }
+
+        public override Value MakeDefaultValue()
+        {
+            return NilValue.GetSingleton();
+        }
+
+        public override Value BasicNewWithSize(long size)
+        {
+            return new ListValue(sourcePosition, new Value[size], this);
+        }
     }
 }
