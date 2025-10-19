@@ -1,4 +1,6 @@
-﻿namespace LibSysmelSharp
+﻿using System.Linq.Expressions;
+
+namespace LibSysmelSharp
 {
     public class ParseTreeTupleNode : ParseTreeNode
     {
@@ -38,6 +40,13 @@
 
             TupleType tupleType = new TupleType(sourcePosition, valueTypes);
             return new TupleValue(sourcePosition, values, tupleType);
+        }
+
+        public override ParseTreeArgumentDefinitionNode[] ParseAsArgumentDefinitionsInEnvironment(Environment environment)
+        {
+            if (elements.Length != 0)
+                throw new NotSupportedException();
+            return new ParseTreeArgumentDefinitionNode[0];
         }
     }
 }

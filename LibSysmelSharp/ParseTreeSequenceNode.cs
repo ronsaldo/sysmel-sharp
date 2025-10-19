@@ -27,5 +27,13 @@ namespace LibSysmelSharp
                 result = expression.AnalyzeAndEvaluateInEnvironment(environment);
             return result;
         }
+        public override ParseTreeArgumentDefinitionNode[] ParseAsArgumentDefinitionsInEnvironment(Environment environment)
+        {
+            int argumentCount = expressions.Length;
+            ParseTreeArgumentDefinitionNode[] result = new ParseTreeArgumentDefinitionNode[argumentCount];
+            for (int i = 0; i < argumentCount; ++i)
+                result[i] = expressions[i].ParseAsArgumentDefinitionInEnvironment(environment);
+            return result;
+        }
     }
 }

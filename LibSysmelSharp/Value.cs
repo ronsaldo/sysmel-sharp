@@ -118,6 +118,10 @@ namespace LibSysmelSharp
         {
             throw new SysmelException(sourcePosition, "Invalid argument spec.");
         }
+        public virtual ParseTreeArgumentDefinitionNode[] ParseAsArgumentDefinitionsInEnvironment(Environment environment)
+        {
+            throw new SysmelException(sourcePosition, "Invalid arguments spec.");
+        }
 
         public virtual Value AnalyzeAndEvaluateDictionaryInstanceInEnvironment(ParseTreeImmutableDictionaryNode dictionary, Environment environment)
         {

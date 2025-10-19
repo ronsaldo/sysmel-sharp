@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace LibSysmelSharp
 {
@@ -329,6 +330,33 @@ namespace LibSysmelSharp
                     ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
                     ParseTreeNode initialValueExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeVariableDefinitionNode(context.sourcePosition, nameExpression, null, initialValueExpression, true);
+                }));
+            AddMethod(new PrimitiveFunction("Function:withArguments:resultType:definition:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode argumentsExpression = (ParseTreeNode)arguments[2];
+                    ParseTreeNode resultTypeExpression = (ParseTreeNode)arguments[3];
+                    ParseTreeNode bodyExpression = (ParseTreeNode)arguments[4];
+
+                    ParseTreeArgumentDefinitionNode[] argumentDefinitions = argumentsExpression.ParseAsArgumentDefinitionsInEnvironment(context.environment);
+
+                    ParseTreeFunctionalSignatureNode signature = new ParseTreeFunctionalSignatureNode(context.sourcePosition, argumentDefinitions, resultTypeExpression, null);
+                    return new ParseTreeFunctionNode(context.sourcePosition, nameExpression, signature, bodyExpression);
+                }));
+            AddMethod(new PrimitiveFunction("Function:withArguments:definition:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode nameExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode argumentsExpression = (ParseTreeNode)arguments[2];
+                    ParseTreeNode bodyExpression = (ParseTreeNode)arguments[3];
+
+                    ParseTreeArgumentDefinitionNode[] argumentDefinitions = argumentsExpression.ParseAsArgumentDefinitionsInEnvironment(context.environment);
+
+                    ParseTreeFunctionalSignatureNode signature = new ParseTreeFunctionalSignatureNode(context.sourcePosition, argumentDefinitions, null, null);
+                    return new ParseTreeFunctionNode(context.sourcePosition, nameExpression, signature, bodyExpression);
                 }));
             AddMethod(new PrimitiveFunction("Enum:withBaseType:values:", true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),

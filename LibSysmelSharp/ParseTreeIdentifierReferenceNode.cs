@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace LibSysmelSharp
 {
@@ -25,6 +26,11 @@ namespace LibSysmelSharp
         public override ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)
         {
             return new ParseTreeArgumentDefinitionNode(sourcePosition, value, null);
+        }
+
+        public override ParseTreeArgumentDefinitionNode[] ParseAsArgumentDefinitionsInEnvironment(Environment environment)
+        {
+            return new ParseTreeArgumentDefinitionNode[] { this.ParseAsArgumentDefinitionInEnvironment(environment) };
         }
     }
 }

@@ -648,6 +648,55 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestFunctionMacro()
+        {
+            Value value = EvaluateString("Function: #two withArguments: () resultType: Integer definition: 2");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+
+            value = EvaluateString("Function: #two withArguments: () resultType: Integer definition: 2. two()");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+
+        }
+
+        [TestMethod]
+        public void TestFunctionMacro2()
+        {
+            Value value = EvaluateString("Function: #identity withArguments: (value: Integer) resultType: Integer definition: value");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+
+            value = EvaluateString("Function: #identity withArguments: (value: Integer) resultType: Integer definition: value. identity(2)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestFunctionMacro3()
+        {
+            Value value = EvaluateString("Function: #identity withArguments: (value: Integer) definition: value");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+
+            value = EvaluateString("Function: #identity withArguments: (value: Integer) definition: value. identity(2)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestFunctionMacro4()
+        {
+            Value value = EvaluateString("Function: #add withArguments: (first: Integer. second: Integer) resultType: Integer definition: first + second.");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.GetSysmelType().IsFunctionType());
+
+            value = EvaluateString("Function: #add withArguments: (first: Integer. second: Integer) resultType: Integer definition: first + second. add(2. 3)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(5, value.AsInteger());
+
+        }
+        [TestMethod]
         public void TestBlockClosureReturn()
         {
             Value value = EvaluateString("{:x | return: 42. x}");
@@ -991,5 +1040,12 @@ namespace SysmelSharpTests
             Assert.IsTrue(typeValue.IsClassType());;
             Assert.AreEqual("TestClass", typeValue.GetName());
         }
+
+        /*[TestMethod]
+        public void TestGenericPair()
+        {
+            Value value = EvaluateString("forall!(K: Type. V: Type) MyPair := struct");
+
+        }*/
     }
 }

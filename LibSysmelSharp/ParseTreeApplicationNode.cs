@@ -42,5 +42,10 @@ namespace LibSysmelSharp
 
             return new ParseTreeArgumentDefinitionNode(sourcePosition, argumentName, arguments[0]);
         }
+
+        public override ParseTreeArgumentDefinitionNode[] ParseAsArgumentDefinitionsInEnvironment(Environment environment)
+        {
+            return new ParseTreeArgumentDefinitionNode[] { this.ParseAsArgumentDefinitionInEnvironment(environment) };
+        }
     }
 }
