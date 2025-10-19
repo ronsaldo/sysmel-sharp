@@ -1306,5 +1306,23 @@ namespace SysmelSharpTests
             Assert.IsTrue(instanceValueAccess.IsIntegerValue());
             Assert.AreEqual(42, instanceValueAccess.AsInteger());
         }
+
+        [TestMethod]
+        public void TestAssertionOk()
+        {
+            EvaluateString("assert: true");
+        }
+
+        [TestMethod]
+        public void TestAssertionFailure()
+        {
+            Assert.ThrowsException<SysmelException>(() => EvaluateString("assert: false"));
+        }
+
+        [TestMethod]
+        public void TestRuntimeError()
+        {
+            Assert.ThrowsException<SysmelException>(() => EvaluateString("error: \"Runtime Error\""));
+        }
     }
 }

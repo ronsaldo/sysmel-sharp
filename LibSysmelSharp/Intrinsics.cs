@@ -326,6 +326,20 @@ namespace LibSysmelSharp
                     ParseTreeNode resultExpression = (ParseTreeNode)arguments[1];
                     return new ParseTreeReturnNode(context.sourcePosition, resultExpression);
                 }));
+            AddMethod(new PrimitiveFunction("assert:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode conditionExpression = (ParseTreeNode)arguments[1];
+                    return new ParseTreeAssertNode(context.sourcePosition, conditionExpression);
+                }));
+            AddMethod(new PrimitiveFunction("error:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode errorMessage = (ParseTreeNode)arguments[1];
+                    return new ParseTreeRuntimeErrorNode(context.sourcePosition, errorMessage);
+                }));
         }
 
         void RegisterDefinitionMacros()

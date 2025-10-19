@@ -40,6 +40,16 @@
             return false;
         }
 
+        public virtual bool IsParseTreeAssertNode()
+        {
+            return false;
+        }
+
+        public virtual bool IsParseTreeRuntimeErrorNode()
+        {
+            return false;
+        }
+
         public virtual bool IsParseTreeFunctionNode()
         {
             return false;
