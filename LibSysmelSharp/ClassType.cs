@@ -8,10 +8,10 @@ namespace LibSysmelSharp
 {
     public class ClassType : BehaviorType
     {
-        public string name;
+        public string? name;
         public MetaclassType type;
 
-        public ClassType(SourcePosition? sourcePosition, string name, BehaviorType? superclass, MetaclassType type, FieldDefinition[] fields) :
+        public ClassType(SourcePosition? sourcePosition, string? name, BehaviorType? superclass, MetaclassType type, FieldDefinition[] fields) :
             base(sourcePosition, superclass, fields)
         {
             this.name = name;

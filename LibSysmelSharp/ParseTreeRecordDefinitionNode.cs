@@ -2,10 +2,10 @@
 {
     public class ParseTreeRecordDefinitionNode : ParseTreeNode
     {
-        public ParseTreeNode nameExpression;
+        public ParseTreeNode? nameExpression;
         public ParseTreeNode fieldsExpression;
 
-        public ParseTreeRecordDefinitionNode(SourcePosition? sourcePosition, ParseTreeNode nameExpression, ParseTreeNode fieldsExpression) : base(sourcePosition)
+        public ParseTreeRecordDefinitionNode(SourcePosition? sourcePosition, ParseTreeNode? nameExpression, ParseTreeNode fieldsExpression) : base(sourcePosition)
         {
             this.nameExpression = nameExpression;
             this.fieldsExpression = fieldsExpression;
@@ -18,7 +18,10 @@
 
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
-            string name = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();
+            string? name = null;
+            if (nameExpression != null)
+                name = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();
+
             Value fieldValues = fieldsExpression.AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
             if (!fieldValues.IsImmutableDictionaryValue())
                 throw new SysmelException(sourcePosition, "Expected a dictionary with the record fields.");
@@ -27,7 +30,8 @@
             FieldDefinition[] fields = fieldValuesDict.EvaluateAsFieldListInEnviroment(environment);
 
             RecordType recordType = new RecordType(sourcePosition, name, fields);
-            environment.SetSymbolBinding(name, recordType);
+            if(name != null)
+                environment.SetSymbolBinding(name, recordType);
             return recordType;
         }
     }

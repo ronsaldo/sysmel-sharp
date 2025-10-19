@@ -2,12 +2,12 @@
 {
     public class ParseTreeClassDefinitionNode : ParseTreeNode
     {
-        public ParseTreeNode nameExpression;
+        public ParseTreeNode? nameExpression;
         public ParseTreeNode? superclass;
         public ParseTreeNode? metafields;
         public ParseTreeNode? fields;
 
-        public ParseTreeClassDefinitionNode(SourcePosition? sourcePosition, ParseTreeNode nameExpression, ParseTreeNode? superclass, ParseTreeNode? metafields, ParseTreeNode? fields) : base(sourcePosition)
+        public ParseTreeClassDefinitionNode(SourcePosition? sourcePosition, ParseTreeNode? nameExpression, ParseTreeNode? superclass, ParseTreeNode? metafields, ParseTreeNode? fields) : base(sourcePosition)
         {
             this.nameExpression = nameExpression;
             this.superclass = superclass;
@@ -22,7 +22,9 @@
 
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
-            string name = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();
+            string? name = null;
+            if (nameExpression != null)
+                name = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();
             BehaviorType validSuperclass = Intrinsics.GetSingleton().ProtoObjectClassType;
             if(superclass != null)
             {
@@ -35,7 +37,8 @@
 
             MetaclassType metaClass = new MetaclassType(sourcePosition, (BehaviorType)validSuperclass.GetSysmelType(), []);
             ClassType clazz = new ClassType(sourcePosition, name, validSuperclass, metaClass, []);
-            environment.SetSymbolBinding(name, clazz);
+            if(name != null)
+                environment.SetSymbolBinding(name, clazz);
             
             // Meta fields
             if(metafields != null)

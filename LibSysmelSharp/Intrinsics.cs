@@ -375,6 +375,13 @@ namespace LibSysmelSharp
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeRecordDefinitionNode(context.sourcePosition, nameExpression, fieldsExpression);
                 }));
+            AddMethod(new PrimitiveFunction("RecordWithFields:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[1];
+                    return new ParseTreeRecordDefinitionNode(context.sourcePosition, null, fieldsExpression);
+                }));
 
             AddMethod(new PrimitiveFunction("Class:withFields:", true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
@@ -392,6 +399,21 @@ namespace LibSysmelSharp
                     ParseTreeNode superclassExpression = (ParseTreeNode)arguments[2];
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[3];
                     return new ParseTreeClassDefinitionNode(context.sourcePosition, nameExpression, superclassExpression, null, fieldsExpression);
+                }));
+            AddMethod(new PrimitiveFunction("ClassWithFields:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[1];
+                    return new ParseTreeClassDefinitionNode(context.sourcePosition, null, null, null, fieldsExpression);
+                }));
+            AddMethod(new PrimitiveFunction("ClassWithSuperclass:fields:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode superclassExpression = (ParseTreeNode)arguments[1];
+                    ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[2];
+                    return new ParseTreeClassDefinitionNode(context.sourcePosition, null, superclassExpression, null, fieldsExpression);
                 }));
             AddMethod(new PrimitiveFunction("namespace:definition:", true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),

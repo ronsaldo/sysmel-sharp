@@ -4,11 +4,11 @@ namespace LibSysmelSharp
 {
     public class RecordType : SimpleType
     {
-        public string name;
+        public string? name;
         public FieldDefinition[] fields;
         public Dictionary<string, FieldDefinition> fieldsByName;
 
-        public RecordType(SourcePosition? sourcePosition, string name, FieldDefinition[] fields) : base(sourcePosition)
+        public RecordType(SourcePosition? sourcePosition, string? name, FieldDefinition[] fields) : base(sourcePosition)
         {
             this.name = name;
             this.fields = fields;
@@ -110,6 +110,8 @@ namespace LibSysmelSharp
 
         public override string ToString()
         {
+            if (name == null)
+                return "AnonRecord";
             return name;
         }
     }

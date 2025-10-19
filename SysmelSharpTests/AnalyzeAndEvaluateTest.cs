@@ -694,7 +694,6 @@ namespace SysmelSharpTests
             value = EvaluateString("Function: #add withArguments: (first: Integer. second: Integer) resultType: Integer definition: first + second. add(2. 3)");
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(5, value.AsInteger());
-
         }
         [TestMethod]
         public void TestBlockClosureReturn()
@@ -847,6 +846,24 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestAnonRecordType()
+        {
+            Value value = EvaluateString("RecordWithFields: #{first: Dynamic. second: Dynamic}");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsRecordType());
+
+            RecordType recordType = (RecordType)value;
+            Assert.AreEqual(2, recordType.fields.Length);
+
+            Assert.AreEqual("first", recordType.fields[0].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, recordType.fields[0].type);
+
+            Assert.AreEqual("second", recordType.fields[1].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, recordType.fields[1].type);
+        }
+
+
+        [TestMethod]
         public void TestRecordType()
         {
             Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}");
@@ -905,6 +922,40 @@ namespace SysmelSharpTests
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(2, value.AsInteger());
         }
+
+        [TestMethod]
+        public void TestAnonClassDefinition()
+        {
+            Value value = EvaluateString("ClassWithFields: #{first: Dynamic. second: Dynamic}.");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsClassType());
+
+            ClassType classType = (ClassType)value;
+            Assert.AreEqual(2, classType.fields.Length);
+
+            Assert.AreEqual("first", classType.fields[0].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[0].type);
+
+            Assert.AreEqual("second", classType.fields[1].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[1].type);
+        }
+        [TestMethod]
+        public void TestAnoncClassDefinition2()
+        {
+            Value value = EvaluateString("ClassWithSuperclass: Object fields: #{first: Dynamic. second: Dynamic}.");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsClassType());
+
+            ClassType classType = (ClassType)value;
+            Assert.AreEqual(2, classType.fields.Length);
+
+            Assert.AreEqual("first", classType.fields[0].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[0].type);
+
+            Assert.AreEqual("second", classType.fields[1].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[1].type);
+        }
+
 
         [TestMethod]
         public void TestClassDefinition()
@@ -1041,11 +1092,11 @@ namespace SysmelSharpTests
             Assert.AreEqual("TestClass", typeValue.GetName());
         }
 
-        /*[TestMethod]
-        public void TestGenericPair()
+        [TestMethod]
+        public void TestGenericBox()
         {
-            Value value = EvaluateString("forall!(K: Type. V: Type) MyPair := struct");
+            Value value = EvaluateString("ForAll: (V: Type) in: #MyPair withDefinition: (RecordWithFields: #{boxedValue: V})");
 
-        }*/
+        }
     }
 }
