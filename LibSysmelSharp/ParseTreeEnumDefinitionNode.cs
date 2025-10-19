@@ -2,11 +2,11 @@
 {
     public class ParseTreeEnumDefinitionNode : ParseTreeNode
     {
-        public ParseTreeNode nameExpression;
-        public ParseTreeNode baseType;
+        public ParseTreeNode? nameExpression;
+        public ParseTreeNode? baseType;
         public ParseTreeNode values;
 
-        public ParseTreeEnumDefinitionNode(SourcePosition? sourcePosition, ParseTreeNode nameExpression, ParseTreeNode baseType, ParseTreeNode values) : base(sourcePosition)
+        public ParseTreeEnumDefinitionNode(SourcePosition? sourcePosition, ParseTreeNode? nameExpression, ParseTreeNode? baseType, ParseTreeNode values) : base(sourcePosition)
         {
             this.nameExpression = nameExpression;
             this.baseType = baseType;
@@ -20,11 +20,16 @@
 
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
-            string name = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();
-            SysmelType baseTypeValue = (SysmelType)baseType.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().TypeUniverse0);
+            string? name = null;
+            if(nameExpression != null)
+                name = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();
+            SysmelType baseTypeValue = Intrinsics.GetSingleton().DynamicType;
+            if(baseType != null)
+                baseTypeValue = (SysmelType)baseType.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().TypeUniverse0);
 
             EnumType enumType = new EnumType(sourcePosition, name, baseTypeValue);
-            environment.SetSymbolBinding(name, enumType);
+            if(name != null)
+                environment.SetSymbolBinding(name, enumType);
 
             Value enumValues = values.AnalyzeAndEvaluateInEnvironmentWithEnumBaseType(environment, baseTypeValue);
             if (!enumValues.IsImmutableDictionaryValue())

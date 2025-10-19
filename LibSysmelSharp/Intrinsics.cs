@@ -171,8 +171,11 @@ namespace LibSysmelSharp
             RegisterIntrinsicValue("nil",   NilValue.GetSingleton());
             RegisterIntrinsicValue("void",  VoidValue.GetSingleton());
 
-            RegisterIntrinsicValue("let", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
-                return new LetMetaBuilder(sourcePosition);
+            RegisterIntrinsicValue("class", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
+                return new ClassMetaBuilder(sourcePosition);
+            }));
+            RegisterIntrinsicValue("enum", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
+                return new EnumMetaBuilder(sourcePosition);
             }));
             RegisterIntrinsicValue("forall", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
                 return new ForAllMetaBuilder(sourcePosition);
@@ -180,8 +183,14 @@ namespace LibSysmelSharp
             RegisterIntrinsicValue("function", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
                 return new FunctionMetaBuilder(sourcePosition);
             }));
+            RegisterIntrinsicValue("let", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
+                return new LetMetaBuilder(sourcePosition);
+            }));
             RegisterIntrinsicValue("namespace", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
                 return new NamespaceMetaBuilder(sourcePosition);
+            }));
+            RegisterIntrinsicValue("record", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
+                return new RecordMetaBuilder(sourcePosition);
             }));
         }
 

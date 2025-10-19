@@ -2,14 +2,14 @@
 {
     public class EnumType : SysmelType
     {
-        public string name;
+        public string? name;
         public SysmelType baseType;
 
         public Dictionary<string, Value> nameAndValues = new Dictionary<string, Value> ();
         public List<Value> values = new List<Value>();
         public Dictionary<string, Value>? methodDictionary;
 
-        public EnumType(SourcePosition? sourcePosition, string name, SysmelType baseType) : base(sourcePosition)
+        public EnumType(SourcePosition? sourcePosition, string? name, SysmelType baseType) : base(sourcePosition)
         {
             this.name = name;
             this.baseType = baseType;
@@ -26,6 +26,8 @@
         }
         public override string ToString()
         {
+            if (name == null)
+                return "An Enum";
             return name;
         }
 

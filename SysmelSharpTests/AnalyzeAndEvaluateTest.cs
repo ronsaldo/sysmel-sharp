@@ -786,6 +786,20 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestEnumMetaBuilder()
+        {
+            Value value = EvaluateString("enum TestEnum baseType: Integer values: #{First: 1. Second: 2. Third:}");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsEnumType());
+
+            EnumType enumType = (EnumType)value;
+            Assert.AreEqual(1, enumType.nameAndValues["First"].AsInteger());
+            Assert.AreEqual(2, enumType.nameAndValues["Second"].AsInteger());
+            Assert.AreEqual(3, enumType.nameAndValues["Third"].AsInteger());
+
+        }
+
+        [TestMethod]
         public void TestEnumTypeAccess()
         {
             Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. TestEnum Third");
@@ -924,6 +938,23 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestRecordTypeMetaBuilder()
+        {
+            Value value = EvaluateString("record MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsRecordType());
+
+            RecordType recordType = (RecordType)value;
+            Assert.AreEqual(2, recordType.fields.Length);
+
+            Assert.AreEqual("first", recordType.fields[0].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, recordType.fields[0].type);
+
+            Assert.AreEqual("second", recordType.fields[1].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, recordType.fields[1].type);
+        }
+
+        [TestMethod]
         public void TestAnonClassDefinition()
         {
             Value value = EvaluateString("ClassWithFields: #{first: Dynamic. second: Dynamic}.");
@@ -1016,6 +1047,41 @@ namespace SysmelSharpTests
             Assert.AreEqual(0, instance.elements[0].AsInteger());
             Assert.AreEqual(0, instance.elements[1].AsInteger());
         }
+
+        [TestMethod]
+        public void TestClassMetaBuilderDefinition()
+        {
+            Value value = EvaluateString("class MyClass withFields: #{first: Dynamic. second: Dynamic}.");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsClassType());
+
+            ClassType classType = (ClassType)value;
+            Assert.AreEqual(2, classType.fields.Length);
+
+            Assert.AreEqual("first", classType.fields[0].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[0].type);
+
+            Assert.AreEqual("second", classType.fields[1].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[1].type);
+        }
+
+        [TestMethod]
+        public void TestClassMetaBuilderDefinition2()
+        {
+            Value value = EvaluateString("class MyClass withSuperclass: Object fields: #{first: Dynamic. second: Dynamic}.");
+            Assert.IsTrue(value.IsType());
+            Assert.IsTrue(((SysmelType)value).IsClassType());
+
+            ClassType classType = (ClassType)value;
+            Assert.AreEqual(2, classType.fields.Length);
+
+            Assert.AreEqual("first", classType.fields[0].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[0].type);
+
+            Assert.AreEqual("second", classType.fields[1].name);
+            Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[1].type);
+        }
+
 
         [TestMethod]
         public void TestMethod()
