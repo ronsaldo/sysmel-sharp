@@ -1093,6 +1093,38 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestNamespaceMetaBuilder()
+        {
+            Value value = EvaluateString("namespace TestNamespace definition: {}");
+            Assert.IsTrue(value.IsNamespace());
+
+            Namespace nspace = (Namespace)value;
+            Assert.AreEqual("TestNamespace", nspace.name);
+        }
+
+        [TestMethod]
+        public void TestNamespaceMetaBuilder2()
+        {
+            Value value = EvaluateString("namespace TestNamespace := {}");
+            Assert.IsTrue(value.IsNamespace());
+
+            Namespace nspace = (Namespace)value;
+            Assert.AreEqual("TestNamespace", nspace.name);
+        }
+
+        [TestMethod]
+        public void TestNamespaceMetabuilderAccess()
+        {
+            Value value = EvaluateString("namespace TestNamespace := {public: [Class: #TestClass withFields: #{}]} . TestNamespace TestClass");
+            Assert.IsTrue(value.IsType());
+
+            SysmelType typeValue = (SysmelType)value;
+            Assert.IsTrue(typeValue.IsClassType()); ;
+            Assert.AreEqual("TestClass", typeValue.GetName());
+        }
+
+
+        [TestMethod]
         public void TestGenericBox()
         {
             Value value = EvaluateString("public: [ForAll: (V: Type) in: #MyBox withDefinition: (RecordWithFields: #{boxedValue: V})]. MyBox");

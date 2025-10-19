@@ -180,6 +180,9 @@ namespace LibSysmelSharp
             RegisterIntrinsicValue("function", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
                 return new FunctionMetaBuilder(sourcePosition);
             }));
+            RegisterIntrinsicValue("namespace", new MetaBuilderFactory(null, (SourcePosition? sourcePosition) => {
+                return new NamespaceMetaBuilder(sourcePosition);
+            }));
         }
 
         public static void Reset()

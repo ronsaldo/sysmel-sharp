@@ -2,10 +2,10 @@
 {
     public class ParseTreeNamespaceNode : ParseTreeNode
     {
-        public ParseTreeNode nameExpression;
+        public ParseTreeNode? nameExpression;
         public ParseTreeNode? definitionBody;
 
-        public ParseTreeNamespaceNode(SourcePosition? sourcePosition, ParseTreeNode nameExpression, ParseTreeNode? definitionBody) : base(sourcePosition)
+        public ParseTreeNamespaceNode(SourcePosition? sourcePosition, ParseTreeNode? nameExpression, ParseTreeNode? definitionBody) : base(sourcePosition)
         {
             this.nameExpression = nameExpression;
             this.definitionBody = definitionBody;
@@ -18,6 +18,9 @@
 
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
+            if(nameExpression == null)
+                throw new SysmelException(sourcePosition, "Anonymous namespaces are not supported.");
+
             string name = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();
             Namespace? ownerNamespace = environment.LookNamespace();
             if (ownerNamespace == null)
