@@ -14,7 +14,50 @@ namespace SysmelSharp
             Console.WriteLine("SysmelSharp 0.1");
         }
 
-        static void Main(string[] args)
+        static bool EvaluateString(string s)
+        {
+            try
+            {
+                SysmelFrontEnd.EvaluateString(s);
+                return true;
+            }
+            catch(SysmelException e)
+            {
+                Console.Error.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        static bool EvaluateFileNamed(string fileName)
+        {
+            try
+            {
+                SysmelFrontEnd.EvaluateFileNamed(fileName);
+                return true;
+            }
+            catch (SysmelException e)
+            {
+                Console.Error.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        static bool RunPendingAnalysis()
+        {
+            try
+            {
+                Intrinsics.GetSingleton().RunPendingAnalysis();
+                return true;
+            }
+            catch (SysmelException e)
+            {
+                Console.Error.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+
+        static int Main(string[] args)
         {
             for (int i = 0; i < args.Length; ++i)
             {
@@ -24,25 +67,29 @@ namespace SysmelSharp
                     if(arg == "-help")
                     {
                         printHelp();
-                        return;
+                        return 0;
                     }
                     else if (arg == "-version")
                     {
                         printVersion();
-                        return;
+                        return 0;
                     }
                     else if(arg == "-eval")
                     {
-                        SysmelFrontEnd.EvaluateString(args[++i]);
+                        if (!EvaluateString(args[++i]))
+                            return 1;
                     }
                 }
                 else
                 {
-                    SysmelFrontEnd.EvaluateFileNamed(args[i]);
+                    if (!EvaluateFileNamed(args[i]))
+                        return 1;
                 }
             }
 
-            Intrinsics.GetSingleton().RunPendingAnalysis();
+            if (!RunPendingAnalysis())
+                return 1;
+            return 0;
         }
     }
 }

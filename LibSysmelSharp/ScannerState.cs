@@ -33,7 +33,7 @@ namespace LibSysmelSharp
                 return;
             }
 
-            if(c == '\r')
+            if(c == '\n')
             {
                 if(isPreviousCR)
                 {

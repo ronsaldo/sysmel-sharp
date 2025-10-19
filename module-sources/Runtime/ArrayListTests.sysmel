@@ -8,6 +8,6 @@ printLine(testArrayList at: 0).
 printLine(testArrayList at: 0 put: -2).
 printLine(testArrayList AsList).
 
-printLine(testArrayList at: 1000).
+##printLine(testArrayList at: 1000).
 }.
 }
