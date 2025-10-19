@@ -153,6 +153,35 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestListSize()
+        {
+            Value value = EvaluateString("[1 . 2] size");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestListAt()
+        {
+            Value value = EvaluateString("[1 . 2] at: 1");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(2, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestListAtPut()
+        {
+            Value value = EvaluateString("[1 . 2] at: 1 put: 3");
+            Assert.IsTrue(value.IsListValue());
+
+            ListValue listValue = (ListValue)value;
+            Assert.AreEqual(2, listValue.elements.Length);
+
+            Assert.AreEqual(1, listValue.elements[0].AsInteger());
+            Assert.AreEqual(3, listValue.elements[1].AsInteger());
+        }
+
+        [TestMethod]
         public void TestEmptyByteArray()
         {
             Value value = EvaluateString("#[]");

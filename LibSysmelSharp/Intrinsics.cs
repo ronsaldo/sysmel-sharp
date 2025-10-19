@@ -51,8 +51,8 @@ namespace LibSysmelSharp
         public NominalType Float32Type;
         public NominalType Float64Type;
 
-        public ListType DynamicListType; // TODO: Use an array type.
-        public ListType ByteArrayType; // TODO: Use an array type.
+        public ListType DynamicListType;
+        public ListType ByteArrayType;
         public AssociationType DynamicImmutableDictionaryAssociationType;
         public ImmutableDictionaryType DynamicImmutableDictionaryType;
 
