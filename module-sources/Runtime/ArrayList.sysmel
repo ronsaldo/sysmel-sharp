@@ -1,11 +1,13 @@
 namespace System definition: {
 namespace Collections definition: {
 
+public:[
 forall(V: Type) ArrayList := class withSuperclass: Object fields: #{
     size: Integer.
     capacity: Integer.
     data: V list.
 }.
+].
 
 ArrayList !{
 initialize :: Void.
@@ -48,6 +50,25 @@ add: (V)value :: Void.
 }.
 
 ArrayList !{
+at: (Integer)index :: V.
+    if: index >= size then: {
+        error: "Index out of bounds"
+    }.
+
+    data at: index
+}.
+
+
+ArrayList !{
+at: (Integer)index put: (V)value :: Void.
+    if: index >= size then: {
+        error: "Index out of bounds"
+    }.
+
+    data at: index put: value
+}.
+
+ArrayList !{
 AsList :: V list.
     let result mutable := V list new: size.
     let i mutable := 0.
@@ -58,9 +79,6 @@ AsList :: V list.
     result
 }.
 
-let testArrayList := ArrayList(Integer) new.
-testArrayList add: 42; add: 45.
-printLine(testArrayList AsList).
 }.
 }.
 

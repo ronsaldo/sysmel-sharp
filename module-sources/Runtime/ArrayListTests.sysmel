@@ -1,0 +1,12 @@
+namespace System definition: {
+namespace Collections definition: {
+
+let testArrayList := ArrayList(Integer) new.
+testArrayList add: 42; add: 45.
+printLine(testArrayList AsList).
+printLine(testArrayList at: 0).
+printLine(testArrayList at: 0 put: -2).
+printLine(testArrayList).
+
+}.
+}
