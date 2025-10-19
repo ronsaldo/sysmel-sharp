@@ -11,6 +11,11 @@
             this.definitionBody = definitionBody;
         }
 
+        public override bool IsParseTreeNamespaceNode()
+        {
+            return true;
+        }
+
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
             string name = nameExpression.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();

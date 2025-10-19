@@ -8,6 +8,8 @@ namespace LibSysmelSharp
 {
     public class SysmelType : Value
     {
+        public Value? owner;
+
         public SysmelType(SourcePosition? sourcePosition) : base(sourcePosition)
         {
         }
@@ -46,11 +48,6 @@ namespace LibSysmelSharp
             Value[] callArguments = receiverArgument.Concat(arguments).ToArray();
             return foundMethod.EvaluateWithArguments(callArguments);
         }
-
-        public virtual string? GetName()
-        {
-            return null;
-        }
         
         public override bool IsType()
         {
@@ -71,6 +68,11 @@ namespace LibSysmelSharp
             if(supertype != null)
                 return supertype.IsSubtypeOf(other);
             return false;
+        }
+
+        public override void SetOwner(Value anOwner)
+        {
+            owner = anOwner;
         }
 
         public virtual bool IsAssociationType()

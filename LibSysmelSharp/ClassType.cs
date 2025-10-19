@@ -18,6 +18,11 @@ namespace LibSysmelSharp
             this.type = type;
         }
 
+        public override string? GetName()
+        {
+            return name;
+        }
+
         public override bool IsClassType()
         {
             return true;

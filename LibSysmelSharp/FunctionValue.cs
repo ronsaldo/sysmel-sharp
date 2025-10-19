@@ -2,6 +2,7 @@
 {
     public class FunctionValue : Value
     {
+        public Value? owner;
         public string? name;
         public DependentFunctionType signature;
         public Environment definitionEnvironment;
@@ -25,6 +26,16 @@
         public override SysmelType GetSysmelType()
         {
             return type;
+        }
+
+        public override string? GetName()
+        {
+            return name;
+        }
+
+        public override void SetOwner(Value anOwner)
+        {
+            this.owner = anOwner;
         }
 
         public override Value EvaluateWithArguments(Value[] callArguments)

@@ -24,5 +24,10 @@
         {
             return nspace;
         }
+
+        public override Value? LookEntityOwner()
+        {
+            return nspace;
+        }
     }
 }

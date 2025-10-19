@@ -962,5 +962,23 @@ namespace SysmelSharpTests
             Namespace nspace = (Namespace)value;
             Assert.AreEqual("TestNamespace", nspace.name);
         }
+
+        [TestMethod]
+        public void TestNamespaceExport()
+        {
+            Value value = EvaluateString("namespace: #TestNamespace definition: {public: [Class: #TestClass withFields: #{}]}");
+            Assert.IsTrue(value.IsNamespace());
+
+            Namespace nspace = (Namespace)value;
+            Assert.AreEqual("TestNamespace", nspace.name);
+            Assert.AreEqual(1, nspace.children.Count);
+
+            Value child = nspace.children[0];
+            Assert.IsTrue(child.IsType());
+            Assert.IsTrue( ((SysmelType)child).IsClassType()); ;
+
+            ClassType childClass = (ClassType)child;
+            Assert.AreEqual("TestClass", childClass.name);
+        }
     }
 }

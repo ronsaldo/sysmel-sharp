@@ -11,12 +11,14 @@ namespace LibSysmelSharp
         public string name;
         public Namespace? parent;
         public Dictionary<string, Value> symbolDictionary;
+        public List<Value> children;
 
         public Namespace(SourcePosition? sourcePosition, string name, Namespace? parent) : base(sourcePosition)
         {
             this.name = name;
             this.parent = parent;
             this.symbolDictionary = new Dictionary<string, Value>();
+            this.children = new List<Value>();
         }
 
         public override bool IsNamespace()
@@ -24,9 +26,15 @@ namespace LibSysmelSharp
             return true;
         }
 
-        public void SetSymbolBinding(string symbol, Value binding)
+        public override string? GetName()
+        {
+            return name;
+        }
+
+        public override void SetSymbolBinding(string symbol, Value binding)
         {
             symbolDictionary[symbol] = binding;
+            children.Add(binding);
         }
 
         public Value? LookSymbol(string symbol)

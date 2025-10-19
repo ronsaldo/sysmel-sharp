@@ -11,5 +11,10 @@
         {
             return null;
         }
+
+        public override Value? LookEntityOwner()
+        {
+            return null;
+        }
     }
 }

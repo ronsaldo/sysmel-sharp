@@ -58,5 +58,10 @@ namespace LibSysmelSharp
         {
             return parent.LookNamespace();
         }
+        
+        public override Value? LookEntityOwner()
+        {
+            return parent.LookEntityOwner();
+        }
     }
 }

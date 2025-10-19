@@ -371,6 +371,13 @@ namespace LibSysmelSharp
                     ParseTreeNode bodyExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeNamespaceNode(context.sourcePosition, nameExpression, bodyExpression);
                 }));
+            AddMethod(new PrimitiveFunction("public:", true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode exportListExpression = (ParseTreeNode)arguments[1];
+                    return new ParseTreePublicNode(context.sourcePosition, exportListExpression);
+                }));
 
             AddMethod(new PrimitiveFunction("loadFileOnce:", true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),

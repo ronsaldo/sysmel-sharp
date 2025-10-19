@@ -12,7 +12,6 @@ namespace LibSysmelSharp
         public Dictionary<string, Value> localSymbolTable;
         public Value? receiverValue;
 
-
         public FunctionActivationEnvironment(Environment parent)
         {
             this.parent = parent;
@@ -48,6 +47,10 @@ namespace LibSysmelSharp
         public override Namespace? LookNamespace()
         {
             return parent.LookNamespace();
+        }
+        public override Value? LookEntityOwner()
+        {
+            return parent.LookEntityOwner();
         }
     }
 }

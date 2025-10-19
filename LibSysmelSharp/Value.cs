@@ -154,6 +154,20 @@ namespace LibSysmelSharp
             WithSelectorAddMethod(method.name, method);
         }
 
+        public virtual string? GetName()
+        {
+            return null;
+        }
+
+        public virtual void SetOwner(Value anOwner)
+        {
+            throw new NotSupportedException();
+        }
+        public virtual void SetSymbolBinding(string symbol, Value binding)
+        {
+            throw new NotSupportedException();
+        }
+
         public virtual Value PerformWithArguments(string selector, Value[] arguments)
         {
             Value? foundMethod = LookupSelector(selector);
