@@ -212,7 +212,7 @@ namespace LibSysmelSharp
             if (!hasFunctionalTypeComponents)
                 return null;
 
-            return new ParseTreeFunctionalSignatureNode(state.SourcePositionFrom(startingPosition), arguments.ToArray(), resultTypeExpression, null);
+            return new ParseTreeFunctionalSignatureNode(state.SourcePositionFrom(startingPosition), arguments.ToArray(), resultTypeExpression, null, false);
         }
 
         private ParseTreeNode ParseBlock()
@@ -287,7 +287,7 @@ namespace LibSysmelSharp
                 state.Advance();
                 resultTypeExpression = ParseAssociationExpression();
             }
-            return new ParseTreeFunctionalSignatureNode(state.SourcePositionFrom(startingPosition), arguments.ToArray(), resultTypeExpression, selectorBuilder.ToString())
+            return new ParseTreeFunctionalSignatureNode(state.SourcePositionFrom(startingPosition), arguments.ToArray(), resultTypeExpression, selectorBuilder.ToString(), false)
                     .AddSelfWithType(receiverType);
         }
 

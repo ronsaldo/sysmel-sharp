@@ -11,12 +11,14 @@ namespace LibSysmelSharp
         public ParseTreeArgumentDefinitionNode[] argumentDefinitions;
         public ParseTreeNode? resultTypeExpression;
         public string? selector;
+        public bool isForAll;
 
-        public ParseTreeFunctionalSignatureNode(SourcePosition? sourcePosition, ParseTreeArgumentDefinitionNode[] argumentDefinitions, ParseTreeNode? resultTypeExpression, string? selector) : base(sourcePosition)
+        public ParseTreeFunctionalSignatureNode(SourcePosition? sourcePosition, ParseTreeArgumentDefinitionNode[] argumentDefinitions, ParseTreeNode? resultTypeExpression, string? selector, bool isForAll) : base(sourcePosition)
         {
             this.argumentDefinitions = argumentDefinitions;
             this.resultTypeExpression = resultTypeExpression;
             this.selector = selector;
+            this.isForAll = isForAll;
         }
 
         public override bool IsParseTreeFunctionalSignatureNode()
@@ -41,7 +43,7 @@ namespace LibSysmelSharp
                     throw new SysmelException(resultTypeExpression.sourcePosition, "Expected a type expression.");
             }
 
-            return new DependentFunctionType(sourcePosition, selector, argumentValues, resultType);
+            return new DependentFunctionType(sourcePosition, selector, argumentValues, resultType, isForAll);
         }
 
         public ParseTreeFunctionalSignatureNode CopyWithSelfType(SysmelType newSelfType)
@@ -55,7 +57,7 @@ namespace LibSysmelSharp
                     new ParseTreeLiteralValueNode(null, newSelfType));
             newArgumentDefinitions[0] = selfWithType;
 
-            return new ParseTreeFunctionalSignatureNode(sourcePosition, newArgumentDefinitions, resultTypeExpression, selector);
+            return new ParseTreeFunctionalSignatureNode(sourcePosition, newArgumentDefinitions, resultTypeExpression, selector, isForAll);
         }
 
         public ParseTreeFunctionalSignatureNode AddSelfWithType(ParseTreeNode? selfType)

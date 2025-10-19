@@ -1095,8 +1095,17 @@ namespace SysmelSharpTests
         [TestMethod]
         public void TestGenericBox()
         {
-            Value value = EvaluateString("ForAll: (V: Type) in: #MyPair withDefinition: (RecordWithFields: #{boxedValue: V})");
+            Value value = EvaluateString("public: [ForAll: (V: Type) in: #MyBox withDefinition: (RecordWithFields: #{boxedValue: V})]. MyBox");
+            Assert.IsTrue(value.IsFunctionValue());
+            Assert.IsTrue(value.IsTemplate());
 
+            Value firstValue = EvaluateString("MyBox(Integer)");
+            Assert.IsTrue(firstValue.IsType());
+            SysmelType valueType = (SysmelType)firstValue;
+            Assert.IsTrue(valueType.IsRecordType());
+
+            Value secondValue = EvaluateString("MyBox(Integer)");
+            Assert.AreSame(firstValue, secondValue);
         }
     }
 }

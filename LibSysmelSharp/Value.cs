@@ -312,7 +312,10 @@ namespace LibSysmelSharp
         {
             return false;
         }
-
+        public virtual bool IsTemplate()
+        {
+            return false;
+        }
         public virtual bool IsMacroFunction()
         {
             return false;

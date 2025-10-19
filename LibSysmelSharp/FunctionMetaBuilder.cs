@@ -38,7 +38,7 @@ namespace LibSysmelSharp
 
         public override Value AnalyzeAndEvaluateAssignmentInEnvironment(ParseTreeAssignmentNode assignmentNode, Environment environment)
         {
-            ParseTreeFunctionalSignatureNode signature = new ParseTreeFunctionalSignatureNode(assignmentNode.sourcePosition, argumentDefinitions, resultTypeExpression, name);
+            ParseTreeFunctionalSignatureNode signature = new ParseTreeFunctionalSignatureNode(assignmentNode.sourcePosition, argumentDefinitions, resultTypeExpression, name, false);
             ParseTreeFunctionNode functionNode = new ParseTreeFunctionNode(sourcePosition, nameExpression, signature, assignmentNode.value);
             return functionNode.AnalyzeAndEvaluateInEnvironment(environment);
         }

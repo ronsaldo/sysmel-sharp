@@ -12,8 +12,9 @@ namespace LibSysmelSharp
         public ArgumentDefinitionValue[] arguments;
         public Value resultTypeExpression;
         public bool hasDependentArguments;
+        public bool isForAll;
 
-        public DependentFunctionType(SourcePosition? sourcePosition, string? selector, ArgumentDefinitionValue[] arguments, Value resultTypeExpression) : base(sourcePosition)
+        public DependentFunctionType(SourcePosition? sourcePosition, string? selector, ArgumentDefinitionValue[] arguments, Value resultTypeExpression, bool isForAll) : base(sourcePosition)
         {
             this.selector = selector;
             this.arguments = arguments;
@@ -24,6 +25,7 @@ namespace LibSysmelSharp
                 if (arg.hasDependentUser)
                     this.hasDependentArguments = true;
             }
+            this.isForAll = isForAll;
         }
 
         public override bool IsDependentFunctionType()

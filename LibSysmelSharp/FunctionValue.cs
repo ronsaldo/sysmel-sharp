@@ -8,6 +8,10 @@
         public Environment definitionEnvironment;
         public ParseTreeNode definitionBody;
         public SysmelType type;
+        public bool isTemplate;
+        public Dictionary<MemoizedFunctionKey, Value> memoizedValues;
+        public List<Value> instances;
+        public List<Value> extensions;
 
         public FunctionValue(SourcePosition? sourcePosition, string? name, DependentFunctionType signature, Environment definitionEnvironment, ParseTreeNode definitionBody) : base(sourcePosition)
         {
@@ -16,9 +20,17 @@
             this.definitionEnvironment = definitionEnvironment;
             this.definitionBody = definitionBody;
             this.type = signature.TryToSimplifyFunctionType();
+            this.isTemplate = signature.isForAll;
+            this.memoizedValues = new Dictionary<MemoizedFunctionKey, Value>();
+            this.instances = new List<Value>();
+            this.extensions = new List<Value>();
         }
 
         public override bool IsFunctionValue()
+        {
+            return true;
+        }
+        public override bool IsTemplate()
         {
             return true;
         }
@@ -40,6 +52,14 @@
 
         public override Value EvaluateWithArguments(Value[] callArguments)
         {
+            MemoizedFunctionKey? memoizationKey = null;
+            if (isTemplate)
+            {
+                memoizationKey = new MemoizedFunctionKey(callArguments);
+                if (memoizedValues.ContainsKey(memoizationKey))
+                    return memoizedValues[memoizationKey];
+            }
+
             FunctionActivationEnvironment activationEnvironment = new FunctionActivationEnvironment(definitionEnvironment);
             foreach(ArgumentDefinitionValue argumentDef in signature.arguments)
             {
@@ -65,6 +85,13 @@
             catch (SysmelReturnException re)
             {
                 resultValue = re.resultValue.AnalyzeAndEvaluateInEnvironmentWithExpectedType(bodyEnvironment, resultTypeValue);
+            }
+
+            if (isTemplate && memoizationKey != null)
+            {
+                resultValue.SetOwner(this);
+                memoizedValues[memoizationKey] = resultValue;
+                instances.Add(resultValue);
             }
 
             return resultValue;
