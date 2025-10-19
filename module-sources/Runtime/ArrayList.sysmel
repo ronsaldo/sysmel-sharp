@@ -10,7 +10,7 @@ forall(V: Type) ArrayList := class withSuperclass: Object fields: #{
 ArrayList !{
 initialize :: Void.
     size := 0.
-    capacity := 32.
+    capacity := 16.
     data := V list new: capacity.
 }.
 
@@ -19,8 +19,48 @@ size :: Integer.
     size
 }.
 
+ArrayList !{
+increaseCapacity :: Void.
+    let newCapacity mutable := capacity*2.
+    if: newCapacity < 16 then: {
+        newCapacity := 16.
+    }.
+
+    let newDataStore := V list new: newCapacity.
+    let oldData := data.
+    let oldDataSize := size.
+    let i mutable := 0.
+    while: i < oldDataSize do: {
+        newDataStore at: i put: (data at: i)
+    } continueWith: (i := i + 1).
+
+    data := newDataStore.
+}.
+
+ArrayList !{
+add: (V)value :: Void.
+    if: size >= capacity then: {
+        self increaseCapacity
+    }.
+
+    data at: size put: value.
+    size := size + 1.
+}.
+
+ArrayList !{
+AsList :: V list.
+    let result mutable := V list new: size.
+    let i mutable := 0.
+    while: i < size do: {
+        result at: i put: (data at: i)
+    } continueWith: (i := i + 1).
+
+    result
+}.
+
 let testArrayList := ArrayList(Integer) new.
-printLine(testArrayList size).
+testArrayList add: 42; add: 45.
+printLine(testArrayList AsList).
 }.
 }.
 
