@@ -58,5 +58,21 @@ namespace LibSysmelSharp
             SetSymbolBinding(childName, newNamespace);
             return newNamespace;
         }
+
+        public override Value AnalyzeAndEvaluateMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, Environment environment)
+        {
+            if(messageSend.arguments.Length == 0)
+            {
+                Value? foundSymbol = LookSymbol(selector);
+                if (foundSymbol != null)
+                    return foundSymbol;
+            }
+            return base.AnalyzeAndEvaluateMessageSendInEnvironment(messageSend, selector, environment);
+        }
+
+        public override SysmelType GetSysmelType()
+        {
+            return Intrinsics.GetSingleton().NamespaceType;
+        }
     }
 }

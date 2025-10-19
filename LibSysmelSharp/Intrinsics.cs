@@ -31,6 +31,7 @@ namespace LibSysmelSharp
         public NominalType ParseTreeNodeType;
         public NominalType MacroContextType;
         public NominalType MetaBuilderType;
+        public NominalType NamespaceType;
 
         public IntegerType Char8Type;
         public IntegerType Char16Type;
@@ -148,6 +149,7 @@ namespace LibSysmelSharp
             ParseTreeNodeType = CreateNominalType("ParseTreeNode");
             MacroContextType  = CreateNominalType("MacroContext");
             MetaBuilderType   = CreateNominalType("MetaBuilder");
+            NamespaceType     = CreateNominalType("Namespace");
 
             DynamicListType = GetOrCreateListOfType(DynamicType);
             ByteArrayType = GetOrCreateListOfType(UInt8Type);

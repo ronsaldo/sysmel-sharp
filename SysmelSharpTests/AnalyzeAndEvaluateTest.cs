@@ -980,5 +980,16 @@ namespace SysmelSharpTests
             ClassType childClass = (ClassType)child;
             Assert.AreEqual("TestClass", childClass.name);
         }
+
+        [TestMethod]
+        public void TestNamespaceAccess()
+        {
+            Value value = EvaluateString("namespace: #TestNamespace definition: {public: [Class: #TestClass withFields: #{}]} . TestNamespace TestClass");
+            Assert.IsTrue(value.IsType());
+
+            SysmelType typeValue = (SysmelType)value;
+            Assert.IsTrue(typeValue.IsClassType());;
+            Assert.AreEqual("TestClass", typeValue.GetName());
+        }
     }
 }
