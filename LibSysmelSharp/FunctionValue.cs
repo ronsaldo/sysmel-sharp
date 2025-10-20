@@ -111,10 +111,10 @@ namespace LibSysmelSharp
             HIRBasicBlock entryBlock = new HIRBasicBlock(sourcePosition, "entry");
             hirFunction.AddBasicBlock(entryBlock);
 
-            HIRBuilder allocaBuilder = new HIRBuilder(functionAnalysisEnvironment);
+            HIRBuilder allocaBuilder = new HIRBuilder(functionAnalysisEnvironment, hirFunction);
             allocaBuilder.basicBlock = allocaBlock;
 
-            HIRBuilder builder = new HIRBuilder(functionAnalysisEnvironment);
+            HIRBuilder builder = new HIRBuilder(functionAnalysisEnvironment, hirFunction);
             builder.allocaBuilder = allocaBuilder;
             builder.basicBlock = entryBlock;
 

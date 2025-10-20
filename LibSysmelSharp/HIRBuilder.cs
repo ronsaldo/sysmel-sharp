@@ -10,12 +10,14 @@ namespace LibSysmelSharp
     public class HIRBuilder
     {
         public Environment environment;
+        public HIRFunction function;
         public HIRBasicBlock? basicBlock;
         public HIRBuilder? allocaBuilder;
 
-        public HIRBuilder(Environment environment)
+        public HIRBuilder(Environment environment, HIRFunction function)
         {
             this.environment = environment;
+            this.function = function;
         }
 
         public void AddInstruction(HIRInstruction instruction)
@@ -39,6 +41,21 @@ namespace LibSysmelSharp
         public HIRBranch Branch(SourcePosition? sourcePosition, HIRBasicBlock destination)
         {
             HIRBranch branch = new HIRBranch(sourcePosition, destination);
+            AddInstruction(branch);
+            return branch;
+        }
+
+        public HIRBuilder CopyWithBasicBlock(HIRBasicBlock newBasicBlock)
+        {
+            HIRBuilder copy = new HIRBuilder(environment, function);
+            copy.basicBlock = newBasicBlock;
+            copy.allocaBuilder = allocaBuilder;
+            return copy;
+        }
+
+        public HIRConditionalBranch ConditionalBranch(SourcePosition? sourcePosition, HIRValue condition, HIRBasicBlock trueDestination, HIRBasicBlock falseDestination)
+        {
+            HIRConditionalBranch branch = new HIRConditionalBranch(sourcePosition, condition, trueDestination, falseDestination);
             AddInstruction(branch);
             return branch;
         }
@@ -105,6 +122,20 @@ namespace LibSysmelSharp
             HIRReturnVoid instruction = new HIRReturnVoid(sourcePosition);
             AddInstruction(instruction);
             return instruction;
+        }
+
+        public HIRPhi Phi(SourcePosition? sourcePosition, SysmelType type, string? name)
+        {
+            HIRPhi phi = new HIRPhi(sourcePosition, type, name);
+            AddInstruction(phi);
+            return phi;
+        }
+        
+        public HIRPhiSource PhiSource(SourcePosition? sourcePosition, HIRPhi destinationPhi, HIRValue sourceValue)
+        {
+            HIRPhiSource phiSource = new HIRPhiSource(sourcePosition, destinationPhi, sourceValue);
+            AddInstruction(phiSource);
+            return phiSource;
         }
 
         public bool IsLastTerminator()

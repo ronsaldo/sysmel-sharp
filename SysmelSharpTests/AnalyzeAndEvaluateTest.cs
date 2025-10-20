@@ -280,6 +280,22 @@ namespace SysmelSharpTests
             Assert.AreEqual(0, value.AsInteger());
         }
 
+        [TestMethod]
+        public void TestIfThenElseExpressionInFunction()
+        {
+            Value function = EvaluateString("{:(Boolean)condition :: Integer | if: condition then: 1 else: 0}");
+            Assert.IsTrue(function.IsFunctionValue());
+            function.DumpToConsole();
+
+            Value value = EvaluateString("{:(Boolean)condition :: Integer | if: condition then: 1 else: 0} (false)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(0, value.AsInteger());
+
+            value = EvaluateString("{:(Boolean)condition :: Integer | if: condition then: 1 else: 0} (true)");
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(1, value.AsInteger());
+        }
+
 
         [TestMethod]
         public void TestSwitchWithCases()

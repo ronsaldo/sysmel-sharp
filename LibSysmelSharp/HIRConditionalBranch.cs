@@ -22,5 +22,9 @@
         {
             return true;
         }
+        public override void DumpToConsole()
+        {
+            Console.WriteLine("  conditionalBranch " + condition.ToString() + " " + trueDestination.ToString() + " " + falseDestination.ToString());
+        }
     }
 }

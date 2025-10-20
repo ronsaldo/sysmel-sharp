@@ -18,5 +18,10 @@
             else
                 Console.WriteLine("%" + name + "." + index +" := argument");
         }
+
+        public override string ToString()
+        {
+            return "arg " + index.ToString();
+        }
     }
 }

@@ -113,7 +113,17 @@
 
         public virtual bool IsImportedFunction()
         {
-            return true;
+            return false;
+        }
+
+        public virtual bool IsPhi()
+        {
+            return false;
+        }
+
+        public virtual bool IsPhiSource()
+        {
+            return false;
         }
     }
 }
