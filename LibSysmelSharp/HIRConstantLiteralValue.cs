@@ -13,6 +13,10 @@
         {
             return true;
         }
+        public override SysmelType AsSelfTypeWithDefaultType(SysmelType defaultResultType)
+        {
+            return literal.AsSelfTypeWithDefaultType(defaultResultType);
+        }
 
         public override string ToString()
         {

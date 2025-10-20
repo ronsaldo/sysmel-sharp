@@ -90,6 +90,16 @@
             return false;
         }
 
+        public virtual bool IsAssertInstruction()
+        {
+            return false;
+        }
+
+        public virtual bool IsRuntimeErrorInstruction()
+        {
+            return false;
+        }
+
         public virtual bool IsBoxDynamic()
         {
             return false;

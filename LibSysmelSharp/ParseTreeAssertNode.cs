@@ -28,5 +28,12 @@
 
             return VoidValue.GetSingleton();
         }
+
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            HIRValue conditionValue = assertionCondition.AnalyzeAndBuildWithExpectedType(builder, Intrinsics.GetSingleton().BooleanType);
+            builder.Assert(sourcePosition, conditionValue);
+            return builder.GetVoidLiteral(sourcePosition);
+        }
     }
 }

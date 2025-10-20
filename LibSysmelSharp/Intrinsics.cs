@@ -645,26 +645,30 @@ namespace LibSysmelSharp
 
             // TODO: Use a proper dependent type here
             TypeUniverse0.AddMethod(new PrimitiveFunction("basicNew", false, false,
-                new SimpleFunctionType(null, [TypeUniverse0], DynamicType),
+                new SimpleFunctionType(null, [TypeUniverse0], DynamicType,
+                (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
                 (Value[] arguments) => {
                     SysmelType selfType = (SysmelType)arguments[0];
                     return selfType.BasicNew();
                 }));
             TypeUniverse0.AddMethod(new PrimitiveFunction("basicNew:", false, false,
-                new SimpleFunctionType(null, [TypeUniverse0, IntegerType], DynamicType),
+                new SimpleFunctionType(null, [TypeUniverse0, IntegerType], DynamicType,
+                (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
                 (Value[] arguments) => {
                     SysmelType selfType = (SysmelType)arguments[0];
                     long size = arguments[1].AsInteger();
                     return selfType.BasicNewWithSize(size);
                 }));
             TypeUniverse0.AddMethod(new PrimitiveFunction("new", false, false,
-                new SimpleFunctionType(null, [TypeUniverse0], DynamicType),
+                new SimpleFunctionType(null, [TypeUniverse0], DynamicType,
+                (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
                 (Value[] arguments) => {
                     SysmelType selfType = (SysmelType)arguments[0];
                     return selfType.New();
                 }));
             TypeUniverse0.AddMethod(new PrimitiveFunction("new:", false, false,
-                new SimpleFunctionType(null, [TypeUniverse0, IntegerType], DynamicType),
+                new SimpleFunctionType(null, [TypeUniverse0, IntegerType], DynamicType,
+                (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
                 (Value[] arguments) => {
                     SysmelType selfType = (SysmelType)arguments[0];
                     long size = arguments[1].AsInteger();

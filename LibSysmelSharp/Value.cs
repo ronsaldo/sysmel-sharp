@@ -507,6 +507,11 @@ namespace LibSysmelSharp
             throw new NotSupportedException();
         }
 
+        public virtual SysmelType AsSelfTypeWithDefaultType(SysmelType defaultResultType)
+        {
+            return defaultResultType;
+        }
+
         public virtual void DumpToConsole()
         {
             System.Console.WriteLine(ToString());

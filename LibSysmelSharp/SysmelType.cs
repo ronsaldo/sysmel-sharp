@@ -217,6 +217,12 @@ namespace LibSysmelSharp
                 return new SimpleFunctionType(sourcePosition, [], resultType);
             return new SimpleFunctionType(sourcePosition, [this], resultType);
         }
+
+        public override SysmelType AsSelfTypeWithDefaultType(SysmelType defaultResultType)
+        {
+            return this;
+        }
+
         public override SysmelType GetSysmelType()
         {
             return Intrinsics.GetSingleton().TypeUniverse0;

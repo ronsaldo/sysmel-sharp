@@ -132,6 +132,19 @@ namespace LibSysmelSharp
             AddInstruction(instruction);
             return instruction;
         }
+        public HIRAssert Assert(SourcePosition? sourcePosition, HIRValue condition)
+        {
+            HIRAssert instruction = new HIRAssert(sourcePosition, condition);
+            AddInstruction(instruction);
+            return instruction;
+        }
+
+        public HIRRuntimeError RuntimeError(SourcePosition? sourcePosition, HIRValue errorMessage)
+        {
+            HIRRuntimeError instruction = new HIRRuntimeError(sourcePosition, errorMessage);
+            AddInstruction(instruction);
+            return instruction;
+        }
 
         public HIRPhi Phi(SourcePosition? sourcePosition, SysmelType type, string? name)
         {

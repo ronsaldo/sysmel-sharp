@@ -1422,9 +1422,28 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestAssertionOkInFunction()
+        {
+            EvaluateString("{:: Void | assert: true} ()");
+        }
+
+        [TestMethod]
+        public void TestAssertionFailureInFunction()
+        {
+            Assert.ThrowsException<SysmelException>(() => EvaluateString("{:: Void | assert: false}()"));
+        }
+
+        [TestMethod]
         public void TestRuntimeError()
         {
             Assert.ThrowsException<SysmelException>(() => EvaluateString("error: \"Runtime Error\""));
         }
+
+        [TestMethod]
+        public void TestRuntimeErrorInFunction()
+        {
+            Assert.ThrowsException<SysmelException>(() => EvaluateString("{:: Void | error: \"Runtime Error\"}()"));
+        }
+
     }
 }

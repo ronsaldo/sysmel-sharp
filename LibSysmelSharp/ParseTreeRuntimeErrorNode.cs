@@ -19,5 +19,12 @@
             string errorMessageValue = errorMessage.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, Intrinsics.GetSingleton().StringType).AsString();
             throw new SysmelException(sourcePosition, "Runtime error: " + errorMessageValue);
         }
+
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            HIRValue errorMessageValue = errorMessage.AnalyzeAndBuildWithExpectedType(builder, Intrinsics.GetSingleton().StringType);
+            builder.RuntimeError(sourcePosition, errorMessageValue);
+            return builder.GetVoidLiteral(sourcePosition);
+        }
     }
 }
