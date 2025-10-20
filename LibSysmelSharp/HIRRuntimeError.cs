@@ -25,5 +25,10 @@ namespace LibSysmelSharp
         {
             return true;
         }
+
+        public override void DumpToConsole()
+        {
+            Console.WriteLine("  runtimeError: " + errorMessage.ToString());
+        }
     }
 }

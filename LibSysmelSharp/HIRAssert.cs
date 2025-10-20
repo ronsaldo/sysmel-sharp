@@ -19,5 +19,9 @@
         {
             return true;
         }
+        public override void DumpToConsole()
+        {
+            Console.WriteLine("  assert: " + condition.ToString());
+        }
     }
 }

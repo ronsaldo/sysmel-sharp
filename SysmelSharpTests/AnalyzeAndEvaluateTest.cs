@@ -1424,12 +1424,14 @@ namespace SysmelSharpTests
         [TestMethod]
         public void TestAssertionOkInFunction()
         {
+            EvaluateString("{:: Void | assert: true}").DumpToConsole();
             EvaluateString("{:: Void | assert: true} ()");
         }
 
         [TestMethod]
         public void TestAssertionFailureInFunction()
         {
+            EvaluateString("{:: Void | assert: false}").DumpToConsole();
             Assert.ThrowsException<SysmelException>(() => EvaluateString("{:: Void | assert: false}()"));
         }
 
@@ -1442,6 +1444,7 @@ namespace SysmelSharpTests
         [TestMethod]
         public void TestRuntimeErrorInFunction()
         {
+            EvaluateString("{:: Void | error: \"Runtime Error\"}").DumpToConsole();
             Assert.ThrowsException<SysmelException>(() => EvaluateString("{:: Void | error: \"Runtime Error\"}()"));
         }
 
