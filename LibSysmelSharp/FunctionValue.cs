@@ -15,6 +15,8 @@ namespace LibSysmelSharp
         public List<TemplateInstance> instances;
         public List<TemplateExtensionMethod> extensions;
 
+        public HIRFunction? hirFunction;
+
         public FunctionValue(SourcePosition? sourcePosition, string? name, DependentFunctionType signature, Environment definitionEnvironment, ParseTreeNode definitionBody) : base(sourcePosition)
         {
             this.name = name;
@@ -61,8 +63,59 @@ namespace LibSysmelSharp
             else
                 return "a Function";
         }
+
+        public override void EnsureAnalysis()
+        {
+            if (isTemplate)
+                return;
+            if (hirFunction != null)
+                return;
+
+            // Create he HIR Functon
+            hirFunction = new HIRFunction(sourcePosition, name, type);
+
+            FunctionAnalysisEnvironment functionAnalysisEnvironment = new FunctionAnalysisEnvironment(hirFunction, definitionEnvironment);
+
+            foreach (ArgumentDefinitionValue argumentDef in signature.arguments)
+            {
+                HIRArgument hirArgument = new HIRArgument(argumentDef.sourcePosition, argumentDef.type, argumentDef.name);
+                hirFunction.AddArgument(hirArgument);
+
+                if (argumentDef.name != null)
+                    functionAnalysisEnvironment.SetSymbolBinding(argumentDef.name, hirArgument);
+            }
+
+            Debug.Assert(signature.resultTypeExpression.IsType());
+            functionAnalysisEnvironment.returnTypeValue = (SysmelType)signature.resultTypeExpression;
+
+            HIRBasicBlock allocaBlock = new HIRBasicBlock(sourcePosition, "alloca");
+            hirFunction.AddBasicBlock(allocaBlock);
+
+            HIRBasicBlock entryBlock = new HIRBasicBlock(sourcePosition, "entry");
+            hirFunction.AddBasicBlock(entryBlock);
+
+            HIRBuilder allocaBuilder = new HIRBuilder();
+            allocaBuilder.basicBlock = allocaBlock;
+
+            HIRBuilder builder = new HIRBuilder();
+            builder.allocaBuilder = allocaBuilder;
+            builder.environment = functionAnalysisEnvironment;
+            builder.basicBlock = entryBlock;
+
+            HIRValue resultValue = definitionBody.AnalyzeAndBuildWithExpectedType(builder, functionAnalysisEnvironment.returnTypeValue);
+        }
+
+        public override void DumpToConsole()
+        {
+            EnsureAnalysis();
+            if (hirFunction != null)
+                hirFunction.DumpToConsole();
+        }
+
         public override Value EvaluateWithArguments(Value[] callArguments)
         {
+            EnsureAnalysis();
+
             MemoizedFunctionKey? memoizationKey = null;
             if (isTemplate)
             {

@@ -130,6 +130,59 @@ namespace LibSysmelSharp
             throw new SysmelException(sourcePosition, "No dictionary type expression.");
         }
 
+        public virtual HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            return builder.AddLiteral(sourcePosition, this);
+        }
+
+        public virtual HIRValue AnalyzeAndBuildWithDecayedType(HIRBuilder builder)
+        {
+            HIRValue irvalue = AnalyzeAndBuild(builder);
+            SysmelType valueType = irvalue.GetSysmelType();
+            if (valueType.IsReferenceType())
+                return builder.LoadPointer(sourcePosition, irvalue);
+
+            return irvalue;
+        }
+
+        public virtual HIRValue AnalyzeAndBuildWithExpectedType(HIRBuilder builder, SysmelType? expectedType)
+        {
+            HIRValue value = AnalyzeAndBuild(builder);
+            return CastHIRValueToExpectedType(builder, value, expectedType);
+        }
+
+        public virtual HIRValue AnalyzeAndBuilderIdentifierReference(ParseTreeIdentifierReferenceNode node, HIRBuilder builder)
+        {
+            return builder.AddLiteral(node.sourcePosition, this);
+        }
+
+        public virtual HIRValue CastHIRValueToExpectedType(HIRBuilder builder, HIRValue buildResult, SysmelType? expectedType)
+        {
+            if (expectedType == null)
+                return buildResult;
+            if (expectedType.IsVoidType())
+                return builder.GetVoidLiteral(sourcePosition);
+
+            SysmelType valueType = buildResult.GetSysmelType();
+            if (expectedType.IsSatisfiedBy(valueType))
+                return buildResult;
+
+            if (valueType.IsReferenceType())
+            {
+                HIRValue loadedValue = builder.LoadPointer(sourcePosition, buildResult);
+                return CastHIRValueToExpectedType(builder, loadedValue, expectedType);
+            }
+
+            SysmelType DynamicType = Intrinsics.GetSingleton().DynamicType;
+            if (expectedType == DynamicType)
+                return builder.BoxDynamic(sourcePosition, buildResult);
+            else if(valueType == DynamicType)
+                return builder.UnboxDynamic(sourcePosition, buildResult, expectedType);
+
+            throw new SysmelException(sourcePosition, "Expected an expression with type " + expectedType.ToString() + " instead of " + valueType.ToString());
+        }
+
+
         public virtual void EnsureAnalysis()
         {
         }
@@ -218,6 +271,11 @@ namespace LibSysmelSharp
         public virtual string AsSymbol()
         {
             throw new NotSupportedException();
+        }
+
+        public virtual bool IsHIRValue()
+        {
+            return false;
         }
 
         public virtual bool IsAssociationValue()

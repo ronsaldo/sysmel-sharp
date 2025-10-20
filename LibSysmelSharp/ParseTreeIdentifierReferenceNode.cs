@@ -23,6 +23,15 @@ namespace LibSysmelSharp
             return foundValue.AnalyzeAndEvaluateIdentifierReferenceInEnvironment(this, environment);
         }
 
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            Value? foundValue = builder.environment.LookupRecursively(value);
+            if (foundValue == null)
+                throw new SysmelException(sourcePosition, "Failed to find identifier #" + value);
+
+            return foundValue.AnalyzeAndBuilderIdentifierReference(this, builder);
+        }
+
         public override ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)
         {
             return new ParseTreeArgumentDefinitionNode(sourcePosition, value, null);

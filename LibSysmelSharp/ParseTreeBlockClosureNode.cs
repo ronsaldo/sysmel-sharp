@@ -25,7 +25,9 @@ namespace LibSysmelSharp
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
             DependentFunctionType functionTypeWithSignature = (DependentFunctionType)functionalSignature.AnalyzeAndEvaluateInEnvironment(environment);
-            return new FunctionValue(sourcePosition, null, functionTypeWithSignature, environment, body);
+            FunctionValue functionValue = new FunctionValue(sourcePosition, null, functionTypeWithSignature, environment, body);
+            functionValue.EnsureAnalysis();
+            return functionValue;
         }
     }
 }

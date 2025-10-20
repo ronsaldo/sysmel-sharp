@@ -62,6 +62,8 @@ namespace LibSysmelSharp
         public ClassType ClassClassType;
         public ClassType MetaclassClassType;
 
+        public NominalType BasicBlockType;
+
         public Queue<Value> pendingAnalysisQueue = new Queue<Value> ();
 
         public void AddValueWithPendingAnalysis(Value value)
@@ -165,6 +167,8 @@ namespace LibSysmelSharp
             MetaclassClassType   = CreateClassType("Metaclass", BehaviorClassType, [], []);
             // Class short circuit
             ProtoObjectClassType.type.superclass = ClassClassType;
+
+            BasicBlockType = CreateNominalType("BasicBlockType");
 
             RegisterIntrinsicValue("false", BooleanValue.GetFalse());
             RegisterIntrinsicValue("true",  BooleanValue.GetTrue());

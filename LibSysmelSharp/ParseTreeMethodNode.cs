@@ -27,6 +27,7 @@
             if (owner != null)
                 owner.WithSelectorAddMethod(selector, functionValue);
 
+            functionValue.EnqueuePendingAnalysis();
             return functionValue;
         }
 

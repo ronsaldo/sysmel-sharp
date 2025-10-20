@@ -9,6 +9,11 @@
             throw new NotImplementedException();
         }
 
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
+
         public override Value AnalyzeAndEvaluateMacroArgumentInEnvironment(Environment environment, SysmelType expectedType)
         {
             if (expectedType == Intrinsics.GetSingleton().ParseTreeNodeType)
