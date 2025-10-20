@@ -129,6 +129,19 @@ namespace LibSysmelSharp
             return this;
         }
 
+        public virtual HIRValue AnalyzeAndBuildAssignment(ParseTreeAssignmentNode assignmentNode, HIRBuilder builder)
+        {
+            SysmelType storageType = GetSysmelType();
+            if (!storageType.IsReferenceType())
+                throw new SysmelException(assignmentNode.sourcePosition, "Storage does not support assignments.");
+
+            SysmelType baseType = storageType.GetBaseType();
+            HIRValue valueToStore = assignmentNode.value.AnalyzeAndBuildWithExpectedType(builder, baseType);
+            HIRValue storagePointer = AnalyzeAndBuild(builder);
+            builder.StorePointer(assignmentNode.sourcePosition, storagePointer, valueToStore);
+            return storagePointer;
+
+        }
         public virtual ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)
         {
             throw new SysmelException(sourcePosition, "Invalid argument spec.");

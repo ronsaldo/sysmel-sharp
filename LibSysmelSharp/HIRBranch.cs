@@ -9,6 +9,11 @@
             this.destination = destination;
         }
 
+        public override void DumpToConsole()
+        {
+            Console.WriteLine("  branch " + destination.ToString());
+        }
+
         public override bool IsBranchInstruction()
         {
             return true;

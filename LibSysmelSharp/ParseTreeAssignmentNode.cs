@@ -29,5 +29,10 @@ namespace LibSysmelSharp
             return storeValue.AnalyzeAndEvaluateAssignmentInEnvironment(this, environment);
         }
 
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            HIRValue storageValue = store.AnalyzeAndBuild(builder);
+            return storageValue.AnalyzeAndBuildAssignment(this, builder);
+        }
     }
 }

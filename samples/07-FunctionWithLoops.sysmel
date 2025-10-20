@@ -8,7 +8,7 @@ let: #whileCountTo with: {:(Integer)n :: Void |
 
 whileCountTo dump.
 whileCountTo(10).
-
+#*
 let: #doContinueWhileCountTo with: {:(Integer)n :: Void |
     let: #x mutableWith: 0.
 
@@ -31,3 +31,4 @@ let: #doWhileCountTo with: {:(Integer)n :: Void |
 
 doWhileCountTo dump.
 doWhileCountTo(10)
+*#

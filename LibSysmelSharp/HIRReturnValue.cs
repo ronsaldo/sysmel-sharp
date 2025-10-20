@@ -17,5 +17,10 @@
         {
             return true;
         }
+
+        public override void DumpToConsole()
+        {
+            Console.WriteLine("  return: " + valueToReturn.ToString());
+        }
     }
 }

@@ -13,5 +13,10 @@
         {
             return true;
         }
+
+        public override string ToString()
+        {
+            return "constLiteral(" + literal.ToString() + ")"; 
+        }
     }
 }

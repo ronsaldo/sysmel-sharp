@@ -14,5 +14,10 @@
         {
             return true;
         }
+
+        public override void DumpToConsole()
+        {
+            Console.WriteLine("  returnVoid");
+        }
     }
 }

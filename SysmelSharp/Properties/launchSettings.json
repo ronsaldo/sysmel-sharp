@@ -2,7 +2,7 @@
   "profiles": {
     "SysmelSharp": {
       "commandName": "Project",
-      "commandLineArgs": "module-sources/Runtime/Package.sysmel",
+      "commandLineArgs": ".\\samples\\07-FunctionWithLoops.sysmel",
       "workingDirectory": "C:\\projects\\SysmelSharp"
     }
   }

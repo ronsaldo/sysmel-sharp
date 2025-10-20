@@ -35,6 +35,11 @@
             return false;
         }
 
+        public virtual bool IsAllocaInstruction()
+        {
+            return false;
+        }
+
         public virtual bool IsBranchInstruction()
         {
             return false;

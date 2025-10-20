@@ -10,6 +10,8 @@ namespace LibSysmelSharp
         public HIRBasicBlock? firstBlock;
         public HIRBasicBlock? lastBlock;
 
+        public List<HIRValue>? enumeratedInstructions;
+
         public HIRFunction(SourcePosition? sourcePosition, string?name, SysmelType type) : base(sourcePosition, type)
         {
             this.name = name;
@@ -55,14 +57,54 @@ namespace LibSysmelSharp
             return "@" + name;
         }
 
+        public List<HIRValue> EnumerateInstructions()
+        {
+            if (enumeratedInstructions != null)
+                return enumeratedInstructions;
+
+            enumeratedInstructions = new List<HIRValue>();
+            foreach (HIRArgument arg in arguments)
+            {
+                arg.index = enumeratedInstructions.Count();
+                enumeratedInstructions.Add(arg);
+            }
+
+            foreach (HIRCapture capture in captures)
+            {
+                capture.index = enumeratedInstructions.Count;
+                enumeratedInstructions.Add(capture);
+            }
+
+            HIRBasicBlock? blockPosition = firstBlock;
+            while(blockPosition != null)
+            {
+                blockPosition.index = enumeratedInstructions.Count;
+                enumeratedInstructions.Add(blockPosition);
+
+                HIRInstruction? instructionPosition = blockPosition.firstInstruction;
+                while(instructionPosition != null)
+                {
+                    instructionPosition.index = enumeratedInstructions.Count;
+                    enumeratedInstructions.Add(instructionPosition);
+
+                    instructionPosition = instructionPosition.nextInstruction;
+                }
+
+                blockPosition = blockPosition.nextBlock;
+            }
+
+            return enumeratedInstructions;
+        }
+
         public override void DumpToConsole()
         {
+            EnumerateInstructions();
             Console.WriteLine(ToString() + "{");
             foreach (HIRArgument arg in arguments)
                 arg.DumpToConsole();
 
-            foreach (HIRCapture arg in captures)
-                arg.DumpToConsole();
+            foreach (HIRCapture capture in captures)
+                capture.DumpToConsole();
 
             HIRBasicBlock? blockPosition = firstBlock;
             while(blockPosition != null)

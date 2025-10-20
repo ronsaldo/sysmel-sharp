@@ -28,6 +28,14 @@ namespace LibSysmelSharp
         {
             return new HIRConstantLiteralValue(sourcePosition, value);
         }
+
+        public HIRAlloca Alloca(SourcePosition? sourcePosition, SysmelType valueType, SysmelType type)
+        {
+            HIRAlloca alloca = new HIRAlloca(sourcePosition, valueType, type);
+            AddInstruction(alloca);
+            return alloca;
+        }
+
         public HIRBranch Branch(SourcePosition? sourcePosition, HIRBasicBlock destination)
         {
             HIRBranch branch = new HIRBranch(sourcePosition, destination);
@@ -50,7 +58,12 @@ namespace LibSysmelSharp
             AddInstruction(loadInstruction);
             return loadInstruction;
         }
-
+        public HIRStoreInstruction StorePointer(SourcePosition? sourcePosition, HIRValue storage, HIRValue valueToStore)
+        {
+            HIRStoreInstruction storeInstruction = new HIRStoreInstruction(sourcePosition, storage, valueToStore);
+            AddInstruction(storeInstruction);
+            return storeInstruction;
+        }
 
         public HIRBoxDynamic BoxDynamic(SourcePosition? sourcePosition, HIRValue valueToBox)
         {
