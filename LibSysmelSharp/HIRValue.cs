@@ -51,6 +51,10 @@
         {
             return false;
         }
+        public virtual bool IsSwitchInstruction()
+        {
+            return false;
+        }
 
         public virtual bool IsCallFunctionInstruction()
         {
@@ -122,6 +126,11 @@
         }
 
         public virtual bool IsPhiSource()
+        {
+            return false;
+        }
+
+        public virtual bool IsDefaultCaseKey()
         {
             return false;
         }

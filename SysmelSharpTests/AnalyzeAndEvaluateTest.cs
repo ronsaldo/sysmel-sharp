@@ -310,6 +310,14 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestSwitchWithCasesInFunction()
+        {
+            Value functionValue = EvaluateString("{:(Integer)n :: Integer | switch: 2 withCases: #{0: -1. 2:-4 . _: 42}}");
+            Assert.IsTrue(functionValue.IsFunctionValue());
+            functionValue.DumpToConsole();
+        }
+
+        [TestMethod]
         public void TestLetWithMacro()
         {
             Value value = EvaluateString("let: #x with: 42. x");

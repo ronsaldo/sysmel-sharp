@@ -18,5 +18,9 @@
         {
             return "constLiteral(" + literal.ToString() + ")"; 
         }
+        public override bool IsDefaultCaseKey()
+        {
+            return literal.IsSymbolValue() && literal.AsSymbol() == "_";
+        }
     }
 }

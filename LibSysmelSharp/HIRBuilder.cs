@@ -45,6 +45,13 @@ namespace LibSysmelSharp
             return branch;
         }
 
+        public HIRSwitch Switch(SourcePosition? sourcePosition, HIRValue switchValue, HIRValue[] caseValues, HIRBasicBlock[] caseBlocks, HIRBasicBlock defaultDestination)
+        {
+            HIRSwitch switchBranch = new HIRSwitch(sourcePosition, switchValue, caseValues, caseBlocks, defaultDestination);
+            AddInstruction(switchBranch);
+            return switchBranch;
+        }
+
         public HIRBuilder CopyWithBasicBlock(HIRBasicBlock newBasicBlock)
         {
             HIRBuilder copy = new HIRBuilder(environment, function);
