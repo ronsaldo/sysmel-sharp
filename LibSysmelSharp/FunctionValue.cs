@@ -209,7 +209,12 @@ namespace LibSysmelSharp
             }
 
             LexicalEnvironment extensionBodyEnvironment = new LexicalEnvironment(activationEnvironment);
-            extensionMethod.methodNode.AnalyzeAndEvaluateInEnvironmentAddingToOwner(extensionBodyEnvironment, instanceValue.instanceValue);
+            if(instanceValue.instanceValue.IsType())
+                extensionMethod.methodNode
+                    .CopyWithSelfType((SysmelType)instanceValue.instanceValue)
+                    .AnalyzeAndEvaluateInEnvironmentAddingToOwner(extensionBodyEnvironment, instanceValue.instanceValue);
+            else
+                extensionMethod.methodNode.AnalyzeAndEvaluateInEnvironmentAddingToOwner(extensionBodyEnvironment, instanceValue.instanceValue);
         }
 
         void ApplyExtensionsToTemplateInstance(TemplateInstance instanceValue)
