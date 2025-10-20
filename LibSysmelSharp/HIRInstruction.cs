@@ -24,7 +24,7 @@ namespace LibSysmelSharp
 
         public override string ToString()
         {
-            return index.ToString();
+            return "%" + index.ToString();
         }
     }
 }

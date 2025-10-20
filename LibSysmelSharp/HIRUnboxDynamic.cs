@@ -13,5 +13,10 @@
         {
             return true;
         }
+
+        public override void DumpToConsole()
+        {
+            Console.WriteLine("  " + ToString() + " := dynamicUnbox " + boxedValue.ToString() + " withType " + type.ToString());
+        }
     }
 }

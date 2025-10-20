@@ -22,5 +22,13 @@ namespace LibSysmelSharp
         {
             return true;
         }
+
+        public override void DumpToConsole()
+        {
+            Console.Write("  " + ToString() + " := call " + function.ToString());
+            foreach (HIRValue value in callArguments)
+                Console.Write(", " + value.ToString());
+            Console.WriteLine();
+        }
     }
 }

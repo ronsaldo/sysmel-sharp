@@ -828,8 +828,9 @@ namespace SysmelSharpTests
             Value loadedValue = reference.LoadValue();
             Assert.IsTrue(loadedValue.IsIntegerValue());
             Assert.AreEqual(10, loadedValue.AsInteger());
-
         }
+
+
         [TestMethod]
         public void TestWhileLoop()
         {
@@ -853,6 +854,29 @@ namespace SysmelSharpTests
             Assert.IsTrue(loadedValue.IsIntegerValue());
             Assert.AreEqual(10, loadedValue.AsInteger());
         }
+
+        [TestMethod]
+        public void TestWhileContinueWithLoopInFunction()
+        {
+            Value functionValue = EvaluateString("{:(Integer)n :: Integer | let: #i mutableWith: 0. while: i < n do: {} continueWith: {i := i + 1}. i}");
+            functionValue.DumpToConsole();
+
+            Value resultValue = EvaluateString("{:(Integer)n :: Integer | let: #i mutableWith: 0. while: i < n do: {} continueWith: {i := i + 1}. i}(20)");
+            Assert.IsTrue(resultValue.IsIntegerValue());
+            Assert.AreEqual(20, resultValue.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestDoContinueWithWhileLoopInFunction()
+        {
+            Value functionValue = EvaluateString("{:(Integer)n :: Integer | let: #i mutableWith: 0. do: {} continueWith: {i := i + 1} while: (i < n). i}");
+            functionValue.DumpToConsole();
+
+            Value resultValue = EvaluateString("{:(Integer)n :: Integer | let: #i mutableWith: 0. do: {} continueWith: {i := i + 1} while: (i < n). i}(20)");
+            Assert.IsTrue(resultValue.IsIntegerValue());
+            Assert.AreEqual(20, resultValue.AsInteger());
+        }
+
 
         [TestMethod]
         public void TestEnumType()

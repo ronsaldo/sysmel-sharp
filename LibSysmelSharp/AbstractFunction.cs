@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace LibSysmelSharp
 {
@@ -29,9 +30,21 @@ namespace LibSysmelSharp
             return isMacro;
         }
 
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            return new HIRImportedFunction(sourcePosition, this);
+        }
+
         public override HIRValue AnalyzeAndBuildIdentifierReference(ParseTreeIdentifierReferenceNode node, HIRBuilder builder)
         {
             return new HIRImportedFunction(node.sourcePosition, this);
+        }
+
+        public override string ToString()
+        {
+            if (name != null)
+                return name;
+            return base.ToString();
         }
     }
 }

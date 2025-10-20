@@ -24,5 +24,10 @@ namespace LibSysmelSharp
         {
             return importedFunction.IsMacroFunction();
         }
+
+        public override string ToString()
+        {
+            return "ImportedFunction(" + importedFunction.ToString() + ")";
+        }
     }
 }

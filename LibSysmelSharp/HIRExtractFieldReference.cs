@@ -22,5 +22,9 @@ namespace LibSysmelSharp
         {
             return true;
         }
+        public override void DumpToConsole()
+        {
+            Console.WriteLine("  " + ToString() + " := from " + aggregate.ToString() + " extractField " + fieldDefinition.ToString());
+        }
     }
 }

@@ -13,5 +13,9 @@
         {
             return true;
         }
+        public override void DumpToConsole()
+        {
+            Console.WriteLine("  " + ToString() + " := alloca " + valueType.ToString());
+        }
     }
 }
