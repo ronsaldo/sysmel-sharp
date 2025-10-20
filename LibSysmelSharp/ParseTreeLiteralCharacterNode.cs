@@ -13,10 +13,13 @@
         {
             return true;
         }
-
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
             return new IntegerValue(sourcePosition, value, Intrinsics.GetSingleton().CharacterType);
+        }
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            return builder.AddLiteral(sourcePosition, AnalyzeAndEvaluateInEnvironment(builder.environment));
         }
     }
 }

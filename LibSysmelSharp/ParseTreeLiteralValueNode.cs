@@ -18,5 +18,9 @@
         {
             return value;
         }
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            return builder.AddLiteral(sourcePosition, value);
+        }
     }
 }

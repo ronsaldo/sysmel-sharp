@@ -14,7 +14,12 @@
             return type;
         }
 
-        public override HIRValue AnalyzeAndBuilderIdentifierReference(ParseTreeIdentifierReferenceNode node, HIRBuilder builder)
+        public override HIRValue AnalyzeAndBuildIdentifierReference(ParseTreeIdentifierReferenceNode node, HIRBuilder builder)
+        {
+            return this;
+        }
+
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
         {
             return this;
         }
@@ -26,6 +31,20 @@
 
 
         public virtual bool IsArgumentValue()
+        {
+            return false;
+        }
+
+        public virtual bool IsBranchInstruction()
+        {
+            return false;
+        }
+        public virtual bool IsConditionalBranchInstruction()
+        {
+            return false;
+        }
+
+        public virtual bool IsCallFunctionInstruction()
         {
             return false;
         }
@@ -63,5 +82,24 @@
             return false;
         }
 
+        public virtual bool IsReturnValue()
+        {
+            return false;
+        }
+
+        public virtual bool IsReturnVoid()
+        {
+            return false;
+        }
+
+        public virtual bool IsTerminator()
+        {
+            return false;
+        }
+
+        public virtual bool IsImportedFunction()
+        {
+            return true;
+        }
     }
 }

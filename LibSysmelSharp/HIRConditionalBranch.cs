@@ -1,0 +1,26 @@
+﻿namespace LibSysmelSharp
+{
+    public class HIRConditionalBranch : HIRInstruction
+    {
+        public HIRValue condition;
+        public HIRBasicBlock trueDestination;
+        public HIRBasicBlock falseDestination;
+
+        public HIRConditionalBranch(SourcePosition? sourcePosition, HIRValue condition, HIRBasicBlock trueDestination, HIRBasicBlock falseDestination) : base(sourcePosition, Intrinsics.GetSingleton().VoidType, null)
+        {
+            this.condition = condition;
+            this.trueDestination = trueDestination;
+            this.falseDestination = falseDestination;
+        }
+
+        public override bool IsConditionalBranchInstruction()
+        {
+            return true;
+        }
+
+        public override bool IsTerminator()
+        {
+            return true;
+        }
+    }
+}

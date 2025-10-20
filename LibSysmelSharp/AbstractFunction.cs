@@ -28,5 +28,10 @@ namespace LibSysmelSharp
         {
             return isMacro;
         }
+
+        public override HIRValue AnalyzeAndBuildIdentifierReference(ParseTreeIdentifierReferenceNode node, HIRBuilder builder)
+        {
+            return new HIRImportedFunction(node.sourcePosition, this);
+        }
     }
 }

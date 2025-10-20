@@ -17,5 +17,9 @@
         {
             return new SymbolValue(sourcePosition, value, Intrinsics.GetSingleton().SymbolType);
         }
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            return builder.AddLiteral(sourcePosition, AnalyzeAndEvaluateInEnvironment(builder.environment));
+        }
     }
 }

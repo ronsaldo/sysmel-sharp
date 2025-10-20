@@ -31,6 +31,13 @@ namespace LibSysmelSharp
             return receiverValue.AnalyzeAndEvaluateMessageSendInEnvironment(this, selectorValue.AsSymbol(), environment);
         }
 
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            HIRValue receiverValue = receiver.AnalyzeAndBuild(builder);
+            Value selectorValue = selector.AnalyzeAndEvaluateInEnvironmentWithExpectedType(builder.environment, Intrinsics.GetSingleton().SymbolType);
+            return receiverValue.AnalyzeAndBuildMessageSendInEnvironment(this, selectorValue.AsSymbol(), builder);
+        }
+
         public override void SplitReceiverForCascade(out ParseTreeNode outReceiver, out ParseTreeNode? firstCascadedMessage)
         {
             outReceiver = receiver;

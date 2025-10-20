@@ -27,6 +27,14 @@ namespace LibSysmelSharp
                 result = expression.AnalyzeAndEvaluateInEnvironment(environment);
             return result;
         }
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            HIRValue result = builder.GetVoidLiteral(sourcePosition);
+            foreach (ParseTreeNode expression in expressions)
+                result = expression.AnalyzeAndBuild(builder);
+            return result;
+        }
+
         public override ParseTreeArgumentDefinitionNode[] ParseAsArgumentDefinitionsInEnvironment(Environment environment)
         {
             int argumentCount = expressions.Length;

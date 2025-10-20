@@ -1,4 +1,6 @@
-﻿namespace LibSysmelSharp
+﻿using System;
+
+namespace LibSysmelSharp
 {
     public class ParseTreeReturnNode : ParseTreeNode
     {
@@ -15,5 +17,16 @@
             throw new SysmelReturnException(resultValue);
         }
 
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            // TODO: Cast into the required type.
+            HIRValue resultValue = resultExpression.AnalyzeAndBuildWithDecayedType(builder);
+            if (resultValue.GetSysmelType().IsVoidType())
+                builder.ReturnVoid(sourcePosition);
+            else
+                builder.ReturnValue(sourcePosition, resultValue);
+
+            return builder.GetVoidLiteral(sourcePosition);
+        }
     }
 }

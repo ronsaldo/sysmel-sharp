@@ -94,15 +94,23 @@ namespace LibSysmelSharp
             HIRBasicBlock entryBlock = new HIRBasicBlock(sourcePosition, "entry");
             hirFunction.AddBasicBlock(entryBlock);
 
-            HIRBuilder allocaBuilder = new HIRBuilder();
+            HIRBuilder allocaBuilder = new HIRBuilder(functionAnalysisEnvironment);
             allocaBuilder.basicBlock = allocaBlock;
 
-            HIRBuilder builder = new HIRBuilder();
+            HIRBuilder builder = new HIRBuilder(functionAnalysisEnvironment);
             builder.allocaBuilder = allocaBuilder;
-            builder.environment = functionAnalysisEnvironment;
             builder.basicBlock = entryBlock;
 
             HIRValue resultValue = definitionBody.AnalyzeAndBuildWithExpectedType(builder, functionAnalysisEnvironment.returnTypeValue);
+
+            allocaBuilder.Branch(sourcePosition, entryBlock);
+            if (!builder.IsLastTerminator())
+            {
+                if (functionAnalysisEnvironment.returnTypeValue.IsVoidType())
+                    builder.ReturnVoid(sourcePosition);
+                else
+                    builder.ReturnValue(sourcePosition,resultValue);
+            }
         }
 
         public override void DumpToConsole()

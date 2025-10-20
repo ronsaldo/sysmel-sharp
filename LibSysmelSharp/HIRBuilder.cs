@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,13 +9,30 @@ namespace LibSysmelSharp
 {
     public class HIRBuilder
     {
-        public Environment? environment;
+        public Environment environment;
         public HIRBasicBlock? basicBlock;
         public HIRBuilder? allocaBuilder;
+
+        public HIRBuilder(Environment environment)
+        {
+            this.environment = environment;
+        }
+
+        public void AddInstruction(HIRInstruction instruction)
+        {
+            Debug.Assert(basicBlock != null);
+            basicBlock.AddIntruction(instruction);
+        }
 
         public HIRValue AddLiteral(SourcePosition? sourcePosition, Value value)
         {
             return new HIRConstantLiteralValue(sourcePosition, value);
+        }
+        public HIRBranch Branch(SourcePosition? sourcePosition, HIRBasicBlock destination)
+        {
+            HIRBranch branch = new HIRBranch(sourcePosition, destination);
+            AddInstruction(branch);
+            return branch;
         }
 
         public HIRValue GetVoidLiteral(SourcePosition? sourcePosition)
@@ -28,17 +46,50 @@ namespace LibSysmelSharp
             if (!storageType.IsPointerLikeType())
                 throw new SysmelException(sourcePosition, "Expected a value with a pointer like type.");
 
-            return new HIRLoadInstruction(sourcePosition, storageType.GetBaseType(), storage);
+            HIRLoadInstruction loadInstruction = new HIRLoadInstruction(sourcePosition, storageType.GetBaseType(), storage);
+            AddInstruction(loadInstruction);
+            return loadInstruction;
         }
+
 
         public HIRBoxDynamic BoxDynamic(SourcePosition? sourcePosition, HIRValue valueToBox)
         {
-            return new HIRBoxDynamic(sourcePosition, valueToBox);
+            HIRBoxDynamic boxInstruction = new HIRBoxDynamic(sourcePosition, valueToBox);
+            AddInstruction(boxInstruction);
+            return boxInstruction;
         }
 
         public HIRUnboxDynamic UnboxDynamic(SourcePosition? sourcePosition, HIRValue boxedValue, SysmelType unboxedType)
         {
-            return new HIRUnboxDynamic(sourcePosition, boxedValue, unboxedType);
+            HIRUnboxDynamic unboxInstruction = new HIRUnboxDynamic(sourcePosition, boxedValue, unboxedType);
+            AddInstruction(unboxInstruction);
+            return unboxInstruction;
+        }
+
+        public HIRCallFunction CallFunction(SourcePosition? sourcePosition, HIRValue function, HIRValue[] callArguments, SysmelType resultType)
+        {
+            HIRCallFunction callInstruction = new HIRCallFunction(sourcePosition, function, callArguments, resultType);
+            AddInstruction(callInstruction);
+            return callInstruction;
+        }
+
+        public HIRReturnValue ReturnValue(SourcePosition? sourcePosition, HIRValue value)
+        {
+            HIRReturnValue instruction = new HIRReturnValue(sourcePosition, value);
+            AddInstruction(instruction);
+            return instruction;
+        }
+
+        public HIRReturnVoid ReturnVoid(SourcePosition? sourcePosition)
+        {
+            HIRReturnVoid instruction = new HIRReturnVoid(sourcePosition);
+            AddInstruction(instruction);
+            return instruction;
+        }
+
+        public bool IsLastTerminator()
+        {
+            return basicBlock != null && basicBlock.IsLastTerminator();
         }
     }
 }

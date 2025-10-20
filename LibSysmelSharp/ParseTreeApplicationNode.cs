@@ -30,6 +30,11 @@ namespace LibSysmelSharp
             return functionalValue.AnalyzeAndEvaluateApplicationInEnvironment(this, environment);
         }
 
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            HIRValue functionalValue = functional.AnalyzeAndBuild(builder);
+            return functionalValue.AnalyzeAndBuildApplication(this, builder);
+        }
         public override ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)
         {
             Debug.Assert(arguments.Length == 1);

@@ -19,6 +19,11 @@ namespace LibSysmelSharp
         {
             return ExpandAsMessageSendSequence().AnalyzeAndEvaluateInEnvironment(environment);
         }
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            return ExpandAsMessageSendSequence().AnalyzeAndBuild(builder);
+        }
+
         public ParseTreeNode ExpandAsMessageSendSequence()
         {
             ParseTreeNode result = operands[0];

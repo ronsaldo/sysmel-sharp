@@ -17,6 +17,10 @@
         {
             return new FloatValue(sourcePosition, value, Intrinsics.GetSingleton().FloatType);
         }
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            return builder.AddLiteral(sourcePosition, AnalyzeAndEvaluateInEnvironment(builder.environment));
+        }
 
     }
 }

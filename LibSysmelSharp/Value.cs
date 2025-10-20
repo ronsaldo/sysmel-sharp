@@ -93,13 +93,26 @@ namespace LibSysmelSharp
         {
             return GetSysmelType().AnalyzeAndEvaluateApplicationInEnvironmentWithFunctional(application, environment, this);
         }
+        public virtual HIRValue AnalyzeAndBuildApplication(ParseTreeApplicationNode application, HIRBuilder builder)
+        {
+            return GetSysmelType().AnalyzeAndBuildApplicationInEnvironmentWithFunctional(application, builder, AnalyzeAndBuild(builder));
+        }
 
         public virtual Value AnalyzeAndEvaluateApplicationInEnvironmentWithFunctional(ParseTreeApplicationNode application, Environment environment, Value functional)
         {
             throw new SysmelException(application.sourcePosition, "Non functional value.");
         }
+        public virtual HIRValue AnalyzeAndBuildApplicationInEnvironmentWithFunctional(ParseTreeApplicationNode application, HIRBuilder builder, HIRValue functional)
+        {
+            throw new SysmelException(application.sourcePosition, "Non functional value.");
+        }
 
         public virtual Value AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(ParseTreeMessageSendNode messageSend, string selector, Environment environment, Value receiver, Value method)
+        {
+            throw new SysmelException(messageSend.sourcePosition, "Found method does not have a functional type.");
+        }
+
+        public virtual HIRValue AnalyzeAndBuildMessageSendWithMethod(ParseTreeMessageSendNode messageSend, string selector, HIRBuilder builder, HIRValue receiver, Value method)
         {
             throw new SysmelException(messageSend.sourcePosition, "Found method does not have a functional type.");
         }
@@ -151,9 +164,37 @@ namespace LibSysmelSharp
             return CastHIRValueToExpectedType(builder, value, expectedType);
         }
 
-        public virtual HIRValue AnalyzeAndBuilderIdentifierReference(ParseTreeIdentifierReferenceNode node, HIRBuilder builder)
+        public virtual HIRValue AnalyzeAndBuildIdentifierReference(ParseTreeIdentifierReferenceNode node, HIRBuilder builder)
         {
             return builder.AddLiteral(node.sourcePosition, this);
+        }
+        public virtual HIRValue AnalyzeAndBuildMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, HIRBuilder builder)
+        {
+            // HACK: Use a macro or something else here.
+            HIRValue receiver = this.AnalyzeAndBuild(builder);
+            if (selector == "yourself")
+                return receiver;
+
+            if (receiver.GetSysmelType().IsReferenceType())
+                receiver = builder.LoadPointer(sourcePosition, receiver);
+
+
+            Value? method = LookupSelector(selector);
+            if (method != null)
+            {
+                if (method.IsFieldDefinition())
+                    return method.AnalyzeAndBuildMessageSendWithMethod(messageSend, selector, builder, receiver, method);
+                
+                SysmelType functionType = method.GetSysmelType();
+                return functionType.AnalyzeAndBuildMessageSendWithMethod(messageSend, selector, builder, receiver, method);
+            }
+
+            /*Value[] argumentValues = new Value[messageSend.arguments.Length];
+            for (int i = 0; i < messageSend.arguments.Length; ++i)
+                argumentValues[i] = messageSend.arguments[i].AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
+            return PerformWithArguments(selector, argumentValues);
+            */
+            throw new NotImplementedException();
         }
 
         public virtual HIRValue CastHIRValueToExpectedType(HIRBuilder builder, HIRValue buildResult, SysmelType? expectedType)

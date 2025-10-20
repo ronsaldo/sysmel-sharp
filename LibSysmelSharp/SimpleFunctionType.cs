@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -69,11 +70,7 @@ namespace LibSysmelSharp
                 macroArguments[i + 1] = application.arguments[i].AnalyzeAndEvaluateMacroArgumentInEnvironment(environment, expectedType);
             }
 
-            Value macroResult = functional.EvaluateWithArguments(macroArguments);
-            if (resultType == Intrinsics.GetSingleton().ParseTreeNodeType)
-                return macroResult.AnalyzeAndEvaluateInEnvironment(environment);
-            else
-                return macroResult.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, resultType);
+            return functional.EvaluateWithArguments(macroArguments);
         }
 
         public Value ExpandMessageMacro(ParseTreeMessageSendNode messageSend, string selector, Environment environment, Value receiver, Value method)
@@ -84,7 +81,13 @@ namespace LibSysmelSharp
         public override Value AnalyzeAndEvaluateApplicationInEnvironmentWithFunctional(ParseTreeApplicationNode application, Environment environment, Value functional)
         {
             if (functional.IsMacroFunction())
-                return ExpandFunctionalMacro(application, environment, functional);
+            {
+                Value macroResult = ExpandFunctionalMacro(application, environment, functional);
+                if (resultType == Intrinsics.GetSingleton().ParseTreeNodeType)
+                    return macroResult.AnalyzeAndEvaluateInEnvironment(environment);
+                else
+                    return macroResult.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, resultType);
+            }
 
             int applicationArgumentCount = application.arguments.Length;
             if (applicationArgumentCount != argumentTypes.Length)
@@ -97,10 +100,39 @@ namespace LibSysmelSharp
             return functional.EvaluateWithArguments(callArguments);
         }
 
+        public override HIRValue AnalyzeAndBuildApplicationInEnvironmentWithFunctional(ParseTreeApplicationNode application, HIRBuilder builder, HIRValue functional)
+        {
+            if(functional.IsMacroFunction())
+            {
+                HIRImportedFunction importedFunction = (HIRImportedFunction)functional;
+                Value macroResult = ExpandFunctionalMacro(application, builder.environment, importedFunction.importedFunction);
+                if (resultType == Intrinsics.GetSingleton().ParseTreeNodeType)
+                    return macroResult.AnalyzeAndBuild(builder);
+                else
+                    return macroResult.AnalyzeAndBuildWithExpectedType(builder, resultType);
+            }
+
+            int applicationArgumentCount = application.arguments.Length;
+            if (applicationArgumentCount != argumentTypes.Length)
+                throw new SysmelException(application.sourcePosition, "Expected " + argumentTypes.Length.ToString() + " arguments instead of" + application.arguments.Length.ToString());
+
+            HIRValue[] callArguments = new HIRValue[argumentTypes.Length];
+            for (int i = 0; i < applicationArgumentCount; ++i)
+                callArguments[i] = application.arguments[i].AnalyzeAndBuildWithExpectedType(builder, argumentTypes[i]);
+
+            return builder.CallFunction(application.sourcePosition, functional, callArguments, resultType);
+        }
+
         public override Value AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(ParseTreeMessageSendNode messageSend, string selector, Environment environment, Value receiver, Value method)
         {
             if (method.IsMacroFunction())
-                return ExpandMessageMacro(messageSend, selector, environment, receiver, method);
+            {
+                Value macroResult = ExpandMessageMacro(messageSend, selector, environment, receiver, method);
+                if (resultType == Intrinsics.GetSingleton().ParseTreeNodeType)
+                    return macroResult.AnalyzeAndEvaluateInEnvironment(environment);
+                else
+                    return macroResult.AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, resultType);
+            }
 
             int messageArgumentCount = messageSend.arguments.Length;
             if (messageArgumentCount + 1 != argumentTypes.Length)
@@ -113,6 +145,30 @@ namespace LibSysmelSharp
                 callArguments[i + 1] = messageSend.arguments[i].AnalyzeAndEvaluateInEnvironmentWithExpectedType(environment, argumentTypes[i + 1]);
 
             return method.EvaluateWithArguments(callArguments);
+        }
+
+        public override HIRValue AnalyzeAndBuildMessageSendWithMethod(ParseTreeMessageSendNode messageSend, string selector, HIRBuilder builder, HIRValue receiver, Value method)
+        {
+            if(method.IsMacroFunction())
+            {
+                Value macroResult =  ExpandMessageMacro(messageSend, selector, builder.environment, receiver, method);
+                if (resultType == Intrinsics.GetSingleton().ParseTreeNodeType)
+                    return macroResult.AnalyzeAndBuild(builder);
+                else
+                    return macroResult.AnalyzeAndBuildWithExpectedType(builder, resultType);
+            }
+
+            int messageArgumentCount = messageSend.arguments.Length;
+            if (messageArgumentCount + 1 != argumentTypes.Length)
+                throw new SysmelException(messageSend.sourcePosition, "Expected " + argumentTypes.Length.ToString() + " arguments instead of" + (messageSend.arguments.Length + 1).ToString());
+
+            HIRValue[] callArguments = new HIRValue[argumentTypes.Length];
+            callArguments[0] = receiver.AnalyzeAndBuildWithExpectedType(builder, argumentTypes[0]);
+            for (int i = 0; i < messageArgumentCount; ++i)
+                callArguments[i + 1] = messageSend.arguments[i].AnalyzeAndBuildWithExpectedType(builder, argumentTypes[i + 1]);
+
+            HIRValue function = method.AnalyzeAndBuildWithDecayedType(builder);
+            return builder.CallFunction(messageSend.sourcePosition, function, callArguments, resultType);
         }
     }
 }

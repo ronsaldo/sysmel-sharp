@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace LibSysmelSharp
@@ -25,11 +26,12 @@ namespace LibSysmelSharp
 
         public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
         {
+            Debug.Assert(builder.environment != null);
             Value? foundValue = builder.environment.LookupRecursively(value);
             if (foundValue == null)
                 throw new SysmelException(sourcePosition, "Failed to find identifier #" + value);
 
-            return foundValue.AnalyzeAndBuilderIdentifierReference(this, builder);
+            return foundValue.AnalyzeAndBuildIdentifierReference(this, builder);
         }
 
         public override ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)

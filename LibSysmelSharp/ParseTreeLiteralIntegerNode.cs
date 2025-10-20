@@ -17,5 +17,9 @@
         {
             return new IntegerValue(sourcePosition, value, Intrinsics.GetSingleton().IntegerType);
         }
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            return builder.AddLiteral(sourcePosition, AnalyzeAndEvaluateInEnvironment(builder.environment));
+        }
     }
 }

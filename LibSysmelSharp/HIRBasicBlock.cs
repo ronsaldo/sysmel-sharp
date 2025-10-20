@@ -37,7 +37,11 @@ namespace LibSysmelSharp
             {
                 firstInstruction = lastInstruction = instruction;
             }
+        }
 
+        public bool IsLastTerminator()
+        {
+            return lastInstruction != null && lastInstruction.IsTerminator();
         }
 
         public override void DumpToConsole()
