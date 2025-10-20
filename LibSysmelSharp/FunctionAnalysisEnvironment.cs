@@ -8,6 +8,7 @@ namespace LibSysmelSharp
         public Dictionary<string, Value> localSymbolTable;
         public HIRFunction hirFunction;
         public SysmelType? returnTypeValue;
+        public HIRValue? receiverValue;
 
         public FunctionAnalysisEnvironment(HIRFunction hirFunction, Environment parent)
         {
@@ -25,6 +26,13 @@ namespace LibSysmelSharp
         {
             if (localSymbolTable.ContainsKey(symbol))
                 return localSymbolTable[symbol];
+
+            if(receiverValue != null)
+            {
+                FieldDefinition? field = receiverValue.LookupFieldName(symbol);
+                if (field != null)
+                    return new ImplicitFieldAccess(null, receiverValue, field);
+            }
 
             return parent.LookupRecursively(symbol);
         }

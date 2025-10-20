@@ -192,7 +192,7 @@ namespace LibSysmelSharp
                 receiver = builder.LoadPointer(sourcePosition, receiver);
 
 
-            Value? method = LookupSelector(selector);
+            Value? method = receiver.LookupSelector(selector);
             if (method != null)
             {
                 if (method.IsFieldDefinition())

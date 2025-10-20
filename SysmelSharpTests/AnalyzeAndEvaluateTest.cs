@@ -374,6 +374,24 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestLetMacroAnalysisAndBuild()
+        {
+            Value function = EvaluateString("{ :: Integer | let: #x with: 42. x}");
+            Assert.IsTrue(function.IsFunctionValue());
+            function.EnsureAnalysis();
+            function.DumpToConsole();
+        }
+
+        [TestMethod]
+        public void TestLetMutableWithMacroAnalysisAndBuild()
+        {
+            Value function = EvaluateString("{ :: Integer | let: #x mutableWith: 42. x := 5. x}");
+            Assert.IsTrue(function.IsFunctionValue());
+            function.EnsureAnalysis();
+            function.DumpToConsole();
+        }
+
+        [TestMethod]
         public void TestListType()
         {
             Value value = EvaluateString("Integer list");

@@ -65,6 +65,13 @@ namespace LibSysmelSharp
             return storeInstruction;
         }
 
+        public HIRExtractFieldReference ExtractFieldReference(SourcePosition? sourcePosition, HIRValue aggregate, FieldDefinition fieldDefinition)
+        {
+            HIRExtractFieldReference instruction = new HIRExtractFieldReference(sourcePosition, aggregate, fieldDefinition);
+            AddInstruction(instruction);
+            return instruction;
+        }
+
         public HIRBoxDynamic BoxDynamic(SourcePosition? sourcePosition, HIRValue valueToBox)
         {
             HIRBoxDynamic boxInstruction = new HIRBoxDynamic(sourcePosition, valueToBox);

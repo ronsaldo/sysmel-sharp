@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LibSysmelSharp
+{
+    public class HIRExtractFieldReference : HIRInstruction
+    {
+        public HIRValue aggregate;
+        public FieldDefinition fieldDefinition;
+
+        public HIRExtractFieldReference(SourcePosition? sourcePosition, HIRValue aggregate, FieldDefinition fieldDefinition)
+            : base(sourcePosition, fieldDefinition.type.Ref(), null)
+        {
+            this.aggregate = aggregate;
+            this.fieldDefinition = fieldDefinition;
+        }
+
+        public override bool IsExtractFieldReference()
+        {
+            return true;
+        }
+    }
+}

@@ -34,7 +34,10 @@
         {
             return false;
         }
-
+        public virtual bool IsSuperArgumentValue()
+        {
+            return false;
+        }
         public virtual bool IsAllocaInstruction()
         {
             return false;
@@ -68,6 +71,12 @@
         {
             return false;
         }
+        
+        public virtual bool IsExtractFieldReference()
+        {
+            return false;
+        }
+
         public virtual bool IsLoadInstruction()
         {
             return false;

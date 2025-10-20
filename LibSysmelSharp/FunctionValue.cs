@@ -78,11 +78,28 @@ namespace LibSysmelSharp
 
             foreach (ArgumentDefinitionValue argumentDef in signature.arguments)
             {
+                string? argumentName = argumentDef.name;
                 HIRArgument hirArgument = new HIRArgument(argumentDef.sourcePosition, argumentDef.type, argumentDef.name);
                 hirFunction.AddArgument(hirArgument);
 
-                if (argumentDef.name != null)
-                    functionAnalysisEnvironment.SetSymbolBinding(argumentDef.name, hirArgument);
+                if (argumentName != null)
+                {
+                    functionAnalysisEnvironment.SetSymbolBinding(argumentName, hirArgument);
+
+                    if(argumentName == "self")
+                    {
+                        functionAnalysisEnvironment.receiverValue = hirArgument;
+                        if(argumentDef.type.IsBehaviorType())
+                        {
+                            BehaviorType receiverBehavior = (BehaviorType)argumentDef.type;
+                            if(receiverBehavior.superclass != null)
+                            {
+                                HIRSuperArgumentValue superArgument = new HIRSuperArgumentValue(argumentDef.sourcePosition, hirArgument, receiverBehavior.superclass, "super");
+                                functionAnalysisEnvironment.SetSymbolBinding("super", superArgument);
+                            }
+                        }
+                    }
+                }
             }
 
             Debug.Assert(signature.resultTypeExpression.IsType());
