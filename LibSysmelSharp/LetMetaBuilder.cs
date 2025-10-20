@@ -28,11 +28,25 @@ namespace LibSysmelSharp
                 typeExpression = messageSend.arguments[0];
             return this;
         }
+        public override HIRValue ExpandMessageSendWithBuilder(ParseTreeMessageSendNode messageSend, string selector, HIRBuilder builder)
+        {
+            if (selector == "mutable")
+                isMutable = true;
+            else if (selector == "type:")
+                typeExpression = messageSend.arguments[0];
+            return new HIRConstantMetaBuilder(sourcePosition, this);
+        }
 
         public override Value AnalyzeAndEvaluateAssignmentInEnvironment(ParseTreeAssignmentNode assignmentNode, Environment environment)
         {
             ParseTreeVariableDefinitionNode varDefinition = new ParseTreeVariableDefinitionNode(assignmentNode.sourcePosition, nameExpression, typeExpression, assignmentNode.value, isMutable);
             return varDefinition.AnalyzeAndEvaluateInEnvironment(environment);
+        }
+
+        public override HIRValue AnalyzeAndBuildAssignment(ParseTreeAssignmentNode assignmentNode, HIRBuilder builder)
+        {
+            ParseTreeVariableDefinitionNode varDefinition = new ParseTreeVariableDefinitionNode(assignmentNode.sourcePosition, nameExpression, typeExpression, assignmentNode.value, isMutable);
+            return varDefinition.AnalyzeAndBuild(builder);
         }
     }
 }

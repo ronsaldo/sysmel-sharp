@@ -24,5 +24,16 @@ namespace LibSysmelSharp
             }
             return base.AnalyzeAndEvaluateMessageSendInEnvironment(messageSend, selector, environment);
         }
+        public override HIRValue AnalyzeAndBuildMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, HIRBuilder builder)
+        {
+            if (name == null && messageSend.arguments.Length == 0)
+            {
+                name = selector;
+                nameExpression = new ParseTreeLiteralSymbolNode(messageSend.selector.sourcePosition, selector);
+                return new HIRConstantMetaBuilder(sourcePosition, this);
+            }
+
+            return base.AnalyzeAndBuildMessageSendInEnvironment(messageSend, selector, builder);
+        }
     }
 }

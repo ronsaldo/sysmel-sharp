@@ -1,5 +1,6 @@
 ﻿using LibSysmelSharp;
 using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SysmelSharpTests
 {
@@ -395,6 +396,15 @@ namespace SysmelSharpTests
             Value value = EvaluateString("let var mutable := 42. var := 5. var + 7");
             Assert.IsTrue(value.IsIntegerValue());
             Assert.AreEqual(12, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestLetMetabuilderAnalysisAndBuilder()
+        {
+            Value function = EvaluateString("{:: Integer | let var := 42. var }");
+            Assert.IsTrue(function.IsFunctionValue());
+            function.EnsureAnalysis();
+            function.DumpToConsole();
         }
 
         [TestMethod]

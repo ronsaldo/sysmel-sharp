@@ -1,4 +1,5 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibSysmelSharp
 {
@@ -23,6 +24,11 @@ namespace LibSysmelSharp
             return this;
         }
 
+        public virtual HIRValue ExpandMessageSendWithBuilder(ParseTreeMessageSendNode messageSend, string selector, HIRBuilder builder)
+        {
+            return new HIRConstantMetaBuilder(sourcePosition, this);
+        }
+
         public override Value AnalyzeAndEvaluateApplicationInEnvironment(ParseTreeApplicationNode application, Environment environment)
         {
             throw new SysmelException(sourcePosition, "Metabuilder does not support functional application");
@@ -33,6 +39,13 @@ namespace LibSysmelSharp
             if (IsSupportedMessageSelector(selector))
                 return ExpandMessageSendInEnvironment(messageSend, selector, environment);
             return base.AnalyzeAndEvaluateMessageSendInEnvironment(messageSend, selector, environment);
+        }
+
+        public override HIRValue AnalyzeAndBuildMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, HIRBuilder builder)
+        {
+            if (IsSupportedMessageSelector(selector))
+                return ExpandMessageSendWithBuilder(messageSend, selector, builder);
+            return base.AnalyzeAndBuildMessageSendInEnvironment(messageSend, selector, builder);
         }
 
         public override SysmelType GetSysmelType()

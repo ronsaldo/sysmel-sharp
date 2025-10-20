@@ -21,5 +21,10 @@ namespace LibSysmelSharp
         {
             return makeInstance(identifierNode.sourcePosition);
         }
+
+        public override HIRValue AnalyzeAndBuildIdentifierReference(ParseTreeIdentifierReferenceNode identifierNode, HIRBuilder builder)
+        {
+            return new HIRConstantMetaBuilder(identifierNode.sourcePosition, (MetaBuilder)makeInstance(identifierNode.sourcePosition));
+        }
     }
 }
