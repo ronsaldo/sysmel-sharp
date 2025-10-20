@@ -24,5 +24,17 @@ namespace LibSysmelSharp
             Environment childEnvironment = new LexicalEnvironment(environment);
             return body.AnalyzeAndEvaluateInEnvironment(childEnvironment);
         }
+
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            Environment oldEnvironment = builder.environment;
+            Environment childEnvironment = new LexicalEnvironment(oldEnvironment);
+            builder.environment = childEnvironment;
+
+            HIRValue result = body.AnalyzeAndBuild(builder);
+
+            builder.environment = oldEnvironment;
+            return result;
+        }
     }
 }
