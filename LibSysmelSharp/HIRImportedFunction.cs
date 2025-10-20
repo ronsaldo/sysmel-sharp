@@ -29,5 +29,14 @@ namespace LibSysmelSharp
         {
             return "ImportedFunction(" + importedFunction.ToString() + ")";
         }
+        public override bool IsCompileTimeFunction()
+        {
+            return importedFunction.IsCompileTimeFunction();
+        }
+
+        public override Value EvaluateWithArguments(Value[] callArguments)
+        {
+            return importedFunction.EvaluateWithArguments(callArguments);
+        }
     }
 }

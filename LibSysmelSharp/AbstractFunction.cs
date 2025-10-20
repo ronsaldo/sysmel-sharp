@@ -12,12 +12,14 @@ namespace LibSysmelSharp
         public SysmelType functionType;
         public string? name;
         public bool isMacro;
+        public bool isCompileTime;
 
-        public AbstractFunction(SourcePosition? sourcePosition, string? name, bool isMacro, SysmelType functionType) : base(sourcePosition)
+        public AbstractFunction(SourcePosition? sourcePosition, string? name, bool isMacro, bool isCompileTime, SysmelType functionType) : base(sourcePosition)
         {
             this.functionType = functionType;
             this.name = name;
             this.isMacro = isMacro;
+            this.isCompileTime = isCompileTime;
         }
 
         public override SysmelType GetSysmelType()
@@ -28,6 +30,10 @@ namespace LibSysmelSharp
         public override bool IsMacroFunction()
         {
             return isMacro;
+        }
+        public override bool IsCompileTimeFunction()
+        {
+            return isCompileTime;
         }
 
         public override HIRValue AnalyzeAndBuild(HIRBuilder builder)

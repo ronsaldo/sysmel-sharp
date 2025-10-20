@@ -13,7 +13,7 @@ namespace LibSysmelSharp
         public PrimitiveFunctionDelegate implementation;
         public Value? owner = null;
 
-        public PrimitiveFunction(string name, bool isMacro, SysmelType functionType, PrimitiveFunctionDelegate implementation) : base(null, name, isMacro, functionType)
+        public PrimitiveFunction(string name, bool isMacro, bool isCompileTime, SysmelType functionType, PrimitiveFunctionDelegate implementation) : base(null, name, isMacro, isCompileTime, functionType)
         {
             this.implementation = implementation;
         }

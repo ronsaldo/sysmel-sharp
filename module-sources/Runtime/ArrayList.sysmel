@@ -68,7 +68,7 @@ at: (Integer)index put: (V)value :: Void.
     data at: index put: value
 }.
 
-ArrayList !{
+#*ArrayList !{
 AsList :: V list.
     let result mutable := V list new: size.
     let i mutable := 0.
@@ -78,7 +78,7 @@ AsList :: V list.
 
     result
 }.
-
+*#
 }.
 }.
 

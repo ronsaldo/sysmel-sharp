@@ -17,6 +17,11 @@ namespace LibSysmelSharp
         {
         }
 
+        public override bool IsInstruction()
+        {
+            return true;
+        }
+
         public override void DumpToConsole()
         {
             Console.WriteLine("  " + ToString());

@@ -439,6 +439,10 @@ namespace LibSysmelSharp
         {
             return false;
         }
+        public virtual bool IsCompileTimeFunction()
+        {
+            return false;
+        }
         public virtual bool IsPointerLikeValue()
         {
             return false;

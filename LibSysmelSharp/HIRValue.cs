@@ -100,6 +100,11 @@
             return false;
         }
 
+        public virtual bool IsInstruction()
+        {
+            return false;
+        }
+
         public virtual bool IsReturnValue()
         {
             return false;

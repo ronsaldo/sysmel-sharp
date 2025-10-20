@@ -1,19 +1,27 @@
 ﻿using System;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibSysmelSharp
 {
+    public delegate SysmelType DependentFunctionTypeResultComputationFunction(HIRValue[] arguments, SysmelType defaultResultType);
+
     public class SimpleFunctionType : AbstractFunctionType
     {
         public SysmelType[] argumentTypes;
         public SysmelType resultType;
+        public DependentFunctionTypeResultComputationFunction? resultTypeComputationFunction;
 
         public SimpleFunctionType(SourcePosition? sourcePosition, SysmelType[] argumentTypes, SysmelType resultType) : base(sourcePosition)
         {
             this.argumentTypes = argumentTypes;
             this.resultType = resultType;
+        }
+
+        public SimpleFunctionType(SourcePosition? sourcePosition, SysmelType[] argumentTypes, SysmelType resultType, DependentFunctionTypeResultComputationFunction resultTypeComputationFunction) : base(sourcePosition)
+        {
+            this.argumentTypes = argumentTypes;
+            this.resultType = resultType;
+            this.resultTypeComputationFunction = resultTypeComputationFunction;
         }
 
         public override bool IsSimpleFunctionType()
@@ -51,6 +59,13 @@ namespace LibSysmelSharp
             foreach(SysmelType arg in argumentTypes)
                 hashCode ^= arg.GetHashCode();
             return hashCode ^ resultType.GetHashCode();
+        }
+
+        SysmelType ComputeResultTypeWithHirArguments(HIRValue[] arguments)
+        {
+            if (resultTypeComputationFunction != null)
+                return resultTypeComputationFunction(arguments, resultType);
+            return resultType;
         }
 
         public Value ExpandFunctionalMacro(ParseTreeApplicationNode application, Environment environment, Value functional)
@@ -120,7 +135,8 @@ namespace LibSysmelSharp
             for (int i = 0; i < applicationArgumentCount; ++i)
                 callArguments[i] = application.arguments[i].AnalyzeAndBuildWithExpectedType(builder, argumentTypes[i]);
 
-            return builder.CallFunction(application.sourcePosition, functional, callArguments, resultType);
+            SysmelType computedResultType = ComputeResultTypeWithHirArguments(callArguments);
+            return builder.CallFunction(application.sourcePosition, functional, callArguments, computedResultType);
         }
 
         public override Value AnalyzeAndEvaluateMessageSendInEnvironmentWithMethod(ParseTreeMessageSendNode messageSend, string selector, Environment environment, Value receiver, Value method)
@@ -168,7 +184,8 @@ namespace LibSysmelSharp
                 callArguments[i + 1] = messageSend.arguments[i].AnalyzeAndBuildWithExpectedType(builder, argumentTypes[i + 1]);
 
             HIRValue function = method.AnalyzeAndBuildWithDecayedType(builder);
-            return builder.CallFunction(messageSend.sourcePosition, function, callArguments, resultType);
+            SysmelType computedResultType = ComputeResultTypeWithHirArguments(callArguments);
+            return builder.CallFunction(messageSend.sourcePosition, function, callArguments, computedResultType);
         }
     }
 }

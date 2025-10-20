@@ -57,23 +57,23 @@
             SysmelType integerType = Intrinsics.GetSingleton().IntegerType;
             SysmelType booleanType = Intrinsics.GetSingleton().BooleanType;
 
-            AddMethod(new PrimitiveFunction("value", false,
+            AddMethod(new PrimitiveFunction("value", false, true,
                 new SimpleFunctionType(null, [this], baseType),
                 (Value[] arguments) => {
                     EnumValue enumValue = (EnumValue)arguments[0];
                     return enumValue.value;
                 }));
-            AddMethod(new PrimitiveFunction("hash", false,
+            AddMethod(new PrimitiveFunction("hash", false, true,
                 new SimpleFunctionType(null, [this], integerType),
                 (Value[] arguments) => {
                     return new IntegerValue(null, arguments[0].GetHashCode(), integerType);
                 }));
-            AddMethod(new PrimitiveFunction("=", false,
+            AddMethod(new PrimitiveFunction("=", false, true,
                 new SimpleFunctionType(null, [this, this], booleanType),
                 (Value[] arguments) => {
                     return BooleanValue.GetWithValue(arguments[0].Equals(arguments[1]));
                 }));
-            AddMethod(new PrimitiveFunction("~=", false,
+            AddMethod(new PrimitiveFunction("~=", false, true,
                 new SimpleFunctionType(null, [this, this], booleanType),
                 (Value[] arguments) => {
                     return BooleanValue.GetWithValue(!arguments[0].Equals(arguments[1]));

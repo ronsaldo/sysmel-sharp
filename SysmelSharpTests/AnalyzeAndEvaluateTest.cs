@@ -453,6 +453,32 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestListTypeBasicNewInFunction()
+        {
+            Value functionValue = EvaluateString("{:(Integer)n :: Integer list | Integer list basicNew: n}");
+            functionValue.DumpToConsole();
+
+            Value value = EvaluateString("{:(Integer)n :: Integer list | Integer list basicNew: n}(42)");
+            Assert.IsTrue(value.IsListValue());
+
+            ListValue list = (ListValue)value;
+            Assert.AreEqual(list.elements.Length, 42);
+        }
+
+        [TestMethod]
+        public void TestListTypeNewInFunction()
+        {
+            Value functionValue = EvaluateString("{:(Integer)n :: Integer list | Integer list new: n}");
+            functionValue.DumpToConsole();
+
+            Value value = EvaluateString("{:(Integer)n :: Integer list | Integer list new: n}(42)");
+            Assert.IsTrue(value.IsListValue());
+
+            ListValue list = (ListValue)value;
+            Assert.AreEqual(list.elements.Length, 42);
+        }
+
+        [TestMethod]
         public void TestPointerType()
         {
             Value value = EvaluateString("Integer pointer");

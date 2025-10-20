@@ -110,11 +110,13 @@ namespace LibSysmelSharp
             return unboxInstruction;
         }
 
-        public HIRCallFunction CallFunction(SourcePosition? sourcePosition, HIRValue function, HIRValue[] callArguments, SysmelType resultType)
+        public HIRValue  CallFunction(SourcePosition? sourcePosition, HIRValue function, HIRValue[] callArguments, SysmelType resultType)
         {
             HIRCallFunction callInstruction = new HIRCallFunction(sourcePosition, function, callArguments, resultType);
-            AddInstruction(callInstruction);
-            return callInstruction;
+            HIRValue simplified = callInstruction.SimplifyWithBuilder(this);
+            if(simplified == callInstruction)
+                AddInstruction((HIRInstruction)simplified);
+            return simplified;
         }
 
         public HIRReturnValue ReturnValue(SourcePosition? sourcePosition, HIRValue value)

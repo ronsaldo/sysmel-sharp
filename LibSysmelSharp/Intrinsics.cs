@@ -262,7 +262,7 @@ namespace LibSysmelSharp
 
         void RegisterControlFlowMacros()
         {
-            AddMethod(new PrimitiveFunction("if:then:else:", true,
+            AddMethod(new PrimitiveFunction("if:then:else:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -271,7 +271,7 @@ namespace LibSysmelSharp
                     ParseTreeNode falseExpression = (ParseTreeNode)arguments[3];
                     return new ParseTreeIfSelectionNode(context.sourcePosition, condition, trueExpression, falseExpression);
                 }));
-            AddMethod(new PrimitiveFunction("if:then:", true,
+            AddMethod(new PrimitiveFunction("if:then:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -279,7 +279,7 @@ namespace LibSysmelSharp
                     ParseTreeNode trueExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeIfSelectionNode(context.sourcePosition, condition, trueExpression, null);
                 }));
-            AddMethod(new PrimitiveFunction("switch:withCases:", true,
+            AddMethod(new PrimitiveFunction("switch:withCases:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -287,7 +287,7 @@ namespace LibSysmelSharp
                     ParseTreeNode cases = (ParseTreeNode)arguments[2];
                     return new ParseTreeSwitchNode(context.sourcePosition, value, cases);
                 }));
-            AddMethod(new PrimitiveFunction("while:do:", true,
+            AddMethod(new PrimitiveFunction("while:do:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -295,7 +295,7 @@ namespace LibSysmelSharp
                     ParseTreeNode bodyExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeWhileLoopNode(context.sourcePosition, condition, bodyExpression, null);
                 }));
-            AddMethod(new PrimitiveFunction("while:do:continueWith:", true,
+            AddMethod(new PrimitiveFunction("while:do:continueWith:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -304,7 +304,7 @@ namespace LibSysmelSharp
                     ParseTreeNode continueExpression = (ParseTreeNode)arguments[3];
                     return new ParseTreeWhileLoopNode(context.sourcePosition, condition, bodyExpression, continueExpression);
                 }));
-            AddMethod(new PrimitiveFunction("do:while:", true,
+            AddMethod(new PrimitiveFunction("do:while:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -312,7 +312,7 @@ namespace LibSysmelSharp
                     ParseTreeNode condition = (ParseTreeNode)arguments[2];
                     return new ParseTreeDoWhileLoopNode(context.sourcePosition, bodyExpression, null, condition);
                 }));
-            AddMethod(new PrimitiveFunction("do:continueWith:while:", true,
+            AddMethod(new PrimitiveFunction("do:continueWith:while:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -323,21 +323,21 @@ namespace LibSysmelSharp
                 }));
 
 
-            AddMethod(new PrimitiveFunction("return:", true,
+            AddMethod(new PrimitiveFunction("return:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
                     ParseTreeNode resultExpression = (ParseTreeNode)arguments[1];
                     return new ParseTreeReturnNode(context.sourcePosition, resultExpression);
                 }));
-            AddMethod(new PrimitiveFunction("assert:", true,
+            AddMethod(new PrimitiveFunction("assert:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
                     ParseTreeNode conditionExpression = (ParseTreeNode)arguments[1];
                     return new ParseTreeAssertNode(context.sourcePosition, conditionExpression);
                 }));
-            AddMethod(new PrimitiveFunction("error:", true,
+            AddMethod(new PrimitiveFunction("error:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -348,7 +348,7 @@ namespace LibSysmelSharp
 
         void RegisterDefinitionMacros()
         {
-            AddMethod(new PrimitiveFunction("let:with:", true,
+            AddMethod(new PrimitiveFunction("let:with:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -356,7 +356,7 @@ namespace LibSysmelSharp
                     ParseTreeNode initialValueExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeVariableDefinitionNode(context.sourcePosition, nameExpression, null, initialValueExpression, false);
                 }));
-            AddMethod(new PrimitiveFunction("let:mutableWith:", true,
+            AddMethod(new PrimitiveFunction("let:mutableWith:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -364,7 +364,7 @@ namespace LibSysmelSharp
                     ParseTreeNode initialValueExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeVariableDefinitionNode(context.sourcePosition, nameExpression, null, initialValueExpression, true);
                 }));
-            AddMethod(new PrimitiveFunction("Function:withArguments:resultType:definition:", true,
+            AddMethod(new PrimitiveFunction("Function:withArguments:resultType:definition:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -378,7 +378,7 @@ namespace LibSysmelSharp
                     ParseTreeFunctionalSignatureNode signature = new ParseTreeFunctionalSignatureNode(context.sourcePosition, argumentDefinitions, resultTypeExpression, null, false);
                     return new ParseTreeFunctionNode(context.sourcePosition, nameExpression, signature, bodyExpression);
                 }));
-            AddMethod(new PrimitiveFunction("Function:withArguments:definition:", true,
+            AddMethod(new PrimitiveFunction("Function:withArguments:definition:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -391,7 +391,7 @@ namespace LibSysmelSharp
                     ParseTreeFunctionalSignatureNode signature = new ParseTreeFunctionalSignatureNode(context.sourcePosition, argumentDefinitions, null, null, false);
                     return new ParseTreeFunctionNode(context.sourcePosition, nameExpression, signature, bodyExpression);
                 }));
-            AddMethod(new PrimitiveFunction("Enum:withBaseType:values:", true,
+            AddMethod(new PrimitiveFunction("Enum:withBaseType:values:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -400,7 +400,7 @@ namespace LibSysmelSharp
                     ParseTreeNode values = (ParseTreeNode)arguments[3];
                     return new ParseTreeEnumDefinitionNode(context.sourcePosition, nameExpression, baseType, values);
                 }));
-            AddMethod(new PrimitiveFunction("Record:withFields:", true,
+            AddMethod(new PrimitiveFunction("Record:withFields:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -408,7 +408,7 @@ namespace LibSysmelSharp
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeRecordDefinitionNode(context.sourcePosition, nameExpression, fieldsExpression);
                 }));
-            AddMethod(new PrimitiveFunction("RecordWithFields:", true,
+            AddMethod(new PrimitiveFunction("RecordWithFields:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -416,7 +416,7 @@ namespace LibSysmelSharp
                     return new ParseTreeRecordDefinitionNode(context.sourcePosition, null, fieldsExpression);
                 }));
 
-            AddMethod(new PrimitiveFunction("Class:withFields:", true,
+            AddMethod(new PrimitiveFunction("Class:withFields:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -424,7 +424,7 @@ namespace LibSysmelSharp
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeClassDefinitionNode(context.sourcePosition, nameExpression, null, null, fieldsExpression);
                 }));
-            AddMethod(new PrimitiveFunction("Class:withSuperclass:fields:", true,
+            AddMethod(new PrimitiveFunction("Class:withSuperclass:fields:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -433,14 +433,14 @@ namespace LibSysmelSharp
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[3];
                     return new ParseTreeClassDefinitionNode(context.sourcePosition, nameExpression, superclassExpression, null, fieldsExpression);
                 }));
-            AddMethod(new PrimitiveFunction("ClassWithFields:", true,
+            AddMethod(new PrimitiveFunction("ClassWithFields:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[1];
                     return new ParseTreeClassDefinitionNode(context.sourcePosition, null, null, null, fieldsExpression);
                 }));
-            AddMethod(new PrimitiveFunction("ClassWithSuperclass:fields:", true,
+            AddMethod(new PrimitiveFunction("ClassWithSuperclass:fields:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -448,7 +448,7 @@ namespace LibSysmelSharp
                     ParseTreeNode fieldsExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeClassDefinitionNode(context.sourcePosition, null, superclassExpression, null, fieldsExpression);
                 }));
-            AddMethod(new PrimitiveFunction("namespace:definition:", true,
+            AddMethod(new PrimitiveFunction("namespace:definition:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -456,7 +456,7 @@ namespace LibSysmelSharp
                     ParseTreeNode bodyExpression = (ParseTreeNode)arguments[2];
                     return new ParseTreeNamespaceNode(context.sourcePosition, nameExpression, bodyExpression);
                 }));
-            AddMethod(new PrimitiveFunction("ForAll:in:withDefinition:", true,
+            AddMethod(new PrimitiveFunction("ForAll:in:withDefinition:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -469,7 +469,7 @@ namespace LibSysmelSharp
                     return new ParseTreeFunctionNode(context.sourcePosition, nameExpression, signature, bodyExpression);
 
                 }));
-            AddMethod(new PrimitiveFunction("public:", true,
+            AddMethod(new PrimitiveFunction("public:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -477,7 +477,7 @@ namespace LibSysmelSharp
                     return new ParseTreePublicNode(context.sourcePosition, exportListExpression);
                 }));
 
-            AddMethod(new PrimitiveFunction("loadFileOnce:", true,
+            AddMethod(new PrimitiveFunction("loadFileOnce:", true, true,
                 new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType], ParseTreeNodeType),
                 (Value[] arguments) => {
                     MacroContextValue context = (MacroContextValue)arguments[0];
@@ -488,41 +488,41 @@ namespace LibSysmelSharp
 
         void RegisterIntegerTypePrimitives(NominalType integerType)
         {
-            integerType.AddMethod(new PrimitiveFunction("negated", false,
+            integerType.AddMethod(new PrimitiveFunction("negated", false, true,
                 new SimpleFunctionType(null, [ integerType ], integerType),
                 (Value[] arguments) => {
                     return new IntegerValue(arguments[0].sourcePosition, -arguments[0].AsInteger(), integerType);
                 }));
 
-            integerType.AddMethod(new PrimitiveFunction("+", false,
+            integerType.AddMethod(new PrimitiveFunction("+", false, true,
                 new SimpleFunctionType(null, [ integerType, integerType ], integerType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return new IntegerValue(arguments[0].sourcePosition, leftValue + rightValue, integerType);
                 }));
-            integerType.AddMethod(new PrimitiveFunction("-", false,
+            integerType.AddMethod(new PrimitiveFunction("-", false, true,
                 new SimpleFunctionType(null, [ integerType, integerType ], integerType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return new IntegerValue(arguments[0].sourcePosition, leftValue - rightValue, integerType);
                 }));
-            integerType.AddMethod(new PrimitiveFunction("*", false,
+            integerType.AddMethod(new PrimitiveFunction("*", false, true,
                 new SimpleFunctionType(null, [integerType, integerType ], integerType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return new IntegerValue(arguments[0].sourcePosition, leftValue * rightValue, integerType);
                 }));
-            integerType.AddMethod(new PrimitiveFunction("//", false,
+            integerType.AddMethod(new PrimitiveFunction("//", false, true,
                 new SimpleFunctionType(null, [integerType, integerType ], integerType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return new IntegerValue(arguments[0].sourcePosition, leftValue / rightValue, integerType);
                 }));
-            integerType.AddMethod(new PrimitiveFunction("%", false,
+            integerType.AddMethod(new PrimitiveFunction("%", false, true,
                 new SimpleFunctionType(null, [integerType, integerType], integerType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
@@ -530,42 +530,42 @@ namespace LibSysmelSharp
                     return new IntegerValue(arguments[0].sourcePosition, leftValue % rightValue, integerType);
                 }));
 
-            integerType.AddMethod(new PrimitiveFunction("=", false,
+            integerType.AddMethod(new PrimitiveFunction("=", false, true,
                 new SimpleFunctionType(null, [integerType, integerType], BooleanType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return BooleanValue.GetWithValue(leftValue == rightValue);
                 }));
-            integerType.AddMethod(new PrimitiveFunction("~=", false,
+            integerType.AddMethod(new PrimitiveFunction("~=", false, true,
                 new SimpleFunctionType(null, [integerType, integerType], BooleanType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return BooleanValue.GetWithValue(leftValue != rightValue);
                 }));
-            integerType.AddMethod(new PrimitiveFunction("<", false,
+            integerType.AddMethod(new PrimitiveFunction("<", false, true,
                 new SimpleFunctionType(null, [integerType, integerType], BooleanType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return BooleanValue.GetWithValue(leftValue < rightValue);
                 }));
-            integerType.AddMethod(new PrimitiveFunction("<=", false,
+            integerType.AddMethod(new PrimitiveFunction("<=", false, true,
                 new SimpleFunctionType(null, [integerType, integerType], BooleanType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return BooleanValue.GetWithValue(leftValue <= rightValue);
                 }));
-            integerType.AddMethod(new PrimitiveFunction(">", false,
+            integerType.AddMethod(new PrimitiveFunction(">", false, true,
                 new SimpleFunctionType(null, [integerType, integerType], BooleanType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return BooleanValue.GetWithValue(leftValue > rightValue);
                 }));
-            integerType.AddMethod(new PrimitiveFunction(">=", false,
+            integerType.AddMethod(new PrimitiveFunction(">=", false, true,
                 new SimpleFunctionType(null, [integerType, integerType], BooleanType),
                 (Value[] arguments) => {
                     long leftValue = arguments[0].AsInteger();
@@ -575,7 +575,7 @@ namespace LibSysmelSharp
         }
         void RegisterFunctionPrimitives()
         {
-            FunctionType.AddMethod(new PrimitiveFunction("dump", false,
+            FunctionType.AddMethod(new PrimitiveFunction("dump", false, false,
                 new SimpleFunctionType(null, [FunctionType], VoidType),
                 (Value[] arguments) => {
                     Value functionValue = arguments[0];
@@ -588,28 +588,28 @@ namespace LibSysmelSharp
 
         void RegisterStringPrimitives()
         {
-            StringType.AddMethod(new PrimitiveFunction("=", false,
+            StringType.AddMethod(new PrimitiveFunction("=", false, true,
                 new SimpleFunctionType(null, [StringType, StringType], StringType),
                 (Value[] arguments) => {
                     string leftString = arguments[0].AsString();
                     string rightString = arguments[1].AsString();
                     return BooleanValue.GetWithValue(leftString == rightString);
                 }));
-            StringType.AddMethod(new PrimitiveFunction("~=", false,
+            StringType.AddMethod(new PrimitiveFunction("~=", false, true,
                 new SimpleFunctionType(null, [StringType, StringType], StringType),
                 (Value[] arguments) => {
                     string leftString = arguments[0].AsString();
                     string rightString = arguments[1].AsString();
                     return BooleanValue.GetWithValue(leftString != rightString);
                 }));
-            StringType.AddMethod(new PrimitiveFunction("--", false,
+            StringType.AddMethod(new PrimitiveFunction("--", false, true,
                 new SimpleFunctionType(null, [StringType, StringType], StringType),
                 (Value[] arguments) => {
                     string leftString = arguments[0].AsString();
                     string rightString = arguments[1].AsString();
                     return new StringValue(null, leftString + rightString, StringType);
                 }));
-            StringType.AddMethod(new PrimitiveFunction("size", false,
+            StringType.AddMethod(new PrimitiveFunction("size", false, true,
                 new SimpleFunctionType(null, [StringType], IntegerType),
                 (Value[] arguments) => {
                     string str = arguments[0].AsString();
@@ -620,22 +620,22 @@ namespace LibSysmelSharp
 
         void RegisterTypePrimitives()
         {
-            TypeUniverse0.AddMethod(new PrimitiveFunction("list", false,
+            TypeUniverse0.AddMethod(new PrimitiveFunction("list", false, true,
                 new SimpleFunctionType(null, [TypeUniverse0], TypeUniverse0),
                 (Value[] arguments) => {
                     return ((SysmelType)arguments[0]).ListOf();
                 }));
-            TypeUniverse0.AddMethod(new PrimitiveFunction("pointer", false,
+            TypeUniverse0.AddMethod(new PrimitiveFunction("pointer", false, true,
                 new SimpleFunctionType(null, [TypeUniverse0], TypeUniverse0),
                 (Value[] arguments) => {
                     return ((SysmelType)arguments[0]).Pointer();
                 }));
-            TypeUniverse0.AddMethod(new PrimitiveFunction("ref", false,
+            TypeUniverse0.AddMethod(new PrimitiveFunction("ref", false, true,
                 new SimpleFunctionType(null, [TypeUniverse0], TypeUniverse0),
                 (Value[] arguments) => {
                     return ((SysmelType)arguments[0]).Ref();
                 }));
-            TypeUniverse0.AddMethod(new PrimitiveFunction("=>", false,
+            TypeUniverse0.AddMethod(new PrimitiveFunction("=>", false, true,
                 new SimpleFunctionType(null, [TypeUniverse0, TypeUniverse0], TypeUniverse0),
                 (Value[] arguments) => {
                     SysmelType argumentType = (SysmelType)arguments[0];
@@ -644,26 +644,26 @@ namespace LibSysmelSharp
                 }));
 
             // TODO: Use a proper dependent type here
-            TypeUniverse0.AddMethod(new PrimitiveFunction("basicNew", false,
+            TypeUniverse0.AddMethod(new PrimitiveFunction("basicNew", false, false,
                 new SimpleFunctionType(null, [TypeUniverse0], DynamicType),
                 (Value[] arguments) => {
                     SysmelType selfType = (SysmelType)arguments[0];
                     return selfType.BasicNew();
                 }));
-            TypeUniverse0.AddMethod(new PrimitiveFunction("basicNew:", false,
+            TypeUniverse0.AddMethod(new PrimitiveFunction("basicNew:", false, false,
                 new SimpleFunctionType(null, [TypeUniverse0, IntegerType], DynamicType),
                 (Value[] arguments) => {
                     SysmelType selfType = (SysmelType)arguments[0];
                     long size = arguments[1].AsInteger();
                     return selfType.BasicNewWithSize(size);
                 }));
-            TypeUniverse0.AddMethod(new PrimitiveFunction("new", false,
+            TypeUniverse0.AddMethod(new PrimitiveFunction("new", false, false,
                 new SimpleFunctionType(null, [TypeUniverse0], DynamicType),
                 (Value[] arguments) => {
                     SysmelType selfType = (SysmelType)arguments[0];
                     return selfType.New();
                 }));
-            TypeUniverse0.AddMethod(new PrimitiveFunction("new:", false,
+            TypeUniverse0.AddMethod(new PrimitiveFunction("new:", false, false,
                 new SimpleFunctionType(null, [TypeUniverse0, IntegerType], DynamicType),
                 (Value[] arguments) => {
                     SysmelType selfType = (SysmelType)arguments[0];
@@ -674,26 +674,26 @@ namespace LibSysmelSharp
 
         void RegisterIOPrimitive()
         {
-            AddMethod(new PrimitiveFunction("write", false,
+            AddMethod(new PrimitiveFunction("write", false, false,
                 new SimpleFunctionType(null, [DynamicType], VoidType),
                 (Value[] arguments) => {
                     System.Console.Write(arguments[0].AsString());
                     return VoidValue.GetSingleton();
                 }));
-            AddMethod(new PrimitiveFunction("writeLine", false,
+            AddMethod(new PrimitiveFunction("writeLine", false, false,
                 new SimpleFunctionType(null, [DynamicType], VoidType),
                 (Value[] arguments) => {
                     System.Console.WriteLine(arguments[0].AsString());
                     return VoidValue.GetSingleton();
                 }));
 
-            AddMethod(new PrimitiveFunction("print", false,
+            AddMethod(new PrimitiveFunction("print", false, false,
                 new SimpleFunctionType(null, [DynamicType], VoidType),
                 (Value[] arguments) => {
                     System.Console.Write(arguments[0].ToString());
                     return VoidValue.GetSingleton();
                 }));
-            AddMethod(new PrimitiveFunction("printLine", false,
+            AddMethod(new PrimitiveFunction("printLine", false, false,
                 new SimpleFunctionType(null, [DynamicType], VoidType),
                 (Value[] arguments) => {
                     System.Console.WriteLine(arguments[0].ToString());
@@ -702,17 +702,17 @@ namespace LibSysmelSharp
         }
         void RegisterObjectTypePrimitives()
         {
-            ProtoObjectClassType.AddMethod(new PrimitiveFunction("initialize", false,
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("initialize", false, false,
                 new SimpleFunctionType(null, [ProtoObjectClassType], VoidType),
                 (Value[] arguments) => {
                     return VoidValue.GetSingleton();
                 }));
-            ProtoObjectClassType.AddMethod(new PrimitiveFunction("yourself", false,
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("yourself", false, false,
                 new SimpleFunctionType(null, [ProtoObjectClassType], ProtoObjectClassType),
                 (Value[] arguments) => {
                     return arguments[0];
                 }));
-            ProtoObjectClassType.AddMethod(new PrimitiveFunction("class", false,
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("class", false, false,
                 new SimpleFunctionType(null, [ProtoObjectClassType], BehaviorClassType),
                 (Value[] arguments) => {
                     SysmelType type = arguments[0].GetSysmelType();
@@ -721,13 +721,13 @@ namespace LibSysmelSharp
                 }));
 
             // TODO: use a dependent type for the new result.
-            BehaviorClassType.AddMethod(new PrimitiveFunction("basicNew", false,
+            BehaviorClassType.AddMethod(new PrimitiveFunction("basicNew", false, false,
                 new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType),
                 (Value[] arguments) => {
                     BehaviorType behavior = (BehaviorType)arguments[0];
                     return behavior.BasicNew();
                 }));
-            BehaviorClassType.AddMethod(new PrimitiveFunction("new", false,
+            BehaviorClassType.AddMethod(new PrimitiveFunction("new", false, false,
                 new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType),
                 (Value[] arguments) => {
                     BehaviorType behavior = (BehaviorType)arguments[0];

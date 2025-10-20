@@ -30,6 +30,11 @@
             return NilValue.GetSingleton();
         }
 
+        public override string ToString()
+        {
+            return baseType.ToString() + " list";
+        }
+
         public override Value BasicNewWithSize(long size)
         {
             Value[] listValues = new Value[size];
@@ -57,20 +62,20 @@
 
             methodDictionary = new Dictionary<string, Value>();
 
-            AddMethod(new PrimitiveFunction("size", false,
+            AddMethod(new PrimitiveFunction("size", false, true,
                 new SimpleFunctionType(null, [this], integerType),
                 (Value[] arguments) => {
                     ListValue list = (ListValue)arguments[0];
                     return new IntegerValue(null, list.elements.Length, integerType);
                 }));
-            AddMethod(new PrimitiveFunction("basicAt:", false,
+            AddMethod(new PrimitiveFunction("basicAt:", false, false,
                 new SimpleFunctionType(null, [this, integerType], baseType),
                 (Value[] arguments) => {
                     ListValue list = (ListValue)arguments[0];
                     long index = arguments[1].AsInteger();
                     return list.elements[index];
                 }));
-            AddMethod(new PrimitiveFunction("basicAt:put:", false,
+            AddMethod(new PrimitiveFunction("basicAt:put:", false, false,
                 new SimpleFunctionType(null, [this, integerType, baseType], baseType),
                 (Value[] arguments) => {
                     ListValue list = (ListValue)arguments[0];
@@ -80,14 +85,14 @@
                     list.elements[index] = valueToStore;
                     return list;
                 }));
-            AddMethod(new PrimitiveFunction("at:", false,
+            AddMethod(new PrimitiveFunction("at:", false, false,
                 new SimpleFunctionType(null, [this, integerType], baseType),
                 (Value[] arguments) => {
                     ListValue list = (ListValue)arguments[0];
                     long index = arguments[1].AsInteger();
                     return list.elements[index];
                 }));
-            AddMethod(new PrimitiveFunction("at:put:", false,
+            AddMethod(new PrimitiveFunction("at:put:", false, false,
                 new SimpleFunctionType(null, [this, integerType, baseType], baseType),
                 (Value[] arguments) => {
                     ListValue list = (ListValue)arguments[0];
