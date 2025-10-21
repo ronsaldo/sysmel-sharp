@@ -2,6 +2,8 @@
 {
     public class HIRCapture : HIRFunctionLocalValue
     {
+        public HIRValue? sourceValue;
+
         public HIRCapture(SourcePosition? sourcePosition, SysmelType type, string? name) : base(sourcePosition, type, name)
         {
         }

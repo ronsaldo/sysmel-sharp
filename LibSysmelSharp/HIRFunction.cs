@@ -11,12 +11,14 @@ namespace LibSysmelSharp
         public HIRBasicBlock? lastBlock;
 
         public List<HIRValue>? enumeratedInstructions;
+        public FunctionValue? sourceFunctionValue;
 
-        public HIRFunction(SourcePosition? sourcePosition, string?name, SysmelType type) : base(sourcePosition, type)
+        public HIRFunction(SourcePosition? sourcePosition, string?name, SysmelType type, FunctionValue? sourceFunctionValue) : base(sourcePosition, type)
         {
             this.name = name;
-            arguments = new List<HIRArgument>();
-            captures = new List<HIRCapture>();
+            this.arguments = new List<HIRArgument>();
+            this.captures = new List<HIRCapture>();
+            this.sourceFunctionValue = sourceFunctionValue;
         }
 
         public void AddArgument(HIRArgument argument)

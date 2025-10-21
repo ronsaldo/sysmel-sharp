@@ -15,5 +15,10 @@ namespace LibSysmelSharp
         {
             this.name = name;
         }
+
+        public override bool IsCapturableValue()
+        {
+            return true;
+        }
     }
 }

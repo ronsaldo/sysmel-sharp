@@ -15,5 +15,10 @@
         {
             return builder.ExtractFieldReference(node.sourcePosition, aggregate, fieldDefinition);
         }
+
+        public override bool IsImplicitFieldAccess()
+        {
+            return true;
+        }
     }
 }

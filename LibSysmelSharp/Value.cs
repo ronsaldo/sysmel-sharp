@@ -336,6 +336,10 @@ namespace LibSysmelSharp
         {
             return false;
         }
+        public virtual bool IsImplicitFieldAccess()
+        {
+            return false;
+        }
 
         public virtual bool IsImmutableDictionaryValue()
         {
@@ -510,6 +514,11 @@ namespace LibSysmelSharp
         public virtual SysmelType AsSelfTypeWithDefaultType(SysmelType defaultResultType)
         {
             return defaultResultType;
+        }
+
+        public virtual bool IsCapturableValue()
+        {
+            return false;
         }
 
         public virtual void DumpToConsole()

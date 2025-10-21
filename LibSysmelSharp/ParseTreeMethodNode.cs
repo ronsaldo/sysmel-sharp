@@ -22,7 +22,7 @@
         {
             DependentFunctionType functionTypeWithSignature = (DependentFunctionType)functionalSignature.AnalyzeAndEvaluateInEnvironment(environment);
 
-            FunctionValue functionValue = new FunctionValue(sourcePosition, selector, functionTypeWithSignature, environment, body);
+            FunctionValue functionValue = new FunctionValue(sourcePosition, selector, false, false, functionTypeWithSignature, environment, body);
 
             if (owner != null)
                 owner.WithSelectorAddMethod(selector, functionValue);

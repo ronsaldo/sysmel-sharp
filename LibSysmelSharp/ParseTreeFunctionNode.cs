@@ -34,7 +34,7 @@ namespace LibSysmelSharp
                 nameSymbolValue = nameValue.AsSymbol();
             }
 
-            FunctionValue functionValue = new FunctionValue(sourcePosition, nameSymbolValue, functionTypeWithSignature, environment, body);
+            FunctionValue functionValue = new FunctionValue(sourcePosition, nameSymbolValue, false, false, functionTypeWithSignature, environment, body);
             if (nameSymbolValue != null)
                 environment.SetSymbolBinding(nameSymbolValue, functionValue);
             functionValue.EnqueuePendingAnalysis();

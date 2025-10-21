@@ -9,12 +9,17 @@ namespace LibSysmelSharp
         public HIRFunction hirFunction;
         public SysmelType? returnTypeValue;
         public HIRValue? receiverValue;
+        
+        public List<HIRCapture> captures;
+        public Dictionary<string, Value> captureDictionary;
 
         public FunctionAnalysisEnvironment(HIRFunction hirFunction, Environment parent)
         {
             this.parent = parent;
             this.localSymbolTable = new Dictionary<string, Value>();
             this.hirFunction = hirFunction;
+            this.captures = new List<HIRCapture>();
+            this.captureDictionary = new Dictionary<string, Value> ();
         }
 
         public override void SetSymbolBinding(string symbol, Value binding)
@@ -27,14 +32,35 @@ namespace LibSysmelSharp
             if (localSymbolTable.ContainsKey(symbol))
                 return localSymbolTable[symbol];
 
-            if(receiverValue != null)
+            if (captureDictionary.ContainsKey(symbol))
+                return captureDictionary[symbol];   
+
+            if (receiverValue != null)
             {
                 FieldDefinition? field = receiverValue.LookupFieldName(symbol);
                 if (field != null)
                     return new ImplicitFieldAccess(null, receiverValue, field);
             }
 
-            return parent.LookupRecursively(symbol);
+            Value? parentValue = parent.LookupRecursively(symbol);
+            if (parentValue == null)
+                return null;
+
+            if (!parentValue.IsCapturableValue())
+                return parentValue;
+
+            if (parentValue.IsImplicitFieldAccess())
+            {
+                throw new NotImplementedException();
+            }
+
+            HIRCapture newCapture = new HIRCapture(null, parentValue.GetSysmelType(), null);
+            newCapture.sourceValue = (HIRValue)parentValue;
+
+            captures.Add(newCapture);
+            captureDictionary[symbol] = newCapture;
+            hirFunction.AddCapture(newCapture);
+            return newCapture;
         }
         public override Namespace? LookNamespace()
         {

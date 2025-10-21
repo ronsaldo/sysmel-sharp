@@ -50,7 +50,7 @@ namespace LibSysmelSharp
         {
             if (name != null)
                 return name;
-            return base.ToString();
+            return "an AbstractFunction";
         }
     }
 }

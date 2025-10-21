@@ -2,10 +2,9 @@
 
 namespace LibSysmelSharp
 {
-    public class FunctionValue : Value
+    public class FunctionValue : AbstractFunction
     {
         public Value? owner;
-        public string? name;
         public DependentFunctionType signature;
         public Environment definitionEnvironment;
         public ParseTreeNode definitionBody;
@@ -15,9 +14,11 @@ namespace LibSysmelSharp
         public List<TemplateInstance> instances;
         public List<TemplateExtensionMethod> extensions;
 
-        public HIRFunction? hirFunction;
+        public HIRFunction hirFunction;
+        protected bool isAnalyzed;
 
-        public FunctionValue(SourcePosition? sourcePosition, string? name, DependentFunctionType signature, Environment definitionEnvironment, ParseTreeNode definitionBody) : base(sourcePosition)
+        public FunctionValue(SourcePosition? sourcePosition, string? name, bool isMacro, bool isCompileTime, DependentFunctionType signature, Environment definitionEnvironment, ParseTreeNode definitionBody)
+                : base(sourcePosition, name, isMacro, isCompileTime, signature.TryToSimplifyFunctionType())
         {
             this.name = name;
             this.signature = signature;
@@ -28,6 +29,8 @@ namespace LibSysmelSharp
             this.memoizedValues = new Dictionary<MemoizedFunctionKey, TemplateInstance>();
             this.instances = new List<TemplateInstance>();
             this.extensions = new List<TemplateExtensionMethod>();
+            this.isAnalyzed = false;
+            this.hirFunction = new HIRFunction(sourcePosition, name, type, this);
         }
 
         public override bool IsFunctionValue()
@@ -68,11 +71,9 @@ namespace LibSysmelSharp
         {
             if (isTemplate)
                 return;
-            if (hirFunction != null)
+            if (isAnalyzed)
                 return;
-
-            // Create he HIR Functon
-            hirFunction = new HIRFunction(sourcePosition, name, type);
+            isAnalyzed = true;
 
             FunctionAnalysisEnvironment functionAnalysisEnvironment = new FunctionAnalysisEnvironment(hirFunction, definitionEnvironment);
 
@@ -230,6 +231,17 @@ namespace LibSysmelSharp
             extensions.Add(extensionValue);
             foreach (TemplateInstance instance in instances)
                 ApplyExtensionToTemplateInstance(instance, extensionValue);
+        }
+
+
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            return hirFunction;
+        }
+
+        public override HIRValue AnalyzeAndBuildIdentifierReference(ParseTreeIdentifierReferenceNode node, HIRBuilder builder)
+        {
+            return hirFunction;
         }
 
     }
