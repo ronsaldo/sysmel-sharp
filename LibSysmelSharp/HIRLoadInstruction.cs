@@ -17,5 +17,12 @@
         {
             Console.WriteLine("  " + ToString() + " := load " + storage.ToString());
         }
+
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value pointerLikeValue = storage.GetValueInEvaluationContext(context);
+            Value loadedValue = pointerLikeValue.LoadValue();
+            context.SetCurrentInstructionValue(loadedValue);
+        }
     }
 }

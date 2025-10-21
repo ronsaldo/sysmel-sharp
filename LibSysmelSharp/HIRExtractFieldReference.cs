@@ -26,5 +26,12 @@ namespace LibSysmelSharp
         {
             Console.WriteLine("  " + ToString() + " := from " + aggregate.ToString() + " extractField " + fieldDefinition.ToString());
         }
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value aggregateValue = aggregate.GetValueInEvaluationContext(context);
+
+            ReferenceLikeValue fieldReference = new ReferenceLikeValue(sourcePosition, aggregateValue, fieldDefinition.index, GetSysmelType());
+            context.SetCurrentInstructionValue(fieldReference);
+        }
     }
 }
