@@ -17,5 +17,9 @@
         {
             Console.WriteLine("  " + ToString() + " := dynamicBox " + valueToBox.ToString());
         }
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            context.SetCurrentInstructionValue(valueToBox.GetValueInEvaluationContext(context));
+        }
     }
 }

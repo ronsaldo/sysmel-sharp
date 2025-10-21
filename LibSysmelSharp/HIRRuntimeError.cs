@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibSysmelSharp
 {
@@ -29,6 +30,12 @@ namespace LibSysmelSharp
         public override void DumpToConsole()
         {
             Console.WriteLine("  runtimeError: " + errorMessage.ToString());
+        }
+
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value errorMessageValue = errorMessage.GetValueInEvaluationContext(context);
+            throw new SysmelException(sourcePosition, "Runtime error: " + errorMessageValue.AsString());
         }
     }
 }

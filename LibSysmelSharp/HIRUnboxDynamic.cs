@@ -18,5 +18,13 @@
         {
             Console.WriteLine("  " + ToString() + " := dynamicUnbox " + boxedValue.ToString() + " withType " + type.ToString());
         }
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value valueToUnbox = boxedValue.GetValueInEvaluationContext(context);
+            if (!type.IsSatisfiedBy(valueToUnbox.GetSysmelType()))
+                throw new SysmelException(sourcePosition, "Cannot unbox from Dynamic into " + type.ToString());
+
+            context.SetCurrentInstructionValue(valueToUnbox);
+        }
     }
 }

@@ -15,13 +15,21 @@
             return true;
         }
 
-        public override bool IsTerminator()
-        {
-            return true;
-        }
         public override void DumpToConsole()
         {
             Console.WriteLine("  assert: " + condition.ToString());
+        }
+
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value conditionValue = condition.GetValueInEvaluationContext(context);
+            if(!conditionValue.AsBoolean())
+            {
+                if (sourcePosition != null)
+                    throw new SysmelException(sourcePosition, "Assertion Failure: " + sourcePosition.GetText());
+                else
+                    throw new SysmelException(sourcePosition, "Assertion Failure");
+            }
         }
     }
 }

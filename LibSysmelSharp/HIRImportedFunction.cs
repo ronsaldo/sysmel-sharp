@@ -38,5 +38,10 @@ namespace LibSysmelSharp
         {
             return importedFunction.EvaluateWithArguments(callArguments);
         }
+
+        public override Value GetValueInEvaluationContext(HIRFunctionActivationContext context)
+        {
+            return importedFunction;
+        }
     }
 }

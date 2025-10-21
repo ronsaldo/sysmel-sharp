@@ -56,5 +56,17 @@ namespace LibSysmelSharp
             Value evaluationResult = function.EvaluateWithArguments(compileTimeArguments);
             return evaluationResult.AnalyzeAndBuild(builder);
         }
+
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            int argumentCount = callArguments.Length;
+            Value functionValue = function.GetValueInEvaluationContext(context);
+            Value[] callArgumentValues = new Value[argumentCount];
+            for (int i = 0; i < argumentCount; ++i)
+                callArgumentValues[i] = callArguments[i].GetValueInEvaluationContext(context);
+
+            Value callResult = functionValue.EvaluateWithArguments(callArgumentValues);
+            context.SetCurrentInstructionValue(callResult);
+        }
     }
 }

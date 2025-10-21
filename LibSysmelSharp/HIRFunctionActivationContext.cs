@@ -42,6 +42,9 @@
             throw new SysmelException(sourcePosition, "Reached beyond the end of a function instructions.");
         }
 
-
+        public void SetCurrentInstructionValue(Value value)
+        {
+            intructionValues[instructionPC] = value;
+        }
     }
 }

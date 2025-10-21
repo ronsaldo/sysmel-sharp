@@ -153,7 +153,6 @@
         public virtual Value GetValueInEvaluationContext(HIRFunctionActivationContext context)
         {
             throw new NotImplementedException();
-
         }
         public virtual void EvaluateInActivationContext(HIRFunctionActivationContext context)
         {
