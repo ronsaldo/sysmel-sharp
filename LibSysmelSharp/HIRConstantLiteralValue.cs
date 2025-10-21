@@ -26,5 +26,14 @@
         {
             return literal.IsSymbolValue() && literal.AsSymbol() == "_";
         }
+
+        public override Value GetValueInEvaluationContext(HIRFunctionActivationContext context)
+        {
+            return literal;
+        }
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            // Nothing is required here
+        }
     }
 }

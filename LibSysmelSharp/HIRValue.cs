@@ -75,7 +75,7 @@
         {
             return false;
         }
-        
+
         public virtual bool IsExtractFieldReference()
         {
             return false;
@@ -148,6 +148,16 @@
         public virtual bool IsDefaultCaseKey()
         {
             return false;
+        }
+
+        public virtual Value GetValueInEvaluationContext(HIRFunctionActivationContext context)
+        {
+            throw new NotImplementedException();
+
+        }
+        public virtual void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            throw new NotImplementedException();
         }
     }
 }

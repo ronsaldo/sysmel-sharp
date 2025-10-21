@@ -22,5 +22,11 @@
         {
             Console.WriteLine("  return: " + valueToReturn.ToString());
         }
+
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value returnValue = valueToReturn.GetValueInEvaluationContext(context);
+            context.returnValue = returnValue;
+        }
     }
 }

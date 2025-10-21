@@ -61,5 +61,10 @@ namespace LibSysmelSharp
                 return "%" + index.ToString();
             return name + "%" + index.ToString();
         }
+
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            // Nothing is required here
+        }
     }
 }

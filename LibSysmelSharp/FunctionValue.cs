@@ -140,6 +140,15 @@ namespace LibSysmelSharp
 
         public override Value EvaluateWithArguments(Value[] callArguments)
         {
+            if (isTemplate)
+                return EvaluateWithArgumentsViaAST(callArguments);
+
+            EnsureAnalysis();
+            return hirFunction.EvaluateWithArguments(callArguments);
+        }
+
+        public Value EvaluateWithArgumentsViaAST(Value[] callArguments)
+        {
             EnsureAnalysis();
 
             MemoizedFunctionKey? memoizationKey = null;

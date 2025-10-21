@@ -116,5 +116,37 @@ namespace LibSysmelSharp
             }
             Console.WriteLine("}");
         }
+
+        public Value EvaluateWithArgumentsAndCaptures(Value[] callArguments, Value[] callCaptures)
+        {
+            if (sourceFunctionValue != null)
+                sourceFunctionValue.EnsureAnalysis();
+            List<HIRValue> instructions = EnumerateInstructions();
+
+            // Sanity checks
+            Debug.Assert(arguments.Count == callArguments.Length);
+            Debug.Assert(captures.Count == callCaptures.Length);
+
+            // Create the activation context.
+            HIRFunctionActivationContext activationContext = new HIRFunctionActivationContext(sourcePosition, instructions);
+
+            // Set the call arguments
+            int argumentCount = callArguments.Length;
+            for (int i = 0; i < argumentCount; ++i)
+                activationContext.intructionValues[i] = callArguments[i];
+
+            // Set the capture values.
+            int captureCount = callCaptures.Length;
+            for (int i = 0; i < captureCount; ++i)
+                activationContext.intructionValues[argumentCount + i] = callCaptures[i];
+
+            activationContext.pc = argumentCount + captureCount + 1;
+            return activationContext.EvaluateInstructions();
+        }
+
+        public override Value EvaluateWithArguments(Value[] callArguments)
+        {
+            return EvaluateWithArgumentsAndCaptures(callArguments, new Value[0]);
+        }
     }
 }

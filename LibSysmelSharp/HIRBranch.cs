@@ -23,5 +23,10 @@
         {
             return true;
         }
+
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            context.pc = destination.index;
+        }
     }
 }

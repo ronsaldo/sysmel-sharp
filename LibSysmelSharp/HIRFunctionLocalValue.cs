@@ -20,5 +20,10 @@ namespace LibSysmelSharp
         {
             return true;
         }
+
+        public override Value GetValueInEvaluationContext(HIRFunctionActivationContext context)
+        {
+            return context.intructionValues[index];
+        }
     }
 }

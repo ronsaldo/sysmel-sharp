@@ -19,5 +19,9 @@
         {
             Console.WriteLine("  returnVoid");
         }
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            context.returnValue = VoidValue.GetSingleton();
+        }
     }
 }
