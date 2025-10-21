@@ -28,6 +28,9 @@ namespace LibSysmelSharp
 
         public HIRValue AddLiteral(SourcePosition? sourcePosition, Value value)
         {
+            if (value.IsHIRValue())
+                return (HIRValue)value;
+
             return new HIRConstantLiteralValue(sourcePosition, value);
         }
 

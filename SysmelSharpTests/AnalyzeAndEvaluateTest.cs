@@ -1017,6 +1017,22 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestMessageCascadeInFunction()
+        {
+            Value functionValue = EvaluateString("{ | 42 negated; + 2}");
+            functionValue.EnsureAnalysis();
+            functionValue.DumpToConsole();
+        }
+
+        [TestMethod]
+        public void TestMessageCascade2InFunction()
+        {
+            Value functionValue = EvaluateString("{ | 42 negated; + 2; yourself}");
+            functionValue.EnsureAnalysis();
+            functionValue.DumpToConsole();
+
+        }
+        [TestMethod]
         public void TestAnonRecordType()
         {
             Value value = EvaluateString("RecordWithFields: #{first: Dynamic. second: Dynamic}");
@@ -1239,6 +1255,15 @@ namespace SysmelSharpTests
             Assert.AreEqual(Intrinsics.GetSingleton().DynamicType, classType.fields[1].type);
         }
 
+        [TestMethod]
+        public void TestClassInstanceInFunction()
+        {
+            Value functionValue = EvaluateString("Class: #MyClass withSuperclass: Object fields: #{first: Int32. second: Int64}. {::MyClass | MyClass basicNew}");
+            functionValue.DumpToConsole();
+
+            functionValue = EvaluateString("Class: #MyClass withSuperclass: Object fields: #{first: Int32. second: Int64}. {::MyClass | MyClass new}");
+            functionValue.DumpToConsole();
+        }
 
         [TestMethod]
         public void TestMethod()

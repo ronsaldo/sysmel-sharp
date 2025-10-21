@@ -18,5 +18,12 @@
         {
             return Intrinsics.GetSingleton().MetaclassClassType;
         }
+
+        public override string ToString()
+        {
+            if (thisClass != null)
+                return thisClass.ToString() + " class";
+            return "a Metaclass";
+        }
     }
 }

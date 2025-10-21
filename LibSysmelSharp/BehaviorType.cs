@@ -94,5 +94,10 @@
             return instance;
         }
 
+        public override SysmelType? GetSuperType()
+        {
+            return superclass;
+        }
+
     }
 }

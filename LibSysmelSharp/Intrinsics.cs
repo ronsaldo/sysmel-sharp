@@ -660,7 +660,6 @@ namespace LibSysmelSharp
                     return argumentType.MakeSimpleFunctionWithResultType(resultType);
                 }));
 
-            // TODO: Use a proper dependent type here
             TypeUniverse0.AddMethod(new PrimitiveFunction("basicNew", false, false,
                 new SimpleFunctionType(null, [TypeUniverse0], DynamicType,
                 (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
@@ -743,13 +742,15 @@ namespace LibSysmelSharp
 
             // TODO: use a dependent type for the new result.
             BehaviorClassType.AddMethod(new PrimitiveFunction("basicNew", false, false,
-                new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType),
+                new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType,
+                (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
                 (Value[] arguments) => {
                     BehaviorType behavior = (BehaviorType)arguments[0];
                     return behavior.BasicNew();
                 }));
             BehaviorClassType.AddMethod(new PrimitiveFunction("new", false, false,
-                new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType),
+                new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType,
+                (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
                 (Value[] arguments) => {
                     BehaviorType behavior = (BehaviorType)arguments[0];
                     return behavior.New();

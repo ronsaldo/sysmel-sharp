@@ -32,5 +32,12 @@ namespace LibSysmelSharp
         {
             return type;
         }
+
+        public override string ToString()
+        {
+            if (name != null)
+                return name;
+            return "a Class";
+        }
     }
 }

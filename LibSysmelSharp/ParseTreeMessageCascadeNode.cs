@@ -36,5 +36,20 @@ namespace LibSysmelSharp
 
             return result;
         }
+
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            HIRValue receiverValue = receiver.AnalyzeAndBuild(builder);
+            ParseTreeLiteralValueNode receiverValueNode = new ParseTreeLiteralValueNode(receiver.sourcePosition, receiverValue);
+            
+            HIRValue result = receiverValue;
+            foreach (ParseTreeNode cascadedMessage in cascadedMessages)
+            {
+                ParseTreeNode cascadedMessageWithReceiver = cascadedMessage.AsParseTreeMessageSendNodeWithReceiver(receiverValueNode);
+                result = cascadedMessageWithReceiver.AnalyzeAndBuild(builder);
+            }
+
+            return result;
+        }
     }
 }
