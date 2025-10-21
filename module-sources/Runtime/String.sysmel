@@ -1,0 +1,14 @@
+String !{
+allButLast :: String.
+    assert: self size > 0.
+    self substringFrom: 0 until: self size - 1
+}.
+
+String !{
+parseCEscapeSequences :: String.
+    ## TODO: Implement this
+    self
+}.
+
+##printLine("Hello World").
+##printLine("Hello World" substringFrom: 2 until: 5).

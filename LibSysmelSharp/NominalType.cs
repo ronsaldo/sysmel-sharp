@@ -24,7 +24,12 @@ namespace LibSysmelSharp
         {
             return this.Equals(Intrinsics.GetSingleton().VoidType);
         }
-        
+
+        public override bool IsDynamicType()
+        {
+            return this.Equals(Intrinsics.GetSingleton().DynamicType);
+        }
+
         public override string ToString()
         {
             return name;

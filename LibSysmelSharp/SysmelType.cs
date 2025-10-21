@@ -119,6 +119,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsDynamicType()
+        {
+            return false;
+        }
+
         public virtual bool IsVoidType()
         {
             return false;

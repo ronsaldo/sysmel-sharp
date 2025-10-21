@@ -615,6 +615,23 @@ namespace LibSysmelSharp
                     string str = arguments[0].AsString();
                     return new IntegerValue(null, str.Length, IntegerType);
                 }));
+            StringType.AddMethod(new PrimitiveFunction("at:", false, true,
+                new SimpleFunctionType(null, [StringType, IntegerType], CharacterType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsString();
+                    long index = arguments[1].AsInteger();
+                    return new IntegerValue(null, str[(int)index], CharacterType);
+                }));
+            StringType.AddMethod(new PrimitiveFunction("substringFrom:until:", false, true,
+                new SimpleFunctionType(null, [StringType, IntegerType, IntegerType], StringType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsString();
+                    long startingIndex = arguments[1].AsInteger();
+                    long endIndex = arguments[2].AsInteger();
+                    string substring = str.Substring((int)startingIndex, (int)(endIndex - startingIndex));
+                    return new StringValue(null, substring, StringType);
+                }));
+
 
         }
 

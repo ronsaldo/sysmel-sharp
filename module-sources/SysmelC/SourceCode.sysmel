@@ -1,0 +1,162 @@
+namespace SysmelC definition: {
+public: [
+    class SourceCode withSuperclass: Object fields: #{
+        directory: String.
+        name: String.
+        text: String.
+    }.
+
+    class SourcePosition withSuperclass: Object fields: #{
+        sourceCode: SourceCode.
+        startIndex: Integer.
+        endIndex: Integer.
+        startLine: Integer.
+        endLine: Integer.
+        startColumn: Integer.
+        endColumn: Integer.
+    }.
+].
+
+SourceCode !{
+directory :: String.
+    directory
+}.
+
+SourceCode !{
+directory: (String)aString :: Void.
+    directory := aString
+}.
+
+SourceCode !{
+name :: String.
+    name
+}.
+
+SourceCode !{
+name: (String)aString :: Void.
+    name := aString
+}.
+
+SourceCode !{
+text :: String.
+    text
+}.
+
+SourceCode !{
+text: (String)aString :: Void.
+    text := aString
+}.
+
+## Source position
+SourcePosition !{
+sourceCode :: SourceCode.
+    sourceCode
+}.
+
+SourcePosition !{
+sourceCode: (SourceCode)newSourceCode :: Void.
+    sourceCode := newSourceCode
+}.
+
+SourcePosition !{
+startIndex :: Integer.
+    startIndex
+}.
+
+SourcePosition !{
+startIndex: (Integer)newIndex :: Void.
+    startIndex := newIndex
+}.
+
+SourcePosition !{
+endIndex :: Integer.
+    endIndex
+}.
+
+SourcePosition !{
+endIndex: (Integer)newIndex :: Void.
+    endIndex := newIndex
+}.
+
+SourcePosition !{
+startLine :: Integer.
+    startLine
+}.
+
+SourcePosition !{
+startLine: (Integer)newIndex :: Void.
+    startLine := newIndex
+}.
+
+SourcePosition !{
+endLine :: Integer.
+    endLine
+}.
+
+SourcePosition !{
+endLine: (Integer)newIndex :: Void.
+    endLine := newIndex
+}.
+
+SourcePosition !{
+startColumn :: Integer.
+    startColumn
+}.
+
+SourcePosition !{
+startColumn: (Integer)newIndex :: Void.
+    startColumn := newIndex
+}.
+
+SourcePosition !{
+endColumn :: Integer.
+    endColumn
+}.
+
+SourcePosition !{
+endColumn: (Integer)newIndex :: Void.
+    endColumn := newIndex
+}.
+
+SourcePosition !{
+getText :: String.
+    sourceCode text substringFrom: startIndex until: endIndex
+}.
+
+
+SourcePosition !{
+to: (SourcePosition)target :: SourcePosition.
+    SourcePosition new
+        sourceCode: sourceCode;
+        startIndex: startIndex;
+        endIndex: target endIndex;
+        startLine: startLine;
+        endLine: target endLine;
+        startColumn: startColumn;
+        endColumn: target endColumn;
+        yourself
+}.
+
+SourcePosition !{
+until: (SourcePosition)target :: SourcePosition.
+    SourcePosition new
+        sourceCode: sourceCode;
+        startIndex: startIndex;
+        endIndex: target startIndex;
+        startLine: startLine;
+        endLine: target startLine;
+        startColumn: startColumn;
+        endColumn: target startColumn;
+        yourself
+}.
+
+public: [
+function makeSourceCodeForString(text: String) => SourceCode
+    := SourceCode new
+        name: "Text String";
+        text: text;
+        yourself
+].
+
+##Stdio stdout print: makeSourceCodeForString("Hello World"); lf
+}.

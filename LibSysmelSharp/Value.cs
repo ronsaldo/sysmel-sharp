@@ -202,12 +202,13 @@ namespace LibSysmelSharp
                 return functionType.AnalyzeAndBuildMessageSendWithMethod(messageSend, selector, builder, receiver, method);
             }
 
-            /*Value[] argumentValues = new Value[messageSend.arguments.Length];
-            for (int i = 0; i < messageSend.arguments.Length; ++i)
-                argumentValues[i] = messageSend.arguments[i].AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
-            return PerformWithArguments(selector, argumentValues);
-            */
-            throw new NotImplementedException();
+            if(receiver.GetSysmelType().IsDynamicType())
+            {
+                // TODO: Emit a dynamic message send.
+                throw new NotImplementedException();
+            }
+
+            throw new SysmelException(messageSend.sourcePosition, "Method with selector #" + selector + " not found in " + receiver.GetSysmelType().ToString());
         }
 
         public virtual HIRValue CastHIRValueToExpectedType(HIRBuilder builder, HIRValue buildResult, SysmelType? expectedType)
