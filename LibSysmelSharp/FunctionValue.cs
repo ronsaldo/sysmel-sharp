@@ -138,6 +138,7 @@ namespace LibSysmelSharp
                 hirFunction.DumpToConsole();
         }
 
+
         public override Value EvaluateWithArguments(Value[] callArguments)
         {
             if (isTemplate)
@@ -145,6 +146,13 @@ namespace LibSysmelSharp
 
             EnsureAnalysis();
             return hirFunction.EvaluateWithArguments(callArguments);
+        }
+
+        public override Value EvaluateWithArgumentsAndCaptures(Value[] callArguments, Value[] callCaptures)
+        {
+            Debug.Assert(!isTemplate);
+            EnsureAnalysis();
+            return hirFunction.EvaluateWithArgumentsAndCaptures(callArguments, callCaptures);
         }
 
         public Value EvaluateWithArgumentsViaAST(Value[] callArguments)

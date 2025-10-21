@@ -26,5 +26,13 @@
         {
             Console.WriteLine("  conditionalBranch " + condition.ToString() + " " + trueDestination.ToString() + " " + falseDestination.ToString());
         }
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value conditionValue = condition.GetValueInEvaluationContext(context);
+            if(conditionValue.AsBoolean())
+                context.pc = trueDestination.index;
+            else
+                context.pc = falseDestination.index;
+        }
     }
 }

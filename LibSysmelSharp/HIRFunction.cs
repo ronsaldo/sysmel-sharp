@@ -148,5 +148,12 @@ namespace LibSysmelSharp
         {
             return EvaluateWithArgumentsAndCaptures(callArguments, new Value[0]);
         }
+
+        public override Value GetValueInEvaluationContext(HIRFunctionActivationContext context)
+        {
+            if (sourceFunctionValue != null)
+                return sourceFunctionValue;
+            return this;
+        }
     }
 }

@@ -15,5 +15,9 @@
         {
             Console.WriteLine("  " + ToString() + ":= phi " + type.ToString());
         }
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            // Nothing is required here.
+        }
     }
 }

@@ -20,5 +20,11 @@
         {
             Console.WriteLine("  phi " + destinationPhi.ToString() + " := " + sourceValue.ToString());
         }
+
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value phiValue = sourceValue.GetValueInEvaluationContext(context);
+            context.intructionValues[destinationPhi.index] = phiValue;
+        }
     }
 }

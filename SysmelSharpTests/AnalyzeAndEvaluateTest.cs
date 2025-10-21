@@ -707,6 +707,8 @@ namespace SysmelSharpTests
         [TestMethod]
         public void TestInnerBlockClosure()
         {
+            EvaluateString("{| {:x | x}}").DumpToConsole();
+
             Value value = EvaluateString("{| {:x | x}}()");
             Assert.IsTrue(value.IsFunctionValue());
             Assert.IsTrue(value.GetSysmelType().IsFunctionType());

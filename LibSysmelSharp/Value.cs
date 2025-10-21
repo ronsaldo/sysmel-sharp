@@ -301,6 +301,12 @@ namespace LibSysmelSharp
             throw new SysmelException(sourcePosition, "Cannot evaluate non-functional value.");
         }
 
+        public virtual Value EvaluateWithArgumentsAndCaptures(Value[] callArguments, Value[] callCaptures)
+        {
+            throw new SysmelException(sourcePosition, "Cannot evaluate non-functional value.");
+        }
+
+
         public virtual bool AsBoolean()
         {
             throw new NotSupportedException();
@@ -432,6 +438,10 @@ namespace LibSysmelSharp
             return false;
         }
         public virtual bool IsFunctionValue()
+        {
+            return false;
+        }
+        public virtual bool IsClosureValue()
         {
             return false;
         }

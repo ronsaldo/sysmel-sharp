@@ -84,7 +84,7 @@ namespace LibSysmelSharp
             }
 
             trueBuilder.Branch(sourcePosition, mergeDestination);
-            falseBuilder.Branch(sourcePosition, falseDestination);
+            falseBuilder.Branch(sourcePosition, mergeDestination);
 
             return mergedResult;
         }

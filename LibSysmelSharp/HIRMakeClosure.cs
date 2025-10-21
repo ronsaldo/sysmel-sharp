@@ -19,5 +19,15 @@
             Console.WriteLine();
         }
 
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            int captureCount = captureValues.Length;
+            Value functionValue = functionDefinition.GetValueInEvaluationContext(context);
+            Value[] captureEvaluatedValues = new Value[captureCount];
+            for (int i = 0; i < captureCount; ++i)
+                captureEvaluatedValues[i] = captureValues[i].GetValueInEvaluationContext(context);
+            ClosureValue closure = new ClosureValue(sourcePosition, null, false, false, GetSysmelType(), functionValue, captureEvaluatedValues);
+            context.SetCurrentInstructionValue(closure);
+        }
     }
 }

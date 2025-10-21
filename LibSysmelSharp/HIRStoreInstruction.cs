@@ -19,5 +19,12 @@
         {
             Console.WriteLine("  store " + valueToStore.ToString() + " in " + storage.ToString());
         }
+
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value pointerLikeValue = storage.GetValueInEvaluationContext(context);
+            Value value = valueToStore.GetValueInEvaluationContext(context);
+            pointerLikeValue.StoreValue(value);
+        }
     }
 }
