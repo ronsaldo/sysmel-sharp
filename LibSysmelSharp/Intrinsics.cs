@@ -589,14 +589,14 @@ namespace LibSysmelSharp
         void RegisterStringPrimitives()
         {
             StringType.AddMethod(new PrimitiveFunction("=", false, true,
-                new SimpleFunctionType(null, [StringType, StringType], StringType),
+                new SimpleFunctionType(null, [StringType, StringType], BooleanType),
                 (Value[] arguments) => {
                     string leftString = arguments[0].AsString();
                     string rightString = arguments[1].AsString();
                     return BooleanValue.GetWithValue(leftString == rightString);
                 }));
             StringType.AddMethod(new PrimitiveFunction("~=", false, true,
-                new SimpleFunctionType(null, [StringType, StringType], StringType),
+                new SimpleFunctionType(null, [StringType, StringType], BooleanType),
                 (Value[] arguments) => {
                     string leftString = arguments[0].AsString();
                     string rightString = arguments[1].AsString();
@@ -608,6 +608,12 @@ namespace LibSysmelSharp
                     string leftString = arguments[0].AsString();
                     string rightString = arguments[1].AsString();
                     return new StringValue(null, leftString + rightString, StringType);
+                }));
+            StringType.AddMethod(new PrimitiveFunction("hash", false, true,
+                new SimpleFunctionType(null, [StringType], IntegerType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsString();
+                    return new IntegerValue(null, str.GetHashCode(), IntegerType);
                 }));
             StringType.AddMethod(new PrimitiveFunction("size", false, true,
                 new SimpleFunctionType(null, [StringType], IntegerType),
@@ -631,8 +637,42 @@ namespace LibSysmelSharp
                     string substring = str.Substring((int)startingIndex, (int)(endIndex - startingIndex));
                     return new StringValue(null, substring, StringType);
                 }));
+            StringType.AddMethod(new PrimitiveFunction("asSymbol", false, true,
+                new SimpleFunctionType(null, [StringType], SymbolType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsString();
+                    return new SymbolValue(null, str, SymbolType);
+                }));
+        }
 
-
+        void RegisterSymbolPrimitives()
+        {
+            SymbolType.AddMethod(new PrimitiveFunction("=", false, true,
+                new SimpleFunctionType(null, [SymbolType, SymbolType], BooleanType),
+                (Value[] arguments) => {
+                    string leftString = arguments[0].AsSymbol();
+                    string rightString = arguments[1].AsSymbol();
+                    return BooleanValue.GetWithValue(leftString == rightString);
+                }));
+            SymbolType.AddMethod(new PrimitiveFunction("~=", false, true,
+                new SimpleFunctionType(null, [SymbolType, SymbolType], BooleanType),
+                (Value[] arguments) => {
+                    string leftString = arguments[0].AsSymbol();
+                    string rightString = arguments[1].AsSymbol();
+                    return BooleanValue.GetWithValue(leftString != rightString);
+                }));
+            SymbolType.AddMethod(new PrimitiveFunction("hash", false, true,
+                new SimpleFunctionType(null, [SymbolType], IntegerType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsSymbol();
+                    return new IntegerValue(null, str.GetHashCode(), IntegerType);
+                }));
+            SymbolType.AddMethod(new PrimitiveFunction("asString", false, true,
+                new SimpleFunctionType(null, [SymbolType], StringType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsSymbol();
+                    return new StringValue(null, str, StringType);
+                }));
         }
 
         void RegisterTypePrimitives()
@@ -763,6 +803,7 @@ namespace LibSysmelSharp
             RegisterDefinitionMacros();
             RegisterFunctionPrimitives();
             RegisterStringPrimitives();
+            RegisterSymbolPrimitives();
             RegisterTypePrimitives();
             RegisterIOPrimitive();
             RegisterIntegerTypePrimitives(IntegerType);

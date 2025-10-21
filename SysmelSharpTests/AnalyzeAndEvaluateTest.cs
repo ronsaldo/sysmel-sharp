@@ -1479,5 +1479,24 @@ namespace SysmelSharpTests
             Assert.ThrowsException<SysmelException>(() => EvaluateString("{:: Void | error: \"Runtime Error\"}()"));
         }
 
+        [TestMethod]
+        public void TestStringIntrinsics()
+        {
+            Assert.IsTrue(EvaluateString("\"test\" = \"test\"").AsBoolean());
+            Assert.IsFalse(EvaluateString("\"test\" ~= \"test\"").AsBoolean());
+            Assert.IsTrue(EvaluateString("\"test\" hash").IsIntegerValue());
+            Assert.AreEqual("test", EvaluateString("\"test\" asSymbol").AsSymbol());
+        }
+
+
+        [TestMethod]
+        public void TestSymbolPrimitive()
+        {
+            Assert.IsTrue(EvaluateString("#test = #test").AsBoolean());
+            Assert.IsFalse(EvaluateString("#test ~= #test").AsBoolean());
+            Assert.IsTrue(EvaluateString("#test hash").IsIntegerValue());
+            Assert.AreEqual("test", EvaluateString("#test asString").AsString());
+        }
+
     }
 }
