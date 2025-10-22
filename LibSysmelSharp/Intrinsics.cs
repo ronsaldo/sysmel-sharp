@@ -260,6 +260,34 @@ namespace LibSysmelSharp
             globalNamespace.SetSymbolBinding(method.name, method);
         }
 
+        void RegisterBooleanPrimitives()
+        {
+            BooleanType.AddMethod(new PrimitiveFunction("not", false, true,
+                new SimpleFunctionType(null, [BooleanType], BooleanType),
+                (Value[] arguments) => {
+                    return BooleanValue.GetWithValue(!arguments[0].AsBoolean());
+                }));
+            BooleanType.AddMethod(new PrimitiveFunction("&&", true, true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode firstOperand = (ParseTreeNode)arguments[1];
+                    ParseTreeNode secondOperand = (ParseTreeNode)arguments[2];
+                    ParseTreeLiteralValueNode booleanLiteral = new ParseTreeLiteralValueNode(context.sourcePosition, BooleanValue.GetWithValue(false));
+                    return new ParseTreeIfSelectionNode(context.sourcePosition, firstOperand, secondOperand, booleanLiteral);
+                }));
+            BooleanType.AddMethod(new PrimitiveFunction("||", true, true,
+                new SimpleFunctionType(null, [MacroContextType, ParseTreeNodeType, ParseTreeNodeType], ParseTreeNodeType),
+                (Value[] arguments) => {
+                    MacroContextValue context = (MacroContextValue)arguments[0];
+                    ParseTreeNode firstOperand = (ParseTreeNode)arguments[1];
+                    ParseTreeNode secondOperand = (ParseTreeNode)arguments[2];
+                    ParseTreeLiteralValueNode booleanLiteral = new ParseTreeLiteralValueNode(context.sourcePosition, BooleanValue.GetWithValue(true));
+                    return new ParseTreeIfSelectionNode(context.sourcePosition, firstOperand, booleanLiteral, secondOperand);
+                }));
+
+        }
+
         void RegisterControlFlowMacros()
         {
             AddMethod(new PrimitiveFunction("if:then:else:", true, true,
@@ -780,7 +808,6 @@ namespace LibSysmelSharp
                     return type;
                 }));
 
-            // TODO: use a dependent type for the new result.
             BehaviorClassType.AddMethod(new PrimitiveFunction("basicNew", false, false,
                 new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType,
                 (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
@@ -799,6 +826,7 @@ namespace LibSysmelSharp
 
         void RegisterPrimitives()
         {
+            RegisterBooleanPrimitives();
             RegisterControlFlowMacros();
             RegisterDefinitionMacros();
             RegisterFunctionPrimitives();

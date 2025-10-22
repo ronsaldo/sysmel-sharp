@@ -1480,6 +1480,24 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestBooleanIntrinsics()
+        {
+            Assert.IsFalse(EvaluateString("true not").AsBoolean());
+            Assert.IsTrue(EvaluateString("false not").AsBoolean());
+
+            Assert.IsTrue(EvaluateString("true && true").AsBoolean());
+            Assert.IsFalse(EvaluateString("true && false").AsBoolean());
+            Assert.IsFalse(EvaluateString("false && true").AsBoolean());
+            Assert.IsFalse(EvaluateString("false && false").AsBoolean());
+
+            Assert.IsTrue(EvaluateString("true || true").AsBoolean());
+            Assert.IsTrue(EvaluateString("true || false").AsBoolean());
+            Assert.IsTrue(EvaluateString("false || true").AsBoolean());
+            Assert.IsFalse(EvaluateString("false || false").AsBoolean());
+        }
+
+
+        [TestMethod]
         public void TestStringIntrinsics()
         {
             Assert.IsTrue(EvaluateString("\"test\" = \"test\"").AsBoolean());

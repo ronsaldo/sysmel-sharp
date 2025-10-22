@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibSysmelSharp
 {
@@ -90,7 +92,22 @@ namespace LibSysmelSharp
 
         public Value ExpandMessageMacro(ParseTreeMessageSendNode messageSend, string selector, Environment environment, Value receiver, Value method)
         {
-            throw new SysmelException(messageSend.sourcePosition, "TODO: Expand message macro.");
+            int argumentCount = messageSend.arguments.Length;
+            if (argumentCount + 2 != argumentTypes.Length)
+                throw new SysmelException(messageSend.sourcePosition, "Macro expects" + argumentTypes.Length.ToString() + " arguments instead of" + messageSend.arguments.Length.ToString());
+
+            MacroContextValue context = new MacroContextValue(messageSend.sourcePosition, environment);
+            Value[] macroArguments = new Value[2 + argumentCount];
+            macroArguments[0] = context;
+            macroArguments[1] = new ParseTreeLiteralValueNode(messageSend.sourcePosition, receiver);
+
+            for (int i = 0; i < argumentCount; ++i)
+            {
+                SysmelType expectedType = argumentTypes[2 + i];
+                macroArguments[i + 2] = messageSend.arguments[i].AnalyzeAndEvaluateMacroArgumentInEnvironment(environment, expectedType);
+            }
+
+            return method.EvaluateWithArguments(macroArguments);
         }
 
         public override Value AnalyzeAndEvaluateApplicationInEnvironmentWithFunctional(ParseTreeApplicationNode application, Environment environment, Value functional)
