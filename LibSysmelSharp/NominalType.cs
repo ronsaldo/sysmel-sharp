@@ -30,6 +30,11 @@ namespace LibSysmelSharp
             return this.Equals(Intrinsics.GetSingleton().DynamicType);
         }
 
+        public override bool IsUndefinedObjectType()
+        {
+            return this.Equals(Intrinsics.GetSingleton().UndefinedObjectType);
+        }
+
         public override string ToString()
         {
             return name;

@@ -56,6 +56,9 @@ namespace LibSysmelSharp
 
         public virtual bool IsSatisfiedBy(SysmelType other)
         {
+            // TODO: Check for nullable types.
+            if (other.IsUndefinedObjectType())
+                return true;
             return other.IsSubtypeOf(this);
         }
 
@@ -125,6 +128,11 @@ namespace LibSysmelSharp
         }
 
         public virtual bool IsVoidType()
+        {
+            return false;
+        }
+
+        public virtual bool IsUndefinedObjectType()
         {
             return false;
         }

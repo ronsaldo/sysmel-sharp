@@ -1,2 +1,3 @@
 loadFileOnce: "ArrayList.sysmel".
+loadFileOnce: "Dictionary.sysmel".
 loadFileOnce: "String.sysmel".

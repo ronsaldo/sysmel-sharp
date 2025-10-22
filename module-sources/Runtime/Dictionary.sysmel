@@ -1,0 +1,85 @@
+namespace System definition: {
+namespace Collections definition: {
+
+public:[
+forall(K:Type. V: Type) Dictionary := class withSuperclass: Object fields: #{
+    size: Integer.
+    capacity: Integer.
+    targetCapacity: Integer.
+    keys: K list.
+    values: V list
+}.
+].
+Dictionary !{
+initialize :: Void.
+    let initialCapacity := 32.
+    size := 0.
+    capacity := initialCapacity.
+    targetCapacity := initialCapacity * 80 // 100.
+    keys := K list new: initialCapacity.
+    values := V list new: initialCapacity.
+}.
+
+Dictionary !{
+checkTargetCapacity :: Void.
+    if: size <= targetCapacity then: {
+        return: void
+    }.
+
+    let newCapacity mutable := capacity * 2.
+    if: newCapacity < 32 then: {
+        newCapacity := 32
+    }.
+
+    let newKeys := K list new: newCapacity.
+    let newValues := V list new: newCapacity.
+    let oldKeys := keys.
+    let oldValues := values.
+    let oldCapacity := capacity.
+
+    keys := newKeys.
+    values := newValues.
+    size := 0.
+    capacity := newCapacity.
+    targetCapacity := newCapacity * 80 // 100.
+
+    let i mutable := 0.
+    while: (i < oldCapacity) do: {
+        let oldKey := oldKeys at: i.
+        if: oldKey ~= nil then: {
+            let oldValue := oldValues at: i.
+            self at: oldKey put: oldValue
+        }
+    } continueWith: (i := i + 1).
+}.
+
+Dictionary !{
+scanFor: (K)key :: Integer.
+    let keyHash := key hash.
+    let naturalIndex := keyHash % capacity.
+
+    let i mutable := naturalIndex.
+    while: (i < capacity) do: {
+        let keyOrNull := keys at: i.
+        if: (keyOrNull = nil) || (keyOrNull = key)  then: {
+            return: i
+        }.
+    } continueWith: (i := i + 1).
+
+    i := 0.
+    while: (i < capacity) do: {
+        let keyOrNull := keys at: i.
+        if: (keyOrNull = nil) || (keyOrNull = key)  then: {
+            return: i
+        }.
+    } continueWith: (i := i + 1).
+
+    -1
+}.
+
+Dictionary !{
+at: (K)key put: (V)value :: Void.
+}.
+
+}
+}

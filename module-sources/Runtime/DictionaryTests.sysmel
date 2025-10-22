@@ -1,0 +1,9 @@
+namespace System definition: {
+namespace Collections definition: {
+
+let testDictionary := Dictionary(String. Integer) new.
+
+printLine(testDictionary).
+##printLine(testArrayList at: 1000).
+}.
+}

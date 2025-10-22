@@ -1484,6 +1484,10 @@ namespace SysmelSharpTests
         {
             Assert.IsTrue(EvaluateString("\"test\" = \"test\"").AsBoolean());
             Assert.IsFalse(EvaluateString("\"test\" ~= \"test\"").AsBoolean());
+
+            Assert.IsFalse(EvaluateString("\"test\" = nil").AsBoolean());
+            Assert.IsTrue(EvaluateString("\"test\" ~= nil").AsBoolean());
+
             Assert.IsTrue(EvaluateString("\"test\" hash").IsIntegerValue());
             Assert.AreEqual("test", EvaluateString("\"test\" asSymbol").AsSymbol());
         }
