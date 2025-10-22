@@ -1,4 +1,5 @@
-﻿using static System.Net.Mime.MediaTypeNames;
+﻿using System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LibSysmelSharp
 {
@@ -53,7 +54,23 @@ namespace LibSysmelSharp
         }
         public override HIRValue AnalyzeAndBuildApplication(ParseTreeApplicationNode application, HIRBuilder builder)
         {
-            throw new NotImplementedException();
+            int fieldCount = fields.Length;
+            int argumentCount = application.arguments.Length;
+            if (argumentCount > fields.Length)
+                throw new SysmelException(application.sourcePosition, "Record expects at most " + fields.Length.ToString() + " arguments");
+
+            HIRValue[] recordElements = new HIRValue[fields.Length];
+            for (int i = 0; i < fieldCount; ++i)
+            {
+                FieldDefinition field = fields[i];
+
+                if (i < argumentCount)
+                    recordElements[i] = application.arguments[i].AnalyzeAndBuildWithExpectedType(builder, field.type);
+                else
+                    recordElements[i] = builder.AddLiteral(application.sourcePosition, field.type.MakeDefaultValue());
+            }
+
+            return builder.MakeRecord(application.sourcePosition, recordElements, this);
         }
 
         public override Value AnalyzeAndEvaluateDictionaryInstanceInEnvironment(ParseTreeImmutableDictionaryNode dictionary, Environment environment)
@@ -96,7 +113,40 @@ namespace LibSysmelSharp
 
         public override HIRValue AnalyzeAndBuildDictionaryInstance(ParseTreeImmutableDictionaryNode dictionary, HIRBuilder builder)
         {
-            throw new NotImplementedException();
+            int fieldCount = fields.Length;
+            HIRValue[] recordFields = new HIRValue[fieldCount];
+            bool[] initializedRecordFields = new bool[fieldCount];
+
+            // Initialize the dictionary fields.
+            foreach (ParseTreeNode dictionaryElementNode in dictionary.elements)
+            {
+                if (!dictionaryElementNode.IsParseTreeAssociationNode())
+                    throw new SysmelException(dictionaryElementNode.sourcePosition, "Expected an association with the record field name and value.");
+
+                ParseTreeAssociationNode associationNode = (ParseTreeAssociationNode)dictionaryElementNode;
+                string fieldName = associationNode.key.AnalyzeAndEvaluateInEnvironmentWithExpectedType(builder.environment, Intrinsics.GetSingleton().SymbolType).AsSymbol();
+
+                if (!fieldsByName.ContainsKey(fieldName))
+                    throw new SysmelException(dictionaryElementNode.sourcePosition, "Record does not have a field named #" + fieldName + ".");
+
+                FieldDefinition field = fieldsByName[fieldName];
+                HIRValue? fieldValue = null;
+                if (associationNode.value == null)
+                    fieldValue = builder.AddLiteral(associationNode.sourcePosition, field.type.MakeDefaultValue());
+                else
+                    fieldValue = associationNode.value.AnalyzeAndBuildWithExpectedType(builder, field.type);
+
+                recordFields[field.index] = fieldValue;
+                initializedRecordFields[field.index] = true;
+            }
+
+            for(int i = 0; i < fieldCount; ++i)
+            {
+                if (!initializedRecordFields[i])
+                    recordFields[i] = builder.AddLiteral(dictionary.sourcePosition, fields[i].type.MakeDefaultValue());
+            }
+
+            return builder.MakeRecord(dictionary.sourcePosition, recordFields, this);
         }
 
         public override Value? LookupSelector(string selector)

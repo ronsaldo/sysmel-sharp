@@ -134,6 +134,13 @@ namespace LibSysmelSharp
             return closure;
         }
 
+        public HIRMakeRecord MakeRecord(SourcePosition? sourcePosition, HIRValue[] fields, RecordType recordType)
+        {
+            HIRMakeRecord record = new HIRMakeRecord(sourcePosition, fields, recordType);
+            AddInstruction(record);
+            return record;
+        }
+
         public HIRReturnValue ReturnValue(SourcePosition? sourcePosition, HIRValue value)
         {
             HIRReturnValue instruction = new HIRReturnValue(sourcePosition, value);

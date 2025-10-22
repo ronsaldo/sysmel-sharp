@@ -1551,15 +1551,26 @@ namespace SysmelSharpTests
         [TestMethod]
         public void TestRecordInFunction()
         {
-            Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. {:: MyDynamicPair | MyDynamicPair(1. 2)}");
-            Assert.IsTrue(value.IsFunctionValue());
-            value.DumpToConsole();
+            Value functionValue = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. {:: MyDynamicPair | MyDynamicPair(1. 2)}");
+            Assert.IsTrue(functionValue.IsFunctionValue());
+            functionValue.DumpToConsole();
+
+            Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. {:: MyDynamicPair | MyDynamicPair(1. 2)}()");
+            Assert.IsTrue(value.IsRecordValue());
         }
 
         [TestMethod]
         public void TestRecordInFunction2()
         {
             Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. {:: MyDynamicPair | MyDynamicPair#{first: 1. second: 2}}");
+            Assert.IsTrue(value.IsFunctionValue());
+            value.DumpToConsole();
+        }
+
+        [TestMethod]
+        public void TestRecordInFunction3()
+        {
+            Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. {:: MyDynamicPair | MyDynamicPair#{second: 2}}");
             Assert.IsTrue(value.IsFunctionValue());
             value.DumpToConsole();
         }
