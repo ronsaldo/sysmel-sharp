@@ -35,12 +35,17 @@ namespace LibSysmelSharp
 
         public virtual Value CastAnalyzedAndEvaluatedValueToExpectedType(Value evaluationResult, SysmelType? expectedType)
         {
+            SysmelType valueType = evaluationResult.GetSysmelType();
             if (expectedType == null)
+            {
+                if (valueType.IsReferenceType())
+                    return evaluationResult.LoadValue();
+
                 return evaluationResult;
+            }
             if (expectedType.IsVoidType())
                 return VoidValue.GetSingleton();
             
-            SysmelType valueType = evaluationResult.GetSysmelType();
             if (expectedType.IsSatisfiedBy(valueType))
                 return evaluationResult;
 
@@ -218,12 +223,17 @@ namespace LibSysmelSharp
 
         public virtual HIRValue CastHIRValueToExpectedType(HIRBuilder builder, HIRValue buildResult, SysmelType? expectedType)
         {
+            SysmelType valueType = buildResult.GetSysmelType();
             if (expectedType == null)
+            {
+                if (valueType.IsReferenceType())
+                    return builder.LoadPointer(sourcePosition, buildResult);
                 return buildResult;
+            }
+                
             if (expectedType.IsVoidType())
                 return builder.GetVoidLiteral(sourcePosition);
 
-            SysmelType valueType = buildResult.GetSysmelType();
             if (expectedType.IsSatisfiedBy(valueType))
                 return buildResult;
 

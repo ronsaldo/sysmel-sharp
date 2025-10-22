@@ -120,7 +120,6 @@ endColumn: (Integer)newIndex :: Void.
 
 SourcePosition !{
 getText :: String.
-    print(startIndex). write("-"). printLine(endIndex).
     sourceCode text substringFrom: startIndex until: endIndex
 }.
 

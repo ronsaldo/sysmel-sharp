@@ -806,7 +806,6 @@ scanSingleToken :: ScannedToken.
 }.
 
 let TokenArrayList := System Collections ArrayList(ScannedToken).
-
 Scanner !{
 scanSourceCode: (SourceCode)sourceCode :: ScannedToken list.
     let tokenList := TokenArrayList new.

@@ -18,10 +18,41 @@ namespace LibSysmelSharp
             state = new ParserState(new Token[0]);
         }
 
-        internal static string ParseCEscapeCharacters(string cstring)
+        public static string ParseCEscapeCharacters(string cstring)
         {
             // TODO: Implement this method.
-            return cstring;
+            StringBuilder builder = new StringBuilder();
+            int stringLength = cstring.Length;
+            for(int i = 0; i < stringLength; ++i)
+            {
+                char c = cstring[i];
+                if(c == '\\')
+                {
+                    ++i;
+                    c = cstring[i];
+                    switch(c)
+                    {
+                    case 'n':
+                        builder.Append('\n');
+                        break;
+                    case 'r':
+                        builder.Append('\r');
+                        break;
+                    case 't':
+                        builder.Append('\t');
+                        break;
+                    default:
+                        builder.Append(c);
+                        break;
+                    }
+                }
+                else
+                {
+                    builder.Append(c);
+                }
+            }
+
+            return builder.ToString();
         }
 
         private ParseTreeNode ParseLiteralCharacter()

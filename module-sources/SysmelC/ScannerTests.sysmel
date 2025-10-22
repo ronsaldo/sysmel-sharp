@@ -8,7 +8,6 @@ function scanSourceString(sourceString: String) => ScannedToken list := {
 ## Character
 {
     let tokens := scanSourceString("'A'").
-    printLine(tokens size).
     assert: tokens size = 2.
     assert: TokenKind Character = (tokens at: 0) kind.
     assert: TokenKind EndOfSource = (tokens at: 1) kind.
@@ -94,7 +93,7 @@ function scanSourceString(sourceString: String) => ScannedToken list := {
 ## Integer
 {
     let tokens := scanSourceString("42").
-    printLine((tokens at: 0) getText).
+    ##printLine((tokens at: 0) getText).
     assert: tokens size = 2.
     assert: "42" = (tokens at: 0) getText.
     assert: TokenKind Integer = (tokens at: 0) kind.
