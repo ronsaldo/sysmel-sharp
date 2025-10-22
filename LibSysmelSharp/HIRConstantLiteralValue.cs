@@ -18,6 +18,11 @@
             return literal.AsSelfTypeWithDefaultType(defaultResultType);
         }
 
+        public override Value AsLiteralValue()
+        {
+            return literal;
+        }
+
         public override string ToString()
         {
             return "constLiteral(" + literal.ToString() + ")"; 

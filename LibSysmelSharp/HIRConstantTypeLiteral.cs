@@ -13,5 +13,28 @@
         {
             return typeLiteral.AnalyzeAndBuildApplication(application, builder);
         }
+
+        public override SysmelType AsSelfTypeWithDefaultType(SysmelType defaultResultType)
+        {
+            return typeLiteral.AsSelfTypeWithDefaultType(defaultResultType);
+        }
+        public override Value AsLiteralValue()
+        {
+            return typeLiteral;
+        }
+
+        public override bool IsConstantTypeLiteral()
+        {
+            return true;
+        }
+
+        public override Value GetValueInEvaluationContext(HIRFunctionActivationContext context)
+        {
+            return typeLiteral;
+        }
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            // Nothing is required here
+        }
     }
 }

@@ -913,7 +913,8 @@ namespace LibSysmelSharp
                 }));
             TypeUniverse0.AddMethod(new PrimitiveFunction("new:", false, false,
                 new SimpleFunctionType(null, [TypeUniverse0, IntegerType], DynamicType,
-                (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
+                (HIRValue[] arguments, SysmelType defaultResultType) =>
+                    arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),
                 (Value[] arguments) => {
                     SysmelType selfType = (SysmelType)arguments[0];
                     long size = arguments[1].AsInteger();

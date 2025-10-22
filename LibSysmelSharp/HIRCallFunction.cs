@@ -35,7 +35,7 @@ namespace LibSysmelSharp
         {
             foreach(HIRValue argument in callArguments)
             {
-                if (!argument.IsConstantLiteralValue())
+                if (!argument.IsConstantLiteralValue() && !argument.IsConstantTypeLiteral())
                     return false;
             }
             return true;
@@ -48,10 +48,7 @@ namespace LibSysmelSharp
             int argumentCount = callArguments.Length;
             Value[] compileTimeArguments = new Value[argumentCount];
             for(int i = 0; i < argumentCount; ++i)
-            {
-                HIRConstantLiteralValue argumentValue = (HIRConstantLiteralValue)callArguments[i];
-                compileTimeArguments[i] = argumentValue.literal;
-            }
+                compileTimeArguments[i] = callArguments[i].AsLiteralValue();
 
             Value evaluationResult = function.EvaluateWithArguments(compileTimeArguments);
             return evaluationResult.AnalyzeAndBuild(builder);

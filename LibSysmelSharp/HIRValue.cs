@@ -76,6 +76,16 @@
             return false;
         }
 
+        public virtual bool IsConstantTypeLiteral()
+        {
+            return false;
+        }
+
+        public virtual Value AsLiteralValue()
+        {
+            throw new NotSupportedException();
+        }
+
         public virtual bool IsExtractFieldReference()
         {
             return false;
