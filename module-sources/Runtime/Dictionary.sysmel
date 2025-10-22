@@ -78,6 +78,30 @@ scanFor: (K)key :: Integer.
 }.
 
 Dictionary !{
+includesKey: (K)key :: Boolean.
+    let keyIndex := self scanFor: key.
+    if: keyIndex < 0 then: {
+        return: false
+    }.
+
+    key = (keys at: keyIndex)
+}.
+
+Dictionary !{
+at: (K)key :: V.
+    let keyIndex := self scanFor: key.
+    if: keyIndex < 0 then: {
+        error: "Key not found in symbol hashtable."
+    }.
+
+    if: key ~= (keys at: keyIndex) then: {
+        error: "Key not found in symbol hashtable."
+    }.
+
+    values at: keyIndex
+}.
+
+Dictionary !{
 at: (K)key put: (V)value :: Void.
 }.
 
