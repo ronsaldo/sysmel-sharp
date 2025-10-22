@@ -87,5 +87,13 @@
         {
             ValidMethodDictionary()[selector] = method;
         }
+
+        public override HIRValue AnalyzeAndBuildMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, HIRBuilder builder)
+        {
+            if (messageSend.arguments.Length == 0 && nameAndValues.ContainsKey(selector))
+                return builder.AddLiteral(messageSend.sourcePosition, nameAndValues[selector]);
+
+            return base.AnalyzeAndBuildMessageSendInEnvironment(messageSend, selector, builder);
+        }
     }
 }

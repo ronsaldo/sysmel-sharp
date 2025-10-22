@@ -342,7 +342,7 @@ function isOperatorCharacter(character: Integer) => Boolean := {
         }.
     } continueWith: (i := i + 1).
 
-    return: false
+    false
 }.
 
 Scanner !{
@@ -626,7 +626,7 @@ scanPoundSequence :: ScannedToken.
     }.
 
     state := state advance.
-    return: (state makeErrorToken: "Unknown character." startingFrom: initialState)
+    state makeErrorToken: "Unknown character." startingFrom: initialState
 }.
 
 Scanner !{
@@ -757,7 +757,7 @@ scanDelimiter :: ScannedToken.
     }.
 
     state := state advance.
-    return: (state makeErrorToken: "Unknown character." startingFrom: initialState)
+    state makeErrorToken: "Unknown character." startingFrom: initialState
 }.
 
 Scanner !{

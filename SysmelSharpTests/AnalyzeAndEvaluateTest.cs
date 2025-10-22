@@ -974,6 +974,23 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestEnumTypeAccess3()
+        {
+            Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. {:: TestEnum | TestEnum Third}()");
+            Assert.IsTrue(value.IsEnumValue());
+            Assert.AreEqual(3, value.AsInteger());
+        }
+
+        [TestMethod]
+        public void TestEnumTypeAccess4()
+        {
+            Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. {:: Integer | TestEnum Third value}()");
+            Assert.IsFalse(value.IsEnumValue());
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(3, value.AsInteger());
+        }
+
+        [TestMethod]
         public void TestEnumTypeEquality()
         {
             Value value = EvaluateString("Enum: #TestEnum withBaseType: Integer values: #{First: 1. Second: 2. Third:}. TestEnum Third = TestEnum Third");

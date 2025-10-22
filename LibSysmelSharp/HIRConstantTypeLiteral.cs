@@ -36,5 +36,10 @@
         {
             // Nothing is required here
         }
+
+        public override HIRValue AnalyzeAndBuildMessageSendInEnvironment(ParseTreeMessageSendNode messageSend, string selector, HIRBuilder builder)
+        {
+            return typeLiteral.AnalyzeAndBuildMessageSendInEnvironment(messageSend, selector, builder);
+        }
     }
 }
