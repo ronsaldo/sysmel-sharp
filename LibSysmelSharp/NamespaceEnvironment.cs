@@ -13,9 +13,9 @@
 
         public override Value? LookupRecursively(string symbol)
         {
-            Value? intrinsicValue = nspace.LookSymbol(symbol);
-            if (intrinsicValue != null)
-                return intrinsicValue;
+            Value? nspaceValue = nspace.LookSymbol(symbol);
+            if (nspaceValue != null)
+                return nspaceValue;
 
             return parent.LookupRecursively(symbol);
         }

@@ -2,7 +2,7 @@
   "profiles": {
     "SysmelSharp": {
       "commandName": "Project",
-      "commandLineArgs": ".\\module-sources\\Runtime\\Package.sysmel .\\module-sources\\Runtime\\PackageTests.sysmel .\\module-sources\\SysmelC\\Package.sysmel",
+      "commandLineArgs": ".\\module-sources\\Runtime\\Package.sysmel .\\module-sources\\Runtime\\PackageTests.sysmel .\\module-sources\\SysmelC\\Package.sysmel .\\module-sources\\SysmelC\\PackageTests.sysmel",
       "workingDirectory": "C:\\projects\\SysmelSharp"
     }
   }

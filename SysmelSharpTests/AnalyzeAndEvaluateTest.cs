@@ -1409,6 +1409,20 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestNestedNamespaceMetaBuilderAccess2()
+        {
+            Value value = EvaluateString("namespace ParentNamespace definition: {public: [Class: #TestClass withFields: #{}]}. namespace ParentNamespace definition:{TestClass}");
+            Assert.IsTrue(value.IsNamespace());
+        }
+
+        [TestMethod]
+        public void TestNestedNamespaceMetaBuilderAccess3()
+        {
+            Value value = EvaluateString("namespace ParentNamespace definition: {public: [Record: #TestRecord withFields: #{}]}. namespace ParentNamespace definition:{TestRecord}");
+            Assert.IsTrue(value.IsNamespace());
+
+        }
+        [TestMethod]
         public void TestNestedNamespaceMetaBuilder()
         {
             Value value = EvaluateString("namespace ParentNamespace definition: {namespace ChildNamespace definition: {}}");

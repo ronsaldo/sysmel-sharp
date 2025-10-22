@@ -1,0 +1,184 @@
+namespace SysmelC definition: {
+
+function scanSourceString(sourceString: String) => ScannedToken list := {
+    let sourceCode := makeSourceCodeForString(sourceString).
+    Scanner new scanSourceCode: sourceCode
+}.
+
+## Character
+{
+    let tokens := scanSourceString("'A'").
+    printLine(tokens size).
+    assert: tokens size = 2.
+    assert: TokenKind Character = (tokens at: 0) kind.
+    assert: TokenKind EndOfSource = (tokens at: 1) kind.
+}.
+
+## Delimiters
+{
+    let tokens := scanSourceString("() [] {}").
+    assert: tokens size = 7.
+    assert: TokenKind LeftParent = (tokens at: 0) kind.
+    assert: TokenKind RightParent = (tokens at: 1) kind.
+    assert: TokenKind LeftBracket = (tokens at: 2) kind.
+    assert: TokenKind RightBracket = (tokens at: 3) kind.
+    assert: TokenKind LeftCurlyBracket = (tokens at: 4) kind.
+    assert: TokenKind RightCurlyBracket = (tokens at: 5) kind.
+    assert: TokenKind EndOfSource = (tokens at: 6) kind.
+}.
+
+## Delimiters2
+{
+    let tokens := scanSourceString("; , . ... : :: :=").
+    assert: tokens size = 8.
+    assert: TokenKind Semicolon = (tokens at: 0) kind.
+    assert: TokenKind Comma = (tokens at: 1) kind.
+    assert: TokenKind Dot = (tokens at: 2) kind.
+    assert: TokenKind Ellipsis = (tokens at: 3) kind.
+    assert: TokenKind Colon = (tokens at: 4) kind.
+    assert: TokenKind ColonColon = (tokens at: 5) kind.
+    assert: TokenKind Assignment = (tokens at: 6) kind.
+    assert: TokenKind EndOfSource = (tokens at: 7) kind.
+}.
+
+## Delimiters3
+{
+    let tokens := scanSourceString("#[ #{ #( !{").
+    assert: tokens size = 5.
+    assert: TokenKind ByteArrayStart = (tokens at: 0) kind.
+    assert: TokenKind ImmutableDictionaryStart = (tokens at: 1) kind.
+    assert: TokenKind LiteralArrayStart = (tokens at: 2) kind.
+    assert: TokenKind MethodStart = (tokens at: 3) kind.
+    assert: TokenKind EndOfSource = (tokens at: 4) kind.
+}.
+
+## Empty string
+{
+    let tokens := scanSourceString("").
+    assert: tokens size = 1.
+    assert: TokenKind EndOfSource = (tokens at: 0) kind.
+}.
+
+## Float
+{
+    let tokens := scanSourceString("42.5").
+    assert: tokens size = 2.
+    assert: TokenKind Float = (tokens at: 0) kind.
+    assert: TokenKind EndOfSource = (tokens at: 1) kind.
+}.
+
+## Float2
+{
+    let tokens := scanSourceString("42.5e3").
+    assert: tokens size = 2.
+    assert: TokenKind Float = (tokens at: 0) kind.
+    assert: TokenKind EndOfSource = (tokens at: 1) kind.
+}.
+
+## Identifier
+{
+    let tokens := scanSourceString("identifier").
+    assert: tokens size = 2.
+    assert: TokenKind Identifier = (tokens at: 0) kind.
+    assert: TokenKind EndOfSource = (tokens at: 1) kind.
+}.
+
+## incompleteMultiLineComment
+{
+    let tokens := scanSourceString("#* Testing").
+    assert: tokens size = 2.
+    assert: TokenKind Error = (tokens at: 0) kind.
+    assert: TokenKind EndOfSource = (tokens at: 1) kind.
+}.
+
+## Integer
+{
+    let tokens := scanSourceString("42").
+    printLine((tokens at: 0) getText).
+    assert: tokens size = 2.
+    assert: "42" = (tokens at: 0) getText.
+    assert: TokenKind Integer = (tokens at: 0) kind.
+    assert: TokenKind EndOfSource = (tokens at: 1) kind.
+}.
+
+## Keyword
+{
+    let tokens := scanSourceString("multi:keyword:with: keyword: identifier").
+    assert: tokens size = 4.
+    assert: TokenKind MultiKeyword = (tokens at: 0) kind.
+    assert: TokenKind Keyword = (tokens at: 1) kind.
+    assert: TokenKind Identifier = (tokens at: 2) kind.
+    assert: TokenKind EndOfSource = (tokens at: 3) kind.
+}.
+
+## Macro operators
+{
+    let tokens := scanSourceString("`' `` `, `@").
+    assert: tokens size = 5.
+    assert: TokenKind Quote = (tokens at: 0) kind.
+    assert: TokenKind QuasiQuote = (tokens at: 1) kind.
+    assert: TokenKind QuasiUnquote = (tokens at: 2) kind.
+    assert: TokenKind Splice = (tokens at: 3) kind.
+    assert: TokenKind EndOfSource = (tokens at: 4) kind.
+}.
+
+## Multiline comment
+{
+    let tokens := scanSourceString("#*
+    Testing 
+    *#").
+    assert: tokens size = 1.
+    assert: TokenKind EndOfSource = (tokens at: 0) kind.
+}.
+
+## Negative Integer
+{
+    let tokens := scanSourceString("-42").
+    assert: tokens size = 2.
+    assert: TokenKind Integer = (tokens at: 0) kind.
+    assert: TokenKind EndOfSource = (tokens at: 1) kind.
+}.
+
+## Operators
+{
+    let tokens := scanSourceString("| < > + *").
+    assert: tokens size = 6.
+    assert: TokenKind Bar = (tokens at: 0) kind.
+    assert: TokenKind LessThan = (tokens at: 1) kind.
+    assert: TokenKind GreaterThan = (tokens at: 2) kind.
+    assert: TokenKind Operator = (tokens at: 3) kind.
+    assert: TokenKind Operator = (tokens at: 4) kind.
+    assert: TokenKind EndOfSource = (tokens at: 5) kind.
+}.
+
+## Single line comment
+{
+    let tokens := scanSourceString("
+    ## Test comment
+    ").
+    assert: tokens size = 1.
+    assert: TokenKind EndOfSource = (tokens at: 0) kind.
+}.
+
+## String
+{
+    let tokens := scanSourceString("\"Hello World\"").
+    assert: tokens size = 2.
+    assert: TokenKind String = (tokens at: 0) kind.
+    assert: TokenKind EndOfSource = (tokens at: 1) kind.
+}.
+
+## Symbols
+{
+    let tokens := scanSourceString("#multi:keyword:with: #keyword: #identifier #+ #\"String Symbol\"").
+    assert: tokens size = 6.
+    assert: TokenKind Symbol = (tokens at: 0) kind.
+    assert: TokenKind Symbol = (tokens at: 1) kind.
+    assert: TokenKind Symbol = (tokens at: 2) kind.
+    assert: TokenKind Symbol = (tokens at: 3) kind.
+    assert: TokenKind Symbol = (tokens at: 4) kind.
+    assert: TokenKind EndOfSource = (tokens at: 5) kind.
+    
+}.
+
+}.

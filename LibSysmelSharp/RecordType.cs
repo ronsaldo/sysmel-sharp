@@ -167,6 +167,16 @@ namespace LibSysmelSharp
             return null;
         }
 
+        public override Value MakeDefaultValue()
+        {
+            return NilValue.GetSingleton();
+        }
+
+        public override string? GetName()
+        {
+            return name;
+        }
+
         public override string ToString()
         {
             if (name == null)
