@@ -1,9 +1,39 @@
 namespace System definition: {
 namespace Collections definition: {
 
-let testDictionary := Dictionary(String. Integer) new.
+## String dictionary.
+{
+    let testDictionary := Dictionary(String. Integer) new.
 
-printLine(testDictionary).
-##printLine(testArrayList at: 1000).
+    assert: testDictionary size = 0.
+    testDictionary
+        at: "A" put: 1;
+        at: "B" put: 2;
+        at: "C" put: 3.
+
+    assert: testDictionary size = 3.
+
+    assert: (testDictionary at: "A") = 1.
+    assert: (testDictionary at: "B") = 2.
+    assert: (testDictionary at: "C") = 3.
+}.
+
+## Symbol dictionary.
+{
+    let testDictionary := Dictionary(Symbol. Integer) new.
+
+    assert: testDictionary size = 0.
+    testDictionary
+        at: #A put: 1;
+        at: #B put: 2;
+        at: #C put: 3.
+
+    assert: testDictionary size = 3.
+
+    assert: (testDictionary at: #A) = 1.
+    assert: (testDictionary at: #B) = 2.
+    assert: (testDictionary at: #C) = 3.
+}
+
 }.
 }

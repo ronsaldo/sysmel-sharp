@@ -103,6 +103,24 @@ at: (K)key :: V.
 
 Dictionary !{
 at: (K)key put: (V)value :: Void.
+    let bucketIndex := self scanFor: key.
+    if: bucketIndex < 0 then: { error: "Bucket error." }.
+
+    let storedKey := keys at: bucketIndex.
+    if: storedKey = nil then: {
+        keys at: bucketIndex put: key.
+        values at: bucketIndex put: value.
+        size := size + 1.
+        self checkTargetCapacity.
+    } else: {
+        values at: bucketIndex put: value.
+    }.
+
+}.
+
+Dictionary !{
+size :: Integer.
+    size
 }.
 
 }

@@ -619,6 +619,9 @@ namespace LibSysmelSharp
             StringType.AddMethod(new PrimitiveFunction("=", false, true,
                 new SimpleFunctionType(null, [StringType, StringType], BooleanType),
                 (Value[] arguments) => {
+                    if (arguments[0].IsNilValue() || arguments[1].IsNilValue())
+                        return BooleanValue.GetWithValue(arguments[0].Equals(arguments[1]));
+
                     string leftString = arguments[0].AsString();
                     string rightString = arguments[1].AsString();
                     return BooleanValue.GetWithValue(leftString == rightString);
@@ -626,6 +629,9 @@ namespace LibSysmelSharp
             StringType.AddMethod(new PrimitiveFunction("~=", false, true,
                 new SimpleFunctionType(null, [StringType, StringType], BooleanType),
                 (Value[] arguments) => {
+                    if (arguments[0].IsNilValue() || arguments[1].IsNilValue())
+                        return BooleanValue.GetWithValue(!arguments[0].Equals(arguments[1]));
+
                     string leftString = arguments[0].AsString();
                     string rightString = arguments[1].AsString();
                     return BooleanValue.GetWithValue(leftString != rightString);
@@ -641,7 +647,7 @@ namespace LibSysmelSharp
                 new SimpleFunctionType(null, [StringType], IntegerType),
                 (Value[] arguments) => {
                     string str = arguments[0].AsString();
-                    return new IntegerValue(null, str.GetHashCode(), IntegerType);
+                    return new IntegerValue(null, str.GetHashCode() & 0x7fffffff, IntegerType);
                 }));
             StringType.AddMethod(new PrimitiveFunction("size", false, true,
                 new SimpleFunctionType(null, [StringType], IntegerType),
@@ -678,6 +684,9 @@ namespace LibSysmelSharp
             SymbolType.AddMethod(new PrimitiveFunction("=", false, true,
                 new SimpleFunctionType(null, [SymbolType, SymbolType], BooleanType),
                 (Value[] arguments) => {
+                    if (arguments[0].IsNilValue() || arguments[1].IsNilValue())
+                        return BooleanValue.GetWithValue(arguments[0].Equals(arguments[1]));
+
                     string leftString = arguments[0].AsSymbol();
                     string rightString = arguments[1].AsSymbol();
                     return BooleanValue.GetWithValue(leftString == rightString);
@@ -685,6 +694,9 @@ namespace LibSysmelSharp
             SymbolType.AddMethod(new PrimitiveFunction("~=", false, true,
                 new SimpleFunctionType(null, [SymbolType, SymbolType], BooleanType),
                 (Value[] arguments) => {
+                    if (arguments[0].IsNilValue() || arguments[1].IsNilValue())
+                        return BooleanValue.GetWithValue(!arguments[0].Equals(arguments[1]));
+
                     string leftString = arguments[0].AsSymbol();
                     string rightString = arguments[1].AsSymbol();
                     return BooleanValue.GetWithValue(leftString != rightString);
@@ -693,7 +705,7 @@ namespace LibSysmelSharp
                 new SimpleFunctionType(null, [SymbolType], IntegerType),
                 (Value[] arguments) => {
                     string str = arguments[0].AsSymbol();
-                    return new IntegerValue(null, str.GetHashCode(), IntegerType);
+                    return new IntegerValue(null, str.GetHashCode() & 0x7fffffff, IntegerType);
                 }));
             SymbolType.AddMethod(new PrimitiveFunction("asString", false, true,
                 new SimpleFunctionType(null, [SymbolType], StringType),

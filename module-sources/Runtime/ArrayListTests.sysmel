@@ -1,12 +1,19 @@
 namespace System definition: {
 namespace Collections definition: {
 
-let testArrayList := ArrayList(Integer) new.
-testArrayList add: 42; add: 45.
-printLine(testArrayList AsList).
-printLine(testArrayList at: 0).
-printLine(testArrayList at: 0 put: -2).
-printLine(testArrayList AsList).
+## Integer array list
+{
+    let testArrayList := ArrayList(Integer) new.
+    assert: testArrayList size = 0.
+    
+    testArrayList add: 42; add: 45.
+    assert: testArrayList size = 2.
+    assert: (testArrayList at: 0) = 42.
+    assert: (testArrayList at: 1) = 45.
+
+    testArrayList at: 0 put: -2.
+    assert: (testArrayList at: 0) = -2.
+}
 
 ##printLine(testArrayList at: 1000).
 }.

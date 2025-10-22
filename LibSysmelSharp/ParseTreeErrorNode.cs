@@ -10,10 +10,19 @@
             this.message = message;
             this.innerNode = innerNode;
         }
-
         public override bool IsParseTreeErrorNode()
         {
             return true;
+        }
+
+        public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
+        {
+            throw new SysmelException(sourcePosition, "Parsing Error: " + message);
+        }
+
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            throw new SysmelException(sourcePosition, "Parsing Error: " + message);
         }
     }
 }
