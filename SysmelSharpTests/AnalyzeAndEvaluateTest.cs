@@ -1520,5 +1520,48 @@ namespace SysmelSharpTests
             Assert.AreEqual("test", EvaluateString("#test asString").AsString());
         }
 
+        [TestMethod]
+        public void TestIntegerConversion()
+        {
+            Value functionValue = EvaluateString("{:: UInt8 | 42u8 }");
+            functionValue.DumpToConsole();
+        }
+
+        [TestMethod]
+        public void TestIntegerConversion2()
+        {
+            Value functionValue = EvaluateString("{:(Integer)x :: Character | x asCharacter }");
+            functionValue.DumpToConsole();
+        }
+
+        [TestMethod]
+        public void TestIntegerConversion3()
+        {
+            Value functionValue = EvaluateString("{:(Integer)x :: UInt8 | x asUInt8}");
+            functionValue.DumpToConsole();
+        }
+
+        [TestMethod]
+        public void TestCharacterConversion()
+        {
+            Value functionValue = EvaluateString("{:(Character)x :: Integer| x asInteger }");
+            functionValue.DumpToConsole();
+        }
+
+        [TestMethod]
+        public void TestRecordInFunction()
+        {
+            Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. {:: MyDynamicPair | MyDynamicPair(1. 2)}");
+            Assert.IsTrue(value.IsFunctionValue());
+            value.DumpToConsole();
+        }
+
+        [TestMethod]
+        public void TestRecordInFunction2()
+        {
+            Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. {:: MyDynamicPair | MyDynamicPair#{first: 1. second: 2}}");
+            Assert.IsTrue(value.IsFunctionValue());
+            value.DumpToConsole();
+        }
     }
 }

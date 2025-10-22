@@ -156,6 +156,11 @@ namespace LibSysmelSharp
             throw new SysmelException(sourcePosition, "No dictionary type expression.");
         }
 
+        public virtual HIRValue AnalyzeAndBuildDictionaryInstance(ParseTreeImmutableDictionaryNode dictionary, HIRBuilder builder)
+        {
+            throw new SysmelException(sourcePosition, "No dictionary type expression.");
+        }
+
         public virtual HIRValue AnalyzeAndBuild(HIRBuilder builder)
         {
             return builder.AddLiteral(sourcePosition, this);

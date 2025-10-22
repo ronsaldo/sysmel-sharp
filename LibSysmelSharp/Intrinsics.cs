@@ -612,7 +612,144 @@ namespace LibSysmelSharp
                     long rightValue = arguments[1].AsInteger();
                     return BooleanValue.GetWithValue(leftValue >= rightValue);
                 }));
+
+            integerType.AddMethod(new PrimitiveFunction("asCharacter", false, true,
+                new SimpleFunctionType(null, [integerType], CharacterType),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, arguments[0].AsInteger(), CharacterType);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asInteger", false, true,
+                new SimpleFunctionType(null, [integerType], IntegerType),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, arguments[0].AsInteger(), IntegerType);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asFloat", false, true,
+                new SimpleFunctionType(null, [integerType], FloatType),
+                (Value[] arguments) => {
+                    return new FloatValue(arguments[0].sourcePosition, (double)arguments[0].AsInteger(), FloatType);
+                }));
+
+
+            integerType.AddMethod(new PrimitiveFunction("asChar8", false, true,
+                new SimpleFunctionType(null, [integerType], Char8Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Char8Type.NormalizeInteger(arguments[0].AsInteger()), UInt8Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asChar16", false, true,
+                new SimpleFunctionType(null, [integerType], Char16Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Char16Type.NormalizeInteger(arguments[0].AsInteger()), Char16Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asChar32", false, true,
+                new SimpleFunctionType(null, [integerType], Char32Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Char32Type.NormalizeInteger(arguments[0].AsInteger()), Char32Type);
+                }));
+            
+            integerType.AddMethod(new PrimitiveFunction("asUInt8", false, true,
+                new SimpleFunctionType(null, [integerType], UInt8Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, UInt8Type.NormalizeInteger(arguments[0].AsInteger()), UInt8Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asUInt16", false, true,
+                new SimpleFunctionType(null, [integerType], UInt16Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, UInt16Type.NormalizeInteger(arguments[0].AsInteger()), UInt16Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asUInt32", false, true,
+                new SimpleFunctionType(null, [integerType], UInt32Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, UInt32Type.NormalizeInteger(arguments[0].AsInteger()), UInt32Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asUInt64", false, true,
+                new SimpleFunctionType(null, [integerType], UInt64Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, UInt64Type.NormalizeInteger(arguments[0].AsInteger()), UInt64Type);
+                }));
+
+            integerType.AddMethod(new PrimitiveFunction("asInt8", false, true,
+                new SimpleFunctionType(null, [integerType], Int8Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Int8Type.NormalizeInteger(arguments[0].AsInteger()), Int8Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asInt16", false, true,
+                new SimpleFunctionType(null, [integerType], Int16Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Int16Type.NormalizeInteger(arguments[0].AsInteger()), Int16Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asInt32", false, true,
+                new SimpleFunctionType(null, [integerType], Int32Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Int32Type.NormalizeInteger(arguments[0].AsInteger()), Int32Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("asInt64", false, true,
+                new SimpleFunctionType(null, [integerType], Int64Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Int64Type.NormalizeInteger(arguments[0].AsInteger()), Int64Type);
+                }));
         }
+
+        void RegisterLiteralNumberPrimitives(NominalType integerType)
+        {
+            integerType.AddMethod(new PrimitiveFunction("c8", false, true,
+                new SimpleFunctionType(null, [integerType], Char8Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Char8Type.NormalizeInteger(arguments[0].AsInteger()), UInt8Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("c16", false, true,
+                new SimpleFunctionType(null, [integerType], Char16Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Char16Type.NormalizeInteger(arguments[0].AsInteger()), Char16Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("c32", false, true,
+                new SimpleFunctionType(null, [integerType], Char32Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Char32Type.NormalizeInteger(arguments[0].AsInteger()), Char32Type);
+                }));
+
+            integerType.AddMethod(new PrimitiveFunction("u8", false, true,
+                new SimpleFunctionType(null, [integerType], UInt8Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, UInt8Type.NormalizeInteger(arguments[0].AsInteger()), UInt8Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("u16", false, true,
+                new SimpleFunctionType(null, [integerType], UInt16Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, UInt16Type.NormalizeInteger(arguments[0].AsInteger()), UInt16Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("u32", false, true,
+                new SimpleFunctionType(null, [integerType], UInt32Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, UInt32Type.NormalizeInteger(arguments[0].AsInteger()), UInt32Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("u64", false, true,
+                new SimpleFunctionType(null, [integerType], UInt64Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, UInt64Type.NormalizeInteger(arguments[0].AsInteger()), UInt64Type);
+                }));
+
+            integerType.AddMethod(new PrimitiveFunction("i8", false, true,
+                new SimpleFunctionType(null, [integerType], Int8Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Int8Type.NormalizeInteger(arguments[0].AsInteger()), Int8Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("i16", false, true,
+                new SimpleFunctionType(null, [integerType], Int16Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Int16Type.NormalizeInteger(arguments[0].AsInteger()), Int16Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("i32", false, true,
+                new SimpleFunctionType(null, [integerType], Int32Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Int32Type.NormalizeInteger(arguments[0].AsInteger()), Int32Type);
+                }));
+            integerType.AddMethod(new PrimitiveFunction("i64", false, true,
+                new SimpleFunctionType(null, [integerType], Int64Type),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, Int64Type.NormalizeInteger(arguments[0].AsInteger()), Int64Type);
+                }));
+        }
+
         void RegisterFunctionPrimitives()
         {
             FunctionType.AddMethod(new PrimitiveFunction("dump", false, false,
@@ -858,7 +995,12 @@ namespace LibSysmelSharp
             RegisterSymbolPrimitives();
             RegisterTypePrimitives();
             RegisterIOPrimitive();
+
+            RegisterLiteralNumberPrimitives(IntegerType);
+            RegisterLiteralNumberPrimitives(CharacterType);
             RegisterIntegerTypePrimitives(IntegerType);
+            RegisterIntegerTypePrimitives(CharacterType);
+
             RegisterObjectTypePrimitives();
         }
     }

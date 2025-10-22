@@ -1,0 +1,820 @@
+namespace SysmelC definition: {
+public: [
+enum TokenKind baseType: UInt8 values: #{
+    NullToken: 0u8.
+    EndOfSource:.
+    Error:.
+
+    Character:.
+    Float:.
+    Identifier:.
+    Integer:.
+    Keyword:.
+    MultiKeyword:.
+    Operator:.
+    LessThan:.
+    GreaterThan:.
+    Bar:.
+
+    String:.
+    Symbol:.
+
+    LeftParent:.
+    RightParent:.
+    LeftBracket:.
+    RightBracket:.
+    LeftCurlyBracket:.
+    RightCurlyBracket:.
+
+    Colon:.
+    ColonColon:.
+    Assignment:.
+    Semicolon:.
+    Comma:.
+    Dot:.
+    Ellipsis:.
+    Quote:.
+    QuasiQuote:.
+    QuasiUnquote:.
+    Splice:.
+
+    ByteArrayStart:.
+    ImmutableDictionaryStart:.
+    LiteralArrayStart:.
+    MethodStart:.
+}.
+
+record ScannedToken withFields: #{
+    kind: TokenKind.
+    sourcePosition: SourcePosition.
+    errorMessage: String
+}.
+
+class ScannerState withSuperclass: Object fields:#{
+    sourceCode: SourceCode.
+    text: String.
+    textSize: Integer.
+    position: Integer.
+    line: Integer.
+    column: Integer.
+    isPreviousCR: Boolean
+}.
+
+class Scanner withSuperclass: Object fields:#{
+    state: ScannerState
+}.
+
+function makeScannerStateForSourceCode(sourceCode: SourceCode) => ScannerState
+    := ScannerState new
+        sourceCode: sourceCode;
+        text: sourceCode text;
+        textSize: sourceCode text size;
+        position: 0;
+        line: 1;
+        column: 1;
+        isPreviousCR: false;
+        yourself
+].
+
+ScannerState !{
+sourceCode :: SourceCode.
+    sourceCode
+}.
+
+ScannerState !{
+sourceCode: (SourceCode)newSourceCode :: Void.
+    sourceCode := newSourceCode
+}.
+
+ScannerState !{
+text :: String.
+    text
+}.
+
+ScannerState !{
+text: (String)newText :: Void.
+    text := newText
+}.
+
+ScannerState !{
+textSize :: Integer.
+    textSize
+}.
+
+ScannerState !{
+textSize: (Integer)newSize :: Void.
+    textSize := newSize
+}.
+
+ScannerState !{
+position :: Integer.
+    position
+}.
+
+ScannerState !{
+position: (Integer)newPosition :: Void.
+    position := newPosition
+}.
+
+ScannerState !{
+line :: Integer.
+    line
+}.
+
+ScannerState !{
+line: (Integer)newPosition :: Void.
+    line := newPosition
+}.
+
+ScannerState !{
+column :: Integer.
+    column
+}.
+
+ScannerState !{
+column: (Integer)newPosition :: Void.
+    column := newPosition
+}.
+
+ScannerState !{
+isPreviousCR :: Boolean.
+    isPreviousCR
+}.
+
+ScannerState !{
+isPreviousCR: (Boolean)newPosition :: Void.
+    isPreviousCR := newPosition
+}.
+
+ScannedToken !{
+getText :: String.
+    sourcePosition getText
+}.
+
+ScannerState !{
+atEnd :: Boolean.
+    position >= textSize
+}.
+
+ScannerState !{
+peekAt: (Integer)offset :: Integer.
+    let peekPosition := position + offset.
+    if: (peekPosition < textSize)
+    then: (text at: peekPosition) asInteger
+    else: -1
+}.
+
+ScannerState !{
+peek :: Integer.
+    self peekAt: 0
+}.
+
+ScannerState !{
+advance :: ScannerState.
+    assert: self atEnd not.
+    let c := (text at: position) asInteger.
+    
+    ## Carriage return
+    if: c = '\r' asInteger then: {
+        return: (ScannerState new
+            sourceCode: sourceCode;
+            text: text;
+            textSize: textSize;
+            position: position + 1;
+            line: line + 1;
+            column: 1;
+            isPreviousCR: true;
+            yourself)
+    }.
+
+    ## Linefeed
+    if: c = '\n' asInteger then: {
+        if: isPreviousCR then: {
+            return: (ScannerState new
+                    sourceCode: sourceCode;
+                    text: text;
+                    textSize: textSize;
+                    position: position + 1;
+                    line: line;
+                    column: column;
+                    isPreviousCR: false;
+                    yourself)
+        }.
+
+        return: (ScannerState new
+            sourceCode: sourceCode;
+            text: text;
+            textSize: textSize;
+            position: position + 1;
+            line: line + 1;
+            column: 1;
+            isPreviousCR: false;
+            yourself)
+    }.
+
+    ## Tab
+    if: c = '\t' asInteger then: {
+        return: (ScannerState new
+            sourceCode: sourceCode;
+            text: text;
+            textSize: textSize;
+            position: position + 1;
+            line: line;
+            column: (self column + 4)%4 * 4 + 1;
+            isPreviousCR: false;
+            yourself
+        ).
+    }.
+
+    ## Generic character
+    ScannerState new
+        sourceCode: sourceCode;
+        text: text;
+        textSize: textSize;
+        position: position + 1;
+        line: line;
+        column: column + 1;
+        isPreviousCR: false;
+        yourself
+}.
+
+ScannerState !{
+advance: (Integer)count :: ScannerState.
+    let result mutable := self.
+    let i mutable := 0.
+    while: (i < count) do: {
+        result := result advance
+    } continueWith: (i := i + 1).
+
+    result
+}.
+
+ScannerState !{
+currentSourcePosition :: SourcePosition.
+    SourcePosition new
+        sourceCode: sourceCode;
+        startIndex: position;
+        endIndex: position;
+        startLine: line;
+        endLine: line;
+        startColumn: column;
+        endColumn: column;
+        yourself
+}.
+
+ScannerState !{
+makeToken: (TokenKind)kind :: ScannedToken.
+    ScannedToken #{
+        kind: kind.
+        sourcePosition: self currentSourcePosition.
+    }
+}.
+
+ScannerState !{
+makeToken: (TokenKind)kind startingFrom: (ScannerState)previousState :: ScannedToken.
+    ScannedToken #{
+        kind: kind.
+        sourcePosition: (SourcePosition new
+            sourceCode: sourceCode;
+            startIndex: previousState position;
+            endIndex: position;
+            startLine: previousState line;
+            endLine: line;
+            startColumn: previousState column;
+            endColumn: column;
+            yourself)
+    }
+}.
+
+ScannerState !{
+makeToken: (TokenKind)kind message: (String)errorMessage startingFrom: (ScannerState) previousState :: ScannedToken.
+    ScannedToken #{
+        kind: kind.
+        sourcePosition: (SourcePosition new
+            sourceCode: sourceCode;
+            startIndex: previousState position;
+            endIndex: position;
+            startLine: previousState line;
+            endLine: line;
+            startColumn: previousState column;
+            endColumn: column;
+            yourself
+        ).
+        errorMessage: errorMessage
+    }
+}.
+
+ScannerState !{
+makeErrorToken: (String)errorMessage startingFrom: (ScannerState) previousState :: ScannedToken.
+    ScannedToken #{
+        kind: TokenKind Error.
+        sourcePosition: (SourcePosition new
+            sourceCode: sourceCode;
+            startIndex: previousState position;
+            endIndex: position;
+            startLine: previousState line;
+            endLine: line;
+            startColumn: previousState column;
+            endColumn: column;
+            yourself
+        ).
+        errorMessage: errorMessage
+    }
+}.
+
+function isDigit(character: Integer) => Boolean
+    := (('0'asInteger <= character) && (character <= '9'asInteger)).
+
+function isIdentifierStart(character: Integer) => Boolean
+    := (('A'asInteger <= character) && (character <= 'Z'asInteger)) ||
+       (('a'asInteger <= character) && (character <= 'z'asInteger)) ||
+       (character = '_'asInteger).
+
+function isIdentifierMiddle(character: Integer) => Boolean
+    := isDigit(character) || isIdentifierStart(character).
+
+function isOperatorCharacter(character: Integer) => Boolean := {
+    let charset := "+-/\\*~<>=@%|&?!^".
+    let i mutable := 0.
+    while: (i < charset size) do:{
+        if: (charset at: i) asInteger = character then: {
+            return: true
+        }.
+    } continueWith: (i := i + 1).
+
+    return: false
+}.
+
+Scanner !{
+skipWhite :: ScannedToken.
+    let hasSeenComments mutable := false.
+    do: {
+        hasSeenComments := false.
+        ## Skip whitespaces.
+        while: (state atEnd not && (state peek <= ' 'asInteger)) do: {
+            state := state advance
+        }.
+
+        if: (state peek = '#'asInteger) then: {
+            ## Singleline
+            if:((state peekAt: 1) = '#'asInteger) then: {
+                state := state advance: 2.
+                while: (state atEnd not && (state peek ~= '\n'asInteger) && (state peek ~= '\r'asInteger) ) do: {
+                    state := state advance
+                }.
+
+                hasSeenComments := true.
+            }
+            else: {
+                ## Multiline
+                if: ((state peekAt: 1) = '*'asInteger) then: {
+                    let startingState := state.
+                    state := state advance: 2.
+                    let hasCommentEnd mutable := false.
+                    while: state atEnd not && hasCommentEnd not do: {
+                        hasCommentEnd := (state peek = '*'asInteger) && ((state peekAt: 1) = '#'asInteger).
+
+                        if:(hasCommentEnd) then: {
+                            state := state advance: 2
+                        }
+                        else: {
+                            state := state advance.
+                        }
+                    }.
+                    if: hasCommentEnd then: {
+                        hasSeenComments := true
+                    } else: {
+                        return: (state makeErrorToken: "Incomplete multiline comment." startingFrom: startingState)
+                    }
+                }
+            }
+        }
+    } while: (hasSeenComments && state atEnd not).
+    
+    ScannedToken#{kind: TokenKind NullToken}
+}.
+
+Scanner !{
+scanAdvanceKeyword :: Boolean.
+    if: isIdentifierStart(state peek) not then: {
+        return: false
+    }.
+
+    let memento := state.
+    while: isIdentifierMiddle(state peek) do: {
+        state := state advance
+    }.
+
+    if: state peek = ':'asInteger then: {
+        state := state advance.
+        true
+    } else: {
+        state := memento.
+        false
+    }
+}.
+
+Scanner !{
+scanIdentifierOrKeyword :: ScannedToken.
+    let initialState := state.
+
+    state := state advance.
+    while: isIdentifierMiddle(state peek) do: {
+        state := state advance
+    }.
+
+    if: state peek = ':'asInteger then: {
+        state := state advance.
+		let isMultiKeyword mutable := false.
+		let hasAdvanced mutable := true.
+        
+        while: hasAdvanced do: {
+            hasAdvanced := self scanAdvanceKeyword.
+            if: hasAdvanced then: {
+                isMultiKeyword := true
+            }
+        }.
+
+        if: isMultiKeyword then: {
+            return: (state makeToken: TokenKind MultiKeyword startingFrom: initialState)
+        } else: {
+            return: (state makeToken: TokenKind Keyword startingFrom: initialState)
+        }
+    }.
+
+    state makeToken: TokenKind Identifier startingFrom: initialState
+}.
+
+Scanner !{
+scanNumber :: ScannedToken.
+    let initialState := state.
+    if: state peek = '-' asInteger then: {
+        state := state advance
+    }.
+
+    ## Integer part.
+    while: isDigit(state peek) do: {
+        state := state advance
+    }.
+
+    ## Decimal part.
+    if: (state peek = '.' asInteger) && isDigit(state peekAt: 1) then: {
+        state := state advance.
+        while: isDigit(state peek) do: {
+            state := state advance
+        }.
+        
+        if: (state peek = 'e'asInteger) || (state peek = 'E'asInteger) then: {
+            state := state advance.
+            if: (state peek = '+'asInteger) || (state peek = '-'asInteger) then: {
+                state := state advance
+            }.
+
+            while: isDigit(state peek) do: {
+                state := state advance
+            }.
+        }.
+
+        return: (state makeToken: TokenKind Float startingFrom: initialState)
+    }.
+
+    state makeToken: TokenKind Integer startingFrom: initialState
+}.
+
+Scanner !{
+scanCharacter :: ScannedToken.
+    let initialState := state.
+
+    ## Starting quote '
+    state := state advance.
+
+    while: state atEnd not && (state peek ~= '\''asInteger) do: {
+        if: (state peek = '\\'asInteger) && ((state peekAt: 1) >= 0) then: {
+            state := state advance: 2
+        } else: {
+            state := state advance.
+        }
+    }.
+
+    ## Ending quote '
+    if: state peek ~= '\''asInteger then: {
+        return: (state makeErrorToken: "Incomplete character literal" startingFrom: initialState)
+    }.
+    
+    state := state advance.
+    state makeToken: TokenKind Character startingFrom: initialState
+}.
+
+Scanner !{
+scanString :: ScannedToken.
+    let initialState := state.
+
+    ## Starting quote "
+    assert: state peek = '"'asInteger.
+    state := state advance.
+
+    while: state atEnd not && (state peek ~= '"'asInteger) do: {
+        if: (state peek = '\\'asInteger) && ((state peekAt: 1) >= 0) then: {
+            state := state advance: 2
+        } else: {
+            state := state advance.
+        }
+    }.
+
+    ## Ending quote '
+    if: state peek ~= '"'asInteger then: {
+        return: (state makeErrorToken: "Incomplete string literal" startingFrom: initialState)
+    }.
+    
+    state := state advance.
+    state makeToken: TokenKind String startingFrom: initialState
+}.
+
+Scanner !{
+scanSymbolKeyword :: ScannedToken.
+    let initialState := state.
+    ## #
+    state := state advance.
+
+    ## identifier start
+    state := state advance.
+    while: isIdentifierMiddle(state peek) do: {
+        state := state advance
+    }.
+
+    if: state peek = ':'asInteger then: {
+        state := state advance.
+
+		let hasAdvanced mutable := true.        
+        while: hasAdvanced do: {
+            hasAdvanced := self scanAdvanceKeyword.
+        }.
+    }.
+
+    state makeToken: TokenKind Symbol startingFrom: initialState
+}.
+
+Scanner !{
+scanSymbolOperator :: ScannedToken.
+    let initialState := state.
+    ## #
+    state := state advance.
+
+    ## first char
+    state := state advance.
+    while: isOperatorCharacter(state peek) do: {
+        state := state advance
+    }.
+
+    state makeToken: TokenKind Symbol startingFrom: initialState
+}.
+
+Scanner !{
+scanSymbolString :: ScannedToken.
+    let initialState := state.
+
+    ## Starting quote #"
+    state := state advance: 2.
+
+    while: state atEnd not && (state peek ~= '"'asInteger) do: {
+        if: (state peek = '\\'asInteger) && ((state peekAt: 1) >= 0) then: {
+            state := state advance: 2
+        } else: {
+            state := state advance.
+        }
+    }.
+
+    ## Ending quote '
+    if: state peek ~= '"'asInteger then: {
+        return: (state makeErrorToken: "Incomplete string literal" startingFrom: initialState)
+    }.
+    
+    state := state advance.
+    state makeToken: TokenKind Symbol startingFrom: initialState
+}.
+
+Scanner !{
+scanPoundSequence :: ScannedToken.
+    let initialState := state.
+    let c1 := state peekAt: 1.
+
+    if: isIdentifierStart(c1) then: {
+        return: self scanSymbolKeyword
+    }.
+
+    if: isOperatorCharacter(c1) then: {
+        return: self scanSymbolOperator
+    }.
+
+    if: c1 = '"'asInteger then: {
+        return: self scanSymbolString
+    }.
+
+    if: c1 = '['asInteger then: {
+        state := state advance: 2.
+        return: (state makeToken: TokenKind ByteArrayStart startingFrom: initialState)
+    }.
+
+    if: c1 = '('asInteger then: {
+        state := state advance: 2.
+        return: (state makeToken: TokenKind LiteralArrayStart startingFrom: initialState)
+    }.
+
+    if: c1 = '{'asInteger then: {
+        state := state advance: 2.
+        return: (state makeToken: TokenKind ImmutableDictionaryStart startingFrom: initialState)
+    }.
+
+    state := state advance.
+    return: (state makeErrorToken: "Unknown character." startingFrom: initialState)
+}.
+
+Scanner !{
+scanOperator :: ScannedToken.
+    let initialState := state.
+
+    ## first char
+    let c := state peek.
+    state := state advance.
+
+    if: isOperatorCharacter(state peek) not then: {
+        if: c = '|'asInteger then: {
+            return: (state makeToken: TokenKind Bar startingFrom: initialState)
+        }.
+        if: c = '<'asInteger then: {
+            return: (state makeToken: TokenKind LessThan startingFrom: initialState)
+        }.
+        if: c = '>'asInteger then: {
+            return: (state makeToken: TokenKind GreaterThan startingFrom: initialState)
+        }.
+    }.
+
+    while: isOperatorCharacter(state peek) do: {
+        state := state advance
+    }.
+
+    state makeToken: TokenKind Operator startingFrom: initialState
+}.
+
+Scanner !{
+scanDelimiter :: ScannedToken.
+    let initialState := state.
+    let c := state peek.
+
+    if: c = '('asInteger then: {
+        state := state advance.
+        return: (state makeToken: TokenKind LeftParent startingFrom: initialState)
+    }.
+
+    if: c = ')'asInteger then: {
+        state := state advance.
+        return: (state makeToken: TokenKind RightParent startingFrom: initialState)
+    }.
+    if: c = '['asInteger then: {
+        state := state advance.
+        return: (state makeToken: TokenKind LeftBracket startingFrom: initialState)
+    }.
+    if: c = ']'asInteger then: {
+        state := state advance.
+        return: (state makeToken: TokenKind RightBracket startingFrom: initialState)
+    }.
+    if: c = '{'asInteger then: {
+        state := state advance.
+        return: (state makeToken: TokenKind LeftCurlyBracket startingFrom: initialState)
+    }.
+    if: c = '}'asInteger then: {
+        state := state advance.
+        return: (state makeToken: TokenKind RightCurlyBracket startingFrom: initialState)
+    }.
+
+    if: c = ';'asInteger then: {
+        state := state advance.
+        return: (state makeToken: TokenKind Semicolon startingFrom: initialState)
+    }.
+    if: c = ','asInteger then: {
+        state := state advance.
+        return: (state makeToken: TokenKind Comma startingFrom: initialState)
+    }.
+    if: c = '.'asInteger then: {
+        if: (((state peekAt: 1) = '.'asInteger) && ((state peekAt: 2) = '.'asInteger)) then: {
+            state := state advance: 3.
+            return: (state makeToken: TokenKind Ellipsis startingFrom: initialState)
+        }.
+
+        state := state advance.
+        return: (state makeToken: TokenKind Dot startingFrom: initialState)
+    }.
+
+    if: c = ':'asInteger then: {
+        if: ((state peekAt: 1) = ':'asInteger)then: {
+            state := state advance: 2.
+            return: (state makeToken: TokenKind ColonColon startingFrom: initialState)
+        }.
+
+        if: ((state peekAt: 1) = '='asInteger) then: {
+            state := state advance: 2.
+            return: (state makeToken: TokenKind Assignment startingFrom: initialState)
+        }.
+
+        state := state advance.
+        return: (state makeToken: TokenKind Colon startingFrom: initialState)
+    }.
+
+    if: c = '`'asInteger then: {
+        if: ((state peekAt: 1) = '\''asInteger)then: {
+            state := state advance: 2.
+            return: (state makeToken: TokenKind Quote startingFrom: initialState)
+        }.
+
+        if: ((state peekAt: 1) = '`'asInteger)then: {
+            state := state advance: 2.
+            return: (state makeToken: TokenKind QuasiQuote startingFrom: initialState)
+        }.
+
+        if: ((state peekAt: 1) = ','asInteger)then: {
+            state := state advance: 2.
+            return: (state makeToken: TokenKind QuasiUnquote startingFrom: initialState)
+        }.
+
+        if: ((state peekAt: 1) = '@'asInteger)then: {
+            state := state advance: 2.
+            return: (state makeToken: TokenKind Splice startingFrom: initialState)
+        }.
+    }.
+
+    if: (c = '!'asInteger) && ((state peekAt: 1) = '{'asInteger) then: {
+        state := state advance: 2.
+        return: (state makeToken: TokenKind MethodStart startingFrom: initialState)
+    }.
+
+    if: (c = '|'asInteger) && isOperatorCharacter(state peekAt: 1) not then: {
+        state := state advance.
+        return: (state makeToken: TokenKind Bar startingFrom: initialState)
+    }.
+
+    if: isOperatorCharacter(c) then: {
+        return: self scanOperator
+    }.
+
+    state := state advance.
+    return: (state makeErrorToken: "Unknown character." startingFrom: initialState)
+}.
+
+Scanner !{
+scanSingleToken :: ScannedToken.
+    {
+        let whiteErrorToken := self skipWhite.
+        if: whiteErrorToken kind ~= TokenKind NullToken then: {
+            return: whiteErrorToken
+        }.
+
+        if: state atEnd then: {
+            return: ScannedToken#{
+                kind: TokenKind EndOfSource.
+                sourcePosition: state currentSourcePosition.
+            }.            
+        }
+    }.
+
+    let c := state peek.
+
+    if: isIdentifierStart(c) then: {
+        return: self scanIdentifierOrKeyword
+    }.
+
+    ## Negative numbers
+    if: (c = '-'asInteger) && isDigit(state peekAt: 1) then: {
+        return: self scanNumber
+    }.
+    if: isDigit(c) then: {
+        return: self scanNumber
+    }.
+
+    if: c = '#' asInteger then: {
+        return: self scanPoundSequence
+    }.
+
+    if: c = '\'' asInteger then: {
+        return: self scanCharacter
+    }.
+
+    if: c = '"' asInteger then: {
+        return: self scanString
+    }.
+
+    return: self scanDelimiter
+}.
+
+Scanner !{
+scanSourceCode: (SourceCode)sourceCode :: ScannedToken list.
+    let tokenList := ArrayList(ScannedToken) new.
+    state := makeScannerStateForSourceCode(sourceCode).
+    let scannedToken mutable := ScannedToken#{kind: TokenKind NullToken}.
+    do: {
+        scannedToken := self scanSingleToken.
+        tokenList add: scannedToken.
+    } while: (scannedToken kind ~= TokenKind EndOfSource).
+    tokenList asArray
+}.
+
+}

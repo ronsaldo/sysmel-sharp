@@ -51,6 +51,10 @@ namespace LibSysmelSharp
 
             return new RecordValue(application.sourcePosition, recordElements, this);
         }
+        public override HIRValue AnalyzeAndBuildApplication(ParseTreeApplicationNode application, HIRBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
 
         public override Value AnalyzeAndEvaluateDictionaryInstanceInEnvironment(ParseTreeImmutableDictionaryNode dictionary, Environment environment)
         {
@@ -88,6 +92,11 @@ namespace LibSysmelSharp
             }
 
             return new RecordValue(dictionary.sourcePosition, recordFields, this);
+        }
+
+        public override HIRValue AnalyzeAndBuildDictionaryInstance(ParseTreeImmutableDictionaryNode dictionary, HIRBuilder builder)
+        {
+            throw new NotImplementedException();
         }
 
         public override Value? LookupSelector(string selector)

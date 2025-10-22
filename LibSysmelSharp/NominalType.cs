@@ -43,5 +43,14 @@ namespace LibSysmelSharp
         {
             return NilValue.GetSingleton();
         }
+
+        public virtual long NormalizeInteger(long value)
+        {
+            return value;
+        }
+        public virtual double NormalizeFloat(double value)
+        {
+            return value;
+        }
     }
 }

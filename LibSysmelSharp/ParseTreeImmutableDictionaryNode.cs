@@ -81,5 +81,15 @@ namespace LibSysmelSharp
             ImmutableDictionaryType dictType = new ImmutableDictionaryType(sourcePosition, assocType);
             return new ImmutableDictionaryValue(sourcePosition, dictType, elementValues);
         }
+
+        public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
+        {
+            if(dictionaryType != null)
+            {
+                return dictionaryType.AnalyzeAndEvaluateInEnvironment(builder.environment)
+                       .AnalyzeAndBuildDictionaryInstance(this, builder);
+            }
+            throw new NotImplementedException();
+        }
     }
 }

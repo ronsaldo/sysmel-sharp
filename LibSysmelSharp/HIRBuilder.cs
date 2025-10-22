@@ -34,6 +34,11 @@ namespace LibSysmelSharp
             return new HIRConstantLiteralValue(sourcePosition, value);
         }
 
+        public HIRValue AddType(SourcePosition? sourcePosition, SysmelType sysmelType)
+        {
+            return new HIRConstantTypeLiteral(sourcePosition, sysmelType);
+        }
+
         public HIRAlloca Alloca(SourcePosition? sourcePosition, SysmelType valueType, SysmelType type)
         {
             HIRAlloca alloca = new HIRAlloca(sourcePosition, valueType, type);

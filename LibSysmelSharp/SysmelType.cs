@@ -236,6 +236,11 @@ namespace LibSysmelSharp
             return this;
         }
 
+        public override HIRValue AnalyzeAndBuildIdentifierReference(ParseTreeIdentifierReferenceNode node, HIRBuilder builder)
+        {
+            return builder.AddType(node.sourcePosition, this);
+        }
+
         public override SysmelType GetSysmelType()
         {
             return Intrinsics.GetSingleton().TypeUniverse0;
