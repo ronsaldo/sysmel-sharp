@@ -69,7 +69,7 @@ at: (Integer)index put: (V)value :: Void.
 }.
 
 ArrayList !{
-AsList :: V list.
+asList :: V list.
     let result mutable := V list new: size.
     let i mutable := 0.
     while: i < size do: {

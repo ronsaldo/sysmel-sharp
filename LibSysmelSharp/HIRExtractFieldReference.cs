@@ -24,7 +24,7 @@ namespace LibSysmelSharp
         }
         public override void DumpToConsole()
         {
-            Console.WriteLine("  " + ToString() + " := from " + aggregate.ToString() + " extractField " + fieldDefinition.ToString());
+            Console.WriteLine("  " + ToString() + " := from " + aggregate.ToString() + " extractFieldRef " + fieldDefinition.ToString());
         }
         public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
         {

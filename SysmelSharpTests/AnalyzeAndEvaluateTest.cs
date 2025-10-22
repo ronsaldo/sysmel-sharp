@@ -1128,6 +1128,15 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestRecordFieldAccessInFunction()
+        {
+            Value functionValue = EvaluateString("Record: #MyPair withFields: #{first: Integer. second: Integer}. {:(MyPair)pair :: Integer | pair first }");
+            functionValue.DumpToConsole();
+
+            functionValue = EvaluateString("Record: #MyPair withFields: #{first: Integer. second: Integer}. {:(MyPair)pair :: MyPair | pair first: 42. pair }");
+            functionValue.DumpToConsole();
+        }
+        [TestMethod]
         public void TestRecordTypeMetaBuilder()
         {
             Value value = EvaluateString("record MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}");
@@ -1388,6 +1397,26 @@ namespace SysmelSharpTests
             Assert.AreEqual("TestClass", typeValue.GetName());
         }
 
+        [TestMethod]
+        public void TestNestedNamespaceMetaBuilderAccess()
+        {
+            Value value = EvaluateString("namespace ParentNamespace definition: {namespace ChildNamespace definition: {public: [Class: #TestClass withFields: #{}]}}. ParentNamespace ChildNamespace TestClass");
+            Assert.IsTrue(value.IsType());
+
+            SysmelType typeValue = (SysmelType)value;
+            Assert.IsTrue(typeValue.IsClassType()); ;
+            Assert.AreEqual("TestClass", typeValue.GetName());
+        }
+
+        [TestMethod]
+        public void TestNestedNamespaceMetaBuilder()
+        {
+            Value value = EvaluateString("namespace ParentNamespace definition: {namespace ChildNamespace definition: {}}");
+            Assert.IsTrue(value.IsNamespace());
+
+            Namespace nspace = (Namespace)value;
+            Assert.AreEqual("ParentNamespace", nspace.name);
+        }
 
         [TestMethod]
         public void TestGenericBox()

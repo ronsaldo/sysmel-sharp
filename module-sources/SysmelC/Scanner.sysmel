@@ -802,19 +802,21 @@ scanSingleToken :: ScannedToken.
         return: self scanString
     }.
 
-    return: self scanDelimiter
+    self scanDelimiter
 }.
+
+let TokenArrayList := System Collections ArrayList(ScannedToken).
 
 Scanner !{
 scanSourceCode: (SourceCode)sourceCode :: ScannedToken list.
-    let tokenList := ArrayList(ScannedToken) new.
+    let tokenList := TokenArrayList new.
     state := makeScannerStateForSourceCode(sourceCode).
     let scannedToken mutable := ScannedToken#{kind: TokenKind NullToken}.
     do: {
         scannedToken := self scanSingleToken.
         tokenList add: scannedToken.
     } while: (scannedToken kind ~= TokenKind EndOfSource).
-    tokenList asArray
+    tokenList asList
 }.
 
 }
