@@ -33,7 +33,7 @@ namespace Collections definition: {
     assert: (testDictionary at: #A) = 1.
     assert: (testDictionary at: #B) = 2.
     assert: (testDictionary at: #C) = 3.
-}
-
 }.
+
+}
 }

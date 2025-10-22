@@ -1,0 +1,104 @@
+namespace System definition: {
+namespace Collections definition: {
+
+public:[
+forall(V: Type) Set := class withSuperclass: Object fields: #{
+    size: Integer.
+    capacity: Integer.
+    targetCapacity: Integer.
+    values: V list
+}.
+].
+
+Set !{
+initialize :: Void.
+    let initialCapacity := 32.
+    size := 0.
+    capacity := initialCapacity.
+    targetCapacity := initialCapacity * 80 // 100.
+    values := V list new: initialCapacity.
+}.
+
+Set !{
+checkTargetCapacity :: Void.
+    if: size <= targetCapacity then: {
+        return: void
+    }.
+
+    let newCapacity mutable := capacity * 2.
+    if: newCapacity < 32 then: {
+        newCapacity := 32
+    }.
+
+    let newValues := V list new: newCapacity.
+    let oldValues := values.
+    let oldCapacity := capacity.
+
+    values := newValues.
+    size := 0.
+    capacity := newCapacity.
+    targetCapacity := newCapacity * 80 // 100.
+
+    let i mutable := 0.
+    while: (i < oldCapacity) do: {
+        let oldValue := oldValues at: i.
+        if: oldValue ~= nil then: {
+            let oldValue := oldValues at: i.
+            self add: oldValue
+        }
+    } continueWith: (i := i + 1).
+}.
+
+Set !{
+scanFor: (V)value :: Integer.
+    let valueHash := value hash.
+    let naturalIndex := valueHash % capacity.
+
+    let i mutable := naturalIndex.
+    while: (i < capacity) do: {
+        let valueOrNil := values at: i.
+        if: (valueOrNil = nil) || (valueOrNil = value)  then: {
+            return: i
+        }.
+    } continueWith: (i := i + 1).
+
+    i := 0.
+    while: (i < capacity) do: {
+        let valueOrNil := values at: i.
+        if: (valueOrNil = nil) || (valueOrNil = value)  then: {
+            return: i
+        }.
+    } continueWith: (i := i + 1).
+    -1
+}.
+
+Set !{
+includes: (V)value :: Boolean.
+    let valueIndex := self scanFor: value.
+    if: valueIndex < 0 then: {
+        return: false
+    }.
+
+    value = (values at: valueIndex)
+}.
+
+Set !{
+add: (V)value :: Void.
+    let valueIndex := self scanFor: value.
+    if: valueIndex < 0 then: { error: "Bucket error." }.
+
+    let storedValue := values at: valueIndex.
+    if: storedValue = nil then: {
+        values at: valueIndex put: value.
+        size := size + 1.
+        self checkTargetCapacity.
+    }.
+}.
+
+Set !{
+size :: Integer.
+    size
+}.
+
+}
+}

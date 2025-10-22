@@ -117,7 +117,7 @@ namespace LibSysmelSharp
             Console.WriteLine("}");
         }
 
-        public Value EvaluateWithArgumentsAndCaptures(Value[] callArguments, Value[] callCaptures)
+        public override Value EvaluateWithArgumentsAndCaptures(Value[] callArguments, Value[] callCaptures)
         {
             if (sourceFunctionValue != null)
                 sourceFunctionValue.EnsureAnalysis();

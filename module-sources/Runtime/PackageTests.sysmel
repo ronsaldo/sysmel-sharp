@@ -1,2 +1,3 @@
 loadFileOnce: "ArrayListTests.sysmel".
 loadFileOnce: "DictionaryTests.sysmel".
+loadFileOnce: "SetTests.sysmel".

@@ -558,9 +558,18 @@ namespace LibSysmelSharp
                     return new IntegerValue(arguments[0].sourcePosition, leftValue % rightValue, integerType);
                 }));
 
+            integerType.AddMethod(new PrimitiveFunction("hash", false, true,
+                new SimpleFunctionType(null, [integerType], IntegerType),
+                (Value[] arguments) => {
+                    long value = arguments[0].AsInteger();
+                    return new IntegerValue(null, value.GetHashCode() & 0x7fffffff, IntegerType);
+                }));
             integerType.AddMethod(new PrimitiveFunction("=", false, true,
                 new SimpleFunctionType(null, [integerType, integerType], BooleanType),
                 (Value[] arguments) => {
+                    if (arguments[0].IsNilValue() || arguments[1].IsNilValue())
+                        return BooleanValue.GetWithValue(arguments[0].Equals(arguments[1]));
+
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return BooleanValue.GetWithValue(leftValue == rightValue);
@@ -568,6 +577,9 @@ namespace LibSysmelSharp
             integerType.AddMethod(new PrimitiveFunction("~=", false, true,
                 new SimpleFunctionType(null, [integerType, integerType], BooleanType),
                 (Value[] arguments) => {
+                    if (arguments[0].IsNilValue() || arguments[1].IsNilValue())
+                        return BooleanValue.GetWithValue(!arguments[0].Equals(arguments[1]));
+
                     long leftValue = arguments[0].AsInteger();
                     long rightValue = arguments[1].AsInteger();
                     return BooleanValue.GetWithValue(leftValue != rightValue);

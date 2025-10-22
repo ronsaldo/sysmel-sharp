@@ -1,0 +1,16 @@
+namespace System definition: {
+namespace Collections definition: {
+
+## Integer set
+{
+    let integerSet := Set(String) new.
+    assert: integerSet size = 0.
+
+    assert: (integerSet includes: "Hello") not.
+
+    integerSet add: "Hello".
+    assert: integerSet size = 1.
+}
+
+}
+}
