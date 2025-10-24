@@ -127,6 +127,14 @@ namespace LibSysmelSharp
             return simplified;
         }
 
+        public HIRSendMessage SendMessage(SourcePosition? sourcePosition, HIRValue receiver, string selector, HIRValue[] arguments, SysmelType resultType)
+        {
+            HIRSendMessage sendMessage = new HIRSendMessage(sourcePosition, receiver, selector, arguments, resultType);
+            AddInstruction(sendMessage);
+            return sendMessage;
+        }
+
+
         public HIRMakeClosure MakeClosure(SourcePosition? sourcePosition, HIRFunction functionDefinition, HIRValue[] captureValues)
         {
             HIRMakeClosure closure = new HIRMakeClosure(sourcePosition, functionDefinition, captureValues);

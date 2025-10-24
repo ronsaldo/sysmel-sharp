@@ -202,6 +202,16 @@ namespace LibSysmelSharp
 
             HIRValue function = method.AnalyzeAndBuildWithDecayedType(builder);
             SysmelType computedResultType = ComputeResultTypeWithHirArguments(callArguments);
+            if (!receiver.IsSuperArgumentValue() && callArguments[0].GetSysmelType().IsClassType())
+            {
+                HIRValue receiverValue = callArguments[0];
+                HIRValue[] messageArguments = new HIRValue[messageArgumentCount];
+                for (int i = 0; i < messageArgumentCount; ++i)
+                    messageArguments[i] = callArguments[i + 1];
+
+                return builder.SendMessage(sourcePosition, receiverValue, selector, messageArguments, computedResultType);
+            }
+
             return builder.CallFunction(messageSend.sourcePosition, function, callArguments, computedResultType);
         }
     }

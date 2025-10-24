@@ -1704,5 +1704,27 @@ namespace SysmelSharpTests
             value = EvaluateString("32.5 ~= 42.5");
             Assert.IsTrue(value.AsBoolean());
         }
+
+        [TestMethod]
+        public void TestClassPolymorphism()
+        {
+            Value value = EvaluateString(@"Class: #TheSuperclass withSuperclass: Object fields: #{}.
+		Class: #TheSubclass withSuperclass: TheSuperclass fields: #{}.
+		
+		TheSuperclass !{
+		getInteger :: Integer.
+			42
+		}.
+
+		TheSubclass !{
+		getInteger :: Integer.
+			13
+		}.
+		
+		{ :(TheSuperclass)object :: Integer | object getInteger} (TheSubclass new)");
+
+            Assert.IsTrue(value.IsIntegerValue());
+            Assert.AreEqual(13, value.AsInteger());
+        }
     }
 }

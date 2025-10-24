@@ -322,7 +322,7 @@ function parseSourceString(sourceString: String) => ParseTreeNode := {
 }.
 
 ## TODO: Fixme.
-#*## testMessageCascade
+## testMessageCascade
 {
     let parseTree := parseSourceString("42 perform: #+ with: 2; perform: #- with: 5; + 7; yourself").
     assert: parseTree isMessageCascadeNode.
@@ -331,7 +331,6 @@ function parseSourceString(sourceString: String) => ParseTreeNode := {
 
     assert: parseTree cascadedMessages size = 4.
 }.
-*#
 
 ## testParenthesis
 {

@@ -56,6 +56,11 @@
             return false;
         }
 
+        public virtual bool IsSendMessageInstruction()
+        {
+            return false;
+        }
+
         public virtual bool IsCallFunctionInstruction()
         {
             return false;
