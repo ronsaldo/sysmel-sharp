@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Xml.Linq;
 
 namespace LibSysmelSharp
@@ -688,6 +689,104 @@ namespace LibSysmelSharp
                     return new IntegerValue(arguments[0].sourcePosition, Int64Type.NormalizeInteger(arguments[0].AsInteger()), Int64Type);
                 }));
         }
+        void RegisterFloatTypePrimitives(NominalType floatType)
+        {
+            floatType.AddMethod(new PrimitiveFunction("negated", false, true,
+                new SimpleFunctionType(null, [floatType], floatType),
+                (Value[] arguments) => {
+                    return new FloatValue(arguments[0].sourcePosition, -arguments[0].AsFloat(), floatType);
+                }));
+            floatType.AddMethod(new PrimitiveFunction("sqrt", false, true,
+                new SimpleFunctionType(null, [floatType], floatType),
+                (Value[] arguments) => {
+                    return new FloatValue(arguments[0].sourcePosition, System.Math.Sqrt(arguments[0].AsFloat()), floatType);
+                }));
+
+
+            floatType.AddMethod(new PrimitiveFunction("+", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], floatType),
+                (Value[] arguments) => {
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return new FloatValue(arguments[0].sourcePosition, leftValue + rightValue, floatType);
+                }));
+            floatType.AddMethod(new PrimitiveFunction("-", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], floatType),
+                (Value[] arguments) => {
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return new FloatValue(arguments[0].sourcePosition, leftValue - rightValue, floatType);
+                }));
+            floatType.AddMethod(new PrimitiveFunction("*", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], floatType),
+                (Value[] arguments) => {
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return new FloatValue(arguments[0].sourcePosition, leftValue * rightValue, floatType);
+                }));
+            floatType.AddMethod(new PrimitiveFunction("/", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], floatType),
+                (Value[] arguments) => {
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return new FloatValue(arguments[0].sourcePosition, leftValue / rightValue, floatType);
+                }));
+
+            floatType.AddMethod(new PrimitiveFunction("hash", false, true,
+                new SimpleFunctionType(null, [floatType], IntegerType),
+                (Value[] arguments) => {
+                    double value = arguments[0].AsFloat();
+                    return new IntegerValue(null, value.GetHashCode() & 0x7fffffff, IntegerType);
+                }));
+            floatType.AddMethod(new PrimitiveFunction("=", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], BooleanType),
+                (Value[] arguments) => {
+                    if (arguments[0].IsNilValue() || arguments[1].IsNilValue())
+                        return BooleanValue.GetWithValue(arguments[0].Equals(arguments[1]));
+
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return BooleanValue.GetWithValue(leftValue == rightValue);
+                }));
+            floatType.AddMethod(new PrimitiveFunction("~=", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], BooleanType),
+                (Value[] arguments) => {
+                    if (arguments[0].IsNilValue() || arguments[1].IsNilValue())
+                        return BooleanValue.GetWithValue(!arguments[0].Equals(arguments[1]));
+
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return BooleanValue.GetWithValue(leftValue != rightValue);
+                }));
+            floatType.AddMethod(new PrimitiveFunction("<", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], BooleanType),
+                (Value[] arguments) => {
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return BooleanValue.GetWithValue(leftValue < rightValue);
+                }));
+            floatType.AddMethod(new PrimitiveFunction("<=", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], BooleanType),
+                (Value[] arguments) => {
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return BooleanValue.GetWithValue(leftValue <= rightValue);
+                }));
+            floatType.AddMethod(new PrimitiveFunction(">", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], BooleanType),
+                (Value[] arguments) => {
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return BooleanValue.GetWithValue(leftValue > rightValue);
+                }));
+            floatType.AddMethod(new PrimitiveFunction(">=", false, true,
+                new SimpleFunctionType(null, [floatType, floatType], BooleanType),
+                (Value[] arguments) => {
+                    double leftValue = arguments[0].AsFloat();
+                    double rightValue = arguments[1].AsFloat();
+                    return BooleanValue.GetWithValue(leftValue >= rightValue);
+                }));
+        }
 
         void RegisterLiteralNumberPrimitives(NominalType integerType)
         {
@@ -830,7 +929,7 @@ namespace LibSysmelSharp
                 new SimpleFunctionType(null, [StringType], FloatType),
                 (Value[] arguments) => {
                     string str = arguments[0].AsString();
-                    return new FloatValue(null, double.Parse(str), FloatType);
+                    return new FloatValue(null, double.Parse(str, CultureInfo.InvariantCulture), FloatType);
                 }));
         }
 
@@ -1045,6 +1144,24 @@ namespace LibSysmelSharp
             RegisterLiteralNumberPrimitives(CharacterType);
             RegisterIntegerTypePrimitives(IntegerType);
             RegisterIntegerTypePrimitives(CharacterType);
+
+            RegisterIntegerTypePrimitives(Char8Type);
+            RegisterIntegerTypePrimitives(Char16Type);
+            RegisterIntegerTypePrimitives(Char32Type);
+
+            RegisterIntegerTypePrimitives(Int8Type);
+            RegisterIntegerTypePrimitives(Int16Type);
+            RegisterIntegerTypePrimitives(Int32Type);
+            RegisterIntegerTypePrimitives(Int64Type);
+
+            RegisterIntegerTypePrimitives(UInt8Type);
+            RegisterIntegerTypePrimitives(UInt16Type);
+            RegisterIntegerTypePrimitives(UInt32Type);
+            RegisterIntegerTypePrimitives(UInt64Type);
+
+            RegisterFloatTypePrimitives(FloatType);
+            RegisterFloatTypePrimitives(Float32Type);
+            RegisterFloatTypePrimitives(Float64Type);
 
             RegisterObjectTypePrimitives();
             RegisterUndefinedObjectPrimitives();

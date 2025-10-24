@@ -1671,7 +1671,38 @@ namespace SysmelSharpTests
 
             value = EvaluateString("class testClass withFields: #{}. let a := testClass new. a ~~ a");
             Assert.IsFalse(value.AsBoolean());
+        }
 
+        [TestMethod]
+        public void TestIntegerEquality()
+        {
+            Value value = EvaluateString("32 = 32");
+            Assert.IsTrue(value.AsBoolean());
+
+            value = EvaluateString("32 = 42");
+            Assert.IsFalse(value.AsBoolean());
+
+            value = EvaluateString("32 ~= 32");
+            Assert.IsFalse(value.AsBoolean());
+
+            value = EvaluateString("32 ~= 42");
+            Assert.IsTrue(value.AsBoolean());
+        }
+
+        [TestMethod]
+        public void TestFloatEquality()
+        {
+            Value value = EvaluateString("32.5 = 32.5");
+            Assert.IsTrue(value.AsBoolean());
+
+            value = EvaluateString("32.5 = 42.5");
+            Assert.IsFalse(value.AsBoolean());
+
+            value = EvaluateString("32.5 ~= 32.5");
+            Assert.IsFalse(value.AsBoolean());
+
+            value = EvaluateString("32.5 ~= 42.5");
+            Assert.IsTrue(value.AsBoolean());
         }
     }
 }

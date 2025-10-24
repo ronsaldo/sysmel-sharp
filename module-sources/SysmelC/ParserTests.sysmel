@@ -293,14 +293,12 @@ function parseSourceString(sourceString: String) => ParseTreeNode := {
     assert: (parseTree elements at: 1) value = 58.
 }.
 
-## TODO: Fixme
-#*## testLiteralFloat
+## testLiteralFloat
 {
     let parseTree := parseSourceString("42.5").
     assert: parseTree isLiteralFloatNode.
     assert: parseTree value = 42.5.
 }.
-*#
 
 ## testLiteralString
 {
