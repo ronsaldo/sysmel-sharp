@@ -826,6 +826,12 @@ namespace LibSysmelSharp
                     string str = arguments[0].AsString();
                     return new SymbolValue(null, str, SymbolType);
                 }));
+            StringType.AddMethod(new PrimitiveFunction("parseAsFloat", false, true,
+                new SimpleFunctionType(null, [StringType], FloatType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsString();
+                    return new FloatValue(null, double.Parse(str), FloatType);
+                }));
         }
 
         void RegisterSymbolPrimitives()
@@ -970,6 +976,19 @@ namespace LibSysmelSharp
                     return type;
                 }));
 
+
+            BehaviorClassType.AddMethod(new PrimitiveFunction("list", false, true,
+                new SimpleFunctionType(null, [BehaviorClassType], TypeUniverse0),
+                (Value[] arguments) => {
+                    return ((SysmelType)arguments[0]).ListOf();
+                }));
+            BehaviorClassType.AddMethod(new PrimitiveFunction("=>", false, true,
+                new SimpleFunctionType(null, [BehaviorClassType, TypeUniverse0], TypeUniverse0),
+                (Value[] arguments) => {
+                    SysmelType argumentType = (SysmelType)arguments[0];
+                    SysmelType resultType = (SysmelType)arguments[1];
+                    return argumentType.MakeSimpleFunctionWithResultType(resultType);
+                }));
             BehaviorClassType.AddMethod(new PrimitiveFunction("basicNew", false, false,
                 new SimpleFunctionType(null, [BehaviorClassType], ProtoObjectClassType,
                 (HIRValue[] arguments, SysmelType defaultResultType) => arguments[0].AsSelfTypeWithDefaultType(defaultResultType)),

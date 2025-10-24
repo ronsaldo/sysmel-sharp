@@ -1,0 +1,1032 @@
+namespace SysmelC definition: {
+public: [
+class Parser withSuperclass: Object fields:#{
+    sourceCode: SourceCode.
+    tokenCount: Integer.
+    tokens: ScannedToken list.
+    position: Integer.
+}.
+].
+
+Parser !{
+atEnd :: Boolean.
+    position >= tokenCount
+}.
+
+Parser !{
+tokenAt: (Integer)tokenPosition :: ScannedToken.
+    tokens at: tokenPosition
+}.
+
+Parser !{
+peekKind: (Integer)offset :: TokenKind.
+    let peekPosition := position + offset.
+    if: peekPosition >= tokenCount then: {
+        return: TokenKind EndOfSource
+    }.
+
+    let token := self tokenAt: position.
+    token kind
+}.
+
+Parser !{
+peekKind :: TokenKind.
+    self peekKind: 0
+}.
+
+Parser !{
+peek: (Integer)offset :: ScannedToken.
+    let peekPosition := position + offset.
+    if: peekPosition >= tokenCount then: {
+        return: ScannedToken#{kind: TokenKind EndOfSource}
+    }.
+
+    self tokenAt: position
+}.
+
+Parser !{
+peek :: ScannedToken.
+    self peek: 0
+}.
+
+Parser !{
+advance :: Void.
+    assert: position < tokenCount.
+    position := position + 1
+}.
+
+Parser !{
+next :: ScannedToken.
+    assert: position < tokenCount.
+    let token := self tokenAt: position.
+    position := position + 1.
+    token
+}.
+
+Parser !{
+previousSourcePosition :: SourcePosition.
+    assert: position > 0.
+    (self tokenAt: position - 1) sourcePosition
+}.
+
+Parser !{
+currentSourcePosition :: SourcePosition.
+    if: position < tokenCount then: {
+        return: (self tokenAt:  position) sourcePosition
+    }.
+
+    assert: tokenCount > 0.
+    (self tokenAt: tokenCount - 1) sourcePosition
+}.
+
+Parser !{
+sourcePositionFrom: (Integer)startingPosition :: SourcePosition.
+    assert: startingPosition < tokenCount.
+    let startSourcePosition := (self tokenAt: startingPosition) sourcePosition.
+
+    if: position > 0 then: {
+        let endSourcePosition := self previousSourcePosition.
+        startSourcePosition to: endSourcePosition
+    } else: {
+        let endSourcePosition := self currentSourcePosition.
+        startSourcePosition until: endSourcePosition
+    }
+}.
+
+Parser !{
+makeErrorAtCurrentSourcePosition: (String)errorMessage :: ParseTreeErrorNode.
+    ParseTreeErrorNode new
+        sourcePosition: self currentSourcePosition;
+        errorMessage: errorMessage;
+        innerNodes: ParseTreeNode list basicNew;
+        yourself
+}.
+
+Parser !{
+expect: (TokenKind)expectedKind addingError: (String)errorMessage toNode: (ParseTreeNode)innerNode :: ParseTreeNode.
+    if: self peekKind = expectedKind then: {
+        self advance.
+        return: innerNode
+    }.
+
+    ParseTreeErrorNode new
+        sourcePosition: self currentSourcePosition;
+        errorMessage: errorMessage;
+        innerNodes: ((ParseTreeNode list new: 1)
+            at: 0 put: innerNode;
+            yourself);
+        yourself
+}.
+
+Parser !{
+advanceWithExpectedError: (String)errorMessage :: ParseTreeErrorNode.
+    let nodeErrorMessage mutable := errorMessage.
+    let nodeErrorPosition mutable := self currentSourcePosition.
+    if: self peekKind = TokenKind Error then: {
+        let errorToken := self next.
+        nodeErrorMessage := errorToken errorMessage.
+        nodeErrorPosition := errorToken sourcePosition
+    }.
+
+    if: self atEnd not then: {
+        self advance.
+    }.
+
+    ParseTreeErrorNode new
+        sourcePosition: nodeErrorPosition;
+        errorMessage: nodeErrorMessage;
+        innerNodes: ParseTreeNode list basicNew;
+        yourself
+}.
+
+function isBinaryOperatorToken(kind: TokenKind) => Boolean
+    := (kind = TokenKind Operator) || (kind = TokenKind Bar)
+    || (kind = TokenKind LessThan) || (kind = TokenKind GreaterThan).
+
+function parseIntegerConstant(text: String) => Integer := {
+    let value mutable := 0.
+    let radix mutable := 10.
+    let hasSeenRadix mutable := false.
+
+    let stringSize := text size.
+    let i mutable := 0.
+    while: i < stringSize do: {
+        let c := text at: i.
+        if: hasSeenRadix not && ((c = 'r') || (c = 'R')) then: {
+            radix := value.
+            value := 0.
+            hasSeenRadix := true.
+        } else: {
+            if: ('0' <= c) && (c <= '9') then: {
+                let digit := (c - '0') asInteger.
+                value := (value*radix) + digit
+            }.
+            if: ('A' <= c) && (c <= 'Z') then: {
+                let digit := (c - 'A') asInteger + 10.
+                value := (value*radix) + digit
+            }.
+            if: ('a' <= c) && (c <= 'z') then: {
+                let digit := (c - 'a') asInteger + 10.
+                value := (value*radix) + digit
+            }.
+        }
+    } continueWith: (i :=  i +1).
+
+    value
+}.
+
+Parser !{
+parseLiteralCharacter :: ParseTreeNode.
+    let token := self next.
+    let tokenText := token getText.
+    let stringData := tokenText substringFrom: 1 until: tokenText size - 1.
+    let parsedStringData := stringData parseCEscapeSequences.
+
+    ParseTreeLiteralCharacterNode new
+        sourcePosition: token sourcePosition;
+        value: (parsedStringData at: 0);
+        yourself
+}.
+
+Parser !{
+parseLiteralFloat :: ParseTreeNode.
+    let token := self next.
+    ParseTreeLiteralFloatNode new
+        sourcePosition: token sourcePosition;
+        value: token getText parseAsFloat;
+        yourself
+}.
+
+Parser !{
+parseLiteralInteger :: ParseTreeNode.
+    let token := self next.
+    ParseTreeLiteralIntegerNode new
+        sourcePosition: token sourcePosition;
+        value: parseIntegerConstant(token getText);
+        yourself
+}.
+
+Parser !{
+parseLiteralString :: ParseTreeNode.
+    let token := self next.
+    let tokenText := token getText.
+    let stringData := tokenText substringFrom: 1 until: tokenText size - 1.
+    let parsedStringData := stringData parseCEscapeSequences.
+
+    ParseTreeLiteralStringNode new
+        sourcePosition: token sourcePosition;
+        value: parsedStringData;
+        yourself
+}.
+
+Parser !{
+parseLiteralSymbol :: ParseTreeNode.
+    let token := self next.
+    let tokenText := token getText.
+    let symbolData mutable := tokenText substringFrom: 1 until: tokenText size.
+    if: tokenText size >= 2 && ((tokenText at: 1) = '"') then: {
+        let stringData := tokenText substringFrom: 2 until: tokenText size - 1.
+        symbolData := stringData parseCEscapeSequences.
+    }.
+
+    ParseTreeLiteralSymbolNode new
+        sourcePosition: token sourcePosition;
+        value: symbolData asSymbol;
+        yourself
+}.
+
+Parser !{
+parseLiteral :: ParseTreeNode.
+    let kind := self peekKind.
+    if: kind = TokenKind Character then: {
+        return: self parseLiteralCharacter
+    }.
+    if: kind = TokenKind Float then: {
+        return: self parseLiteralFloat
+    }.
+    if: kind = TokenKind Integer then: {
+        return: self parseLiteralInteger
+    }.
+    if: kind = TokenKind String then: {
+        return: self parseLiteralString
+    }.
+    if: kind = TokenKind Symbol then: {
+        return: self parseLiteralSymbol
+    }.
+
+    self advanceWithExpectedError: "Expected a literal."
+}.
+
+Parser !{
+parseIdentifierReference :: ParseTreeNode.
+    let token := self next.
+    ParseTreeIdentifierReferenceNode new
+        sourcePosition: token sourcePosition;
+        value: token getText asSymbol;
+        yourself
+}.
+
+Parser !{
+parseParentheses :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind LeftParent.
+    self advance.
+
+    if: self peekKind = TokenKind RightParent then: {
+        self advance.
+        return: (ParseTreeTupleNode new
+            sourcePosition: (self sourcePositionFrom: startingPosition);
+            elements: ParseTreeNode list basicNew;
+            yourself)
+    }.
+
+    let expression := self parseSequenceUntilEndOrDelimiter: TokenKind RightParent.
+    self expect: TokenKind RightParent addingError: "Missing right parenthesis" toNode: expression
+}.
+
+Parser !{
+parseArray :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind LeftBracket.
+    self advance.
+
+    let expressions mutable := self parseExpressionListUntilEndOrDelimiter: TokenKind RightBracket.
+    if: self peekKind = TokenKind RightBracket then: {
+        self advance
+    } else: {
+        expressions := expressions -- (ParseTreeNode list new
+            at: 0 put: (self makeErrorAtCurrentSourcePosition: "Missing right bracket.");
+            yourself)
+    }.
+
+    ParseTreeArrayNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        elements: expressions;
+        yourself
+}.
+
+Parser !{
+parseBlockArgument :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind Colon.
+    self advance.
+
+    let typeExpression mutable type: ParseTreeNode := nil.
+    if: self peekKind = TokenKind LeftParent then: {
+        typeExpression := self parseParentheses
+    }.
+
+    let nameIdentifier mutable type: Symbol := nil.
+    if: self peekKind = TokenKind Identifier then: {
+        nameIdentifier := self next getText asSymbol
+    }.
+
+    ParseTreeArgumentDefinitionNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        name: nameIdentifier;
+        typeExpression: typeExpression;
+        yourself
+}.
+
+Parser !{
+parseBlockFunctionalType :: ParseTreeFunctionalDependentTypeNode.
+	let hasFunctionalTypeComponents mutable := false.
+	let startingPosition := position.
+	let arguments := OrderedCollection new.
+
+    while: self peekKind = TokenKind Colon do: {
+        let argument := self parseBlockArgument.
+        arguments add: argument.
+        hasFunctionalTypeComponents := true.
+    }.
+
+    let resultTypeExpression mutable type: ParseTreeNode := nil.
+    if: self peekKind = TokenKind ColonColon then: {
+        self advance.
+        resultTypeExpression := self parseUnaryPrefixExpression.
+        hasFunctionalTypeComponents := true.
+    }.
+
+    if: self peekKind = TokenKind Bar then: {
+        self advance.
+        hasFunctionalTypeComponents := true.
+    }.
+
+    if: hasFunctionalTypeComponents not then: {
+        return: nil
+    }.
+
+    ParseTreeFunctionalDependentTypeNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        argumentDefinitions: arguments asArray;
+        resultTypeExpression: resultTypeExpression;
+        yourself
+
+}.
+
+Parser !{
+parseBlock :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind LeftCurlyBracket.
+    self advance.
+
+    let functionalType := self parseBlockFunctionalType.
+
+    let expression := self parseSequenceUntilEndOrDelimiter: TokenKind RightCurlyBracket .
+	let expressionWithError := self expect: TokenKind RightCurlyBracket  addingError: "Missing right curly bracket" toNode: expression.
+	
+    if: nil ~~ functionalType then: {
+        return: (ParseTreeBlockClosureNode new
+            sourcePosition: (self sourcePositionFrom: startingPosition);
+            functionType: functionalType;
+            body: expressionWithError;
+            yourself)
+    }.
+
+    ParseTreeLexicalBlockNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        body: expressionWithError;
+        yourself
+}.
+
+Parser !{
+parseImmutableDictionaryAssociation :: ParseTreeNode.
+    let startingPosition := position.
+    let key mutable type: ParseTreeNode := nil.
+    let value mutable type: ParseTreeNode := nil.
+
+    if: self peekKind = TokenKind Keyword then: {
+        let keyToken := self next.
+        let keyTokenText := keyToken getText.
+        let keyTokenContents := keyTokenText substringFrom: 0 until: keyTokenText size - 1.
+
+        key := ParseTreeLiteralSymbolNode new
+            sourcePosition: keyToken sourcePosition;
+            value: keyTokenContents asSymbol;
+            yourself.
+
+        let kind := self peekKind.
+        if: (kind ~= TokenKind Dot) && (kind ~= TokenKind RightCurlyBracket) then: {
+            value := self parseAssociationExpression
+        }
+    } else: {
+        key := self parseBinaryExpressionSequence.
+        if: self peekKind = TokenKind Colon then: {
+            self advance.
+            value := self parseAssociationExpression
+        }
+    }.
+
+    ParseTreeAssociationNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        key: key;
+        value: value;
+        yourself
+}.
+
+Parser !{
+parseImmutableDictionary :: ParseTreeImmutableDictionaryNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind ImmutableDictionaryStart.
+    self advance.
+
+    ## Chop the initial dots.
+    while: self peekKind = TokenKind Dot do: {
+        self advance
+    }.
+
+    let expectsExpression mutable := true.
+    let elements := OrderedCollection new.
+
+    while: self atEnd not && (self peekKind ~= TokenKind RightCurlyBracket) do: {
+        if: expectsExpression not then: {
+            elements add: (self makeErrorAtCurrentSourcePosition: "Expected a dot before the association.")
+        }.
+
+        let expression := self parseImmutableDictionaryAssociation.
+        elements add: expression.
+
+        expectsExpression := false.
+        
+        ## Chop the trailing dots.
+        while: self peekKind = TokenKind Dot do: {
+            self advance.
+            expectsExpression := true
+        }.
+    }.
+
+    if: self peekKind = TokenKind RightCurlyBracket then: {
+        self advance
+    } else: {
+        elements add: (self makeErrorAtCurrentSourcePosition: "Missing right bracket to close the dictionary.")
+    }.
+
+    ParseTreeImmutableDictionaryNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+		elements: elements asArray;
+		yourself
+}.
+
+Parser !{
+parseOptionalTypeExpression :: ParseTreeNode.
+    if: self peekKind = TokenKind LeftParent then: {
+        return: self parseParentheses
+    }.
+    nil
+}.
+
+Parser !{
+parseMethodArgument :: ParseTreeArgumentDefinitionNode.
+    let startingPosition := position.
+    let typeExpression mutable type: ParseTreeNode := nil.
+    if: self peekKind = TokenKind LeftParent then: {
+        typeExpression := self parseParentheses
+    }.
+
+    let identifierToken := self next.
+    ParseTreeArgumentDefinitionNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        typeExpression: typeExpression;
+        name: identifierToken getText asSymbol;
+        yourself
+}.
+
+Parser !{
+parseMethodHeader :: ParseTreeFunctionalDependentTypeNode.
+    let startingPosition := position.
+    let receiverType := self parseOptionalTypeExpression.
+
+    let arguments := OrderedCollection new.
+    let selectorText mutable := "".
+
+    let headerTokenKind := self peekKind.
+    if: headerTokenKind = TokenKind Identifier then: {
+        selectorText := self next getText
+    }.
+    if: isBinaryOperatorToken(headerTokenKind) then: {
+        selectorText := self next getText.
+        arguments add: self parseMethodArgument
+    }.
+    if: headerTokenKind = TokenKind Keyword then: {
+        while: self peekKind = TokenKind Keyword do: {
+            let keywordToken := self next.
+            selectorText := selectorText -- keywordToken getText.
+            arguments add: self parseMethodArgument.
+        }
+    }.
+
+    let resultTypeExpression mutable type: ParseTreeNode := nil.
+    if: self peekKind = TokenKind ColonColon then: {
+        self advance.
+        resultTypeExpression := self parseAssociationExpression
+    }.
+
+    let sourcePosition := self sourcePositionFrom: startingPosition.
+    ParseTreeFunctionalDependentTypeNode new
+        sourcePosition: sourcePosition;
+        argumentDefinitions: arguments asArray;
+        selector: selectorText asSymbol;
+        addSelfWithType: receiverType;
+        resultTypeExpression: resultTypeExpression;
+        yourself
+}.
+
+Parser !{
+parseMethod :: ParseTreeMethodNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind MethodStart.
+    self advance.
+
+    let methodHeader := self parseMethodHeader.
+    let expression := self parseSequenceUntilEndOrDelimiter: TokenKind RightCurlyBracket.
+    let expressionWithError := self expect: TokenKind RightCurlyBracket addingError: "Missing right curly bracket" toNode: expression.
+
+    ParseTreeMethodNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        functionType: methodHeader;
+        selector: methodHeader selector;
+        body: expressionWithError;
+        yourself
+}.
+
+Parser !{
+parseTerm :: ParseTreeNode.
+    let kind := self peekKind.
+    if: kind = TokenKind Identifier then: {
+        return: self parseIdentifierReference
+    }.
+    if: kind = TokenKind LeftParent then: {
+        return: self parseParentheses
+    }.
+    if: kind = TokenKind LeftBracket then: {
+        return: self parseArray
+    }.
+    if: kind = TokenKind LeftCurlyBracket then: {
+        return: self parseBlock
+    }.
+    if: kind = TokenKind ImmutableDictionaryStart then: {
+        return: self parseImmutableDictionary
+    }.
+    if: kind = TokenKind MethodStart then: {
+        return: self parseMethod
+    }.
+    self parseLiteral
+}.
+
+function isUnaryPostfixToken(token: TokenKind) => Boolean
+    := (token = TokenKind Identifier) || (token = TokenKind LeftParent) ||
+        (token = TokenKind MethodStart) || (token = TokenKind ImmutableDictionaryStart).
+
+Parser !{
+parseUnaryPostfixExpression :: ParseTreeNode.
+    let startingPosition := position.
+    let receiver mutable := self parseTerm.
+    while: isUnaryPostfixToken(self peekKind) do: {
+        let tokenKind := self peekKind.
+
+        if: tokenKind = TokenKind Identifier then: {
+            let token := self next.
+            let selector := token getText asSymbol.
+            receiver := ParseTreeMessageSendNode new
+                sourcePosition: (self sourcePositionFrom: startingPosition);
+                receiver: receiver;
+                selector: (ParseTreeLiteralSymbolNode new
+                    sourcePosition: token sourcePosition;
+                    value: selector;
+                    yourself);
+                arguments: ParseTreeNode list basicNew;
+                yourself
+
+        }.
+        if: tokenKind = TokenKind LeftParent then: {
+            self advance.
+            let callArguments mutable := self parseExpressionListUntilEndOrDelimiter: TokenKind RightParent.
+            if: self peekKind = TokenKind RightParent then: {
+                self advance
+            } else: {
+                callArguments := callArguments -- (ParseTreeNode list with: (self makeErrorAtCurrentSourcePosition: "Expected a right parent"))
+            }.
+
+            receiver := ParseTreeApplicationNode new
+                sourcePosition: (self sourcePositionFrom: startingPosition);
+                functional: receiver;
+                arguments: callArguments;
+                yourself
+        }.
+
+        if: tokenKind = TokenKind MethodStart then: {
+            let method := self parseMethod.
+            receiver := ParseTreeAddMethodNode new
+                sourcePosition: (self sourcePositionFrom: startingPosition);
+				owner: receiver;
+				method: method;
+				yourself
+
+        }.
+        if: tokenKind = TokenKind ImmutableDictionaryStart then: {
+            let dictionary := self parseImmutableDictionary.
+            dictionary dictionaryType: receiver.
+            receiver := dictionary
+
+        }.
+    }.
+
+    receiver
+}.
+
+Parser !{
+parseQuoteExpression :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind Quote.
+    self advance.
+
+    let expression := self parseUnaryPrefixExpression.
+    ParseTreeQuoteNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        expression: expression;
+        yourself
+}.
+
+Parser !{
+parseQuasiQuoteExpression :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind QuasiQuote.
+    self advance.
+
+    let expression := self parseUnaryPrefixExpression.
+    ParseTreeQuasiQuoteNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        expression: expression;
+        yourself
+}.
+
+Parser !{
+parseQuasiUnquoteExpression :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind QuasiUnquote.
+    self advance.
+
+    let expression := self parseUnaryPrefixExpression.
+    ParseTreeQuasiUnquoteNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        expression: expression;
+        yourself
+}.
+
+Parser !{
+parseSpliceExpression :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind Splice.
+    self advance.
+
+    let expression := self parseUnaryPrefixExpression.
+    ParseTreeSpliceNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        expression: expression;
+        yourself
+}.
+
+Parser !{
+parseUnaryPrefixExpression :: ParseTreeNode.
+    let kind := self peekKind.
+
+    if: kind = TokenKind Quote then: {
+        return: self parseQuoteExpression
+    }.
+    if: kind = TokenKind QuasiQuote then: {
+        return: self parseQuasiQuoteExpression
+    }.
+    if: kind = TokenKind QuasiUnquote then: {
+        return: self parseQuasiUnquoteExpression
+    }.
+    if: kind = TokenKind Splice then: {
+        return: self parseSpliceExpression
+    }.
+
+    self parseUnaryPostfixExpression
+}.
+
+Parser !{
+parseBinaryExpressionSequence :: ParseTreeNode.
+    let startingPosition := position.
+    let firstOperand := self parseUnaryPrefixExpression.
+    if: isBinaryOperatorToken(self peekKind) not then: {
+        return: firstOperand
+    }.
+
+    let operands := OrderedCollection new.
+    operands add: firstOperand.
+
+    while: isBinaryOperatorToken(self peekKind) do: {
+        let operator := self next.
+        operands add: (ParseTreeLiteralSymbolNode new
+            sourcePosition: operator sourcePosition;
+            value: operator getText asSymbol;
+            yourself).
+
+        let operand := self parseUnaryPrefixExpression.
+        operands add: operand.
+    }.
+
+    ParseTreeBinaryExpressionSequenceNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        operands: operands asArray;
+        yourself
+}.
+
+Parser !{
+parseAssociationExpression :: ParseTreeNode.
+    let startingPosition := position.
+    let key := self parseBinaryExpressionSequence.
+
+    if: self peekKind = TokenKind Colon then: {
+        self advance.
+        let value := self parseAssociationExpression.
+
+        return: (ParseTreeAssociationNode new
+            sourcePosition: (self sourcePositionFrom: startingPosition);
+            key: key;
+            value: value;
+            yourself)
+    }.
+
+    key
+}.
+
+Parser !{
+parseKeywordApplication :: ParseTreeNode.
+    assert: self peekKind = TokenKind Keyword.
+    let startingPosition := position.
+    let selectorValue mutable := "".
+    let arguments := OrderedCollection new.
+
+    while: self peekKind = TokenKind Keyword do: {
+        let token := self next.
+        selectorValue := selectorValue -- token getText.
+        
+        let argument := self parseAssociationExpression.
+        arguments add: argument
+    }.
+
+    let sourcePosition := self sourcePositionFrom: startingPosition.
+    ParseTreeApplicationNode new
+        sourcePosition: sourcePosition;
+        functional: (ParseTreeIdentifierReferenceNode new
+            sourcePosition: sourcePosition;
+            value: selectorValue asSymbol;
+            yourself);
+        arguments: arguments asArray;
+        yourself
+}.
+
+Parser !{
+parseKeywordMessage :: ParseTreeNode.
+   let startingPosition := position.
+   let receiver := self parseAssociationExpression.
+
+    if: self peekKind ~= TokenKind Keyword then: {
+        return: receiver
+    }.
+
+    let selectorText mutable := "".
+    let arguments := OrderedCollection new.
+
+    while: self peekKind = TokenKind Keyword do: {  
+        let keyword := self next.
+        let argument := self parseAssociationExpression.
+
+        selectorText := selectorText-- keyword getText.
+        arguments add: argument.
+    }.
+
+    let sourcePosition := self sourcePositionFrom: startingPosition.
+    ParseTreeMessageSendNode new
+        sourcePosition: sourcePosition;
+        receiver: receiver;
+        selector: (ParseTreeLiteralSymbolNode new
+            sourcePosition: sourcePosition;
+            value: selectorText asSymbol;
+            yourself);
+        arguments: arguments asArray;
+        yourself
+}.
+
+Parser !{
+parseUnaryCascadedMessage :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind Identifier.
+
+    let identifierToken := self next.
+
+    ParseTreeCascadedMessageNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        selector: (ParseTreeLiteralSymbolNode new
+            sourcePosition: identifierToken sourcePosition;
+            value: identifierToken getText asSymbol;
+            yourself);
+        arguments: ParseTreeNode list basicNew;
+        yourself
+}.
+
+Parser !{
+parseBinaryCascadedMessage :: ParseTreeNode.
+    let startingPosition := position.
+    assert: isBinaryOperatorToken(self peekKind).
+
+    let operatorToken := self next.
+    let argument := self parseAssociationExpression.
+
+    ParseTreeCascadedMessageNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        selector: (ParseTreeLiteralSymbolNode new
+            sourcePosition: operatorToken sourcePosition;
+            value: operatorToken getText asSymbol;
+            yourself);
+        arguments: (ParseTreeNode list with: argument);
+        yourself
+}.
+
+Parser !{
+parseKeywordCascadedMessage :: ParseTreeNode.
+    let startingPosition := position.
+    assert: self peekKind = TokenKind Keyword.
+
+    let selectorText mutable := "".
+    let arguments := OrderedCollection new.
+    while: self peekKind = TokenKind Keyword do: {
+        let keyword := self next.
+        let argument := self parseAssociationExpression.
+
+        selectorText := selectorText -- keyword getText.
+        arguments add: argument
+    }.
+
+    let sourcePosition := self sourcePositionFrom: startingPosition.
+    ParseTreeCascadedMessageNode new
+        sourcePosition: sourcePosition;
+        selector: (ParseTreeLiteralSymbolNode new
+            sourcePosition: sourcePosition;
+            value: selectorText asSymbol;
+            yourself);
+        arguments: arguments asArray;
+        yourself
+}.
+
+Parser !{
+parseCascadedMessage :: ParseTreeNode.
+    let kind := self peekKind.
+    if: kind = TokenKind Identifier then: {
+        return: self parseUnaryCascadedMessage
+    }.
+    if: isBinaryOperatorToken(kind) then: {
+        return: self parseBinaryCascadedMessage
+    }.
+    if: kind = TokenKind Keyword then: {
+        return: self parseKeywordCascadedMessage
+    }.
+
+    self advanceWithExpectedError: "Expected a cascaded message."
+}.
+
+Parser !{
+parseMessageCascade :: ParseTreeNode.
+    let startingPosition := position.
+    let receiver mutable := self parseKeywordMessage.
+    if: self peekKind ~= TokenKind Semicolon then: {
+        return: receiver
+    }.
+
+    let cascadedMessages := OrderedCollection new.
+    let split := receiver splitReceiverForCascade.
+    receiver := split first.
+    let splitCascaded := split second.
+    if: nil ~= splitCascaded then: {
+        cascadedMessages add: splitCascaded
+    }.
+
+    while: self peekKind = TokenKind Semicolon do: {
+        self advance.
+        cascadedMessages add: (self parseCascadedMessage).
+    }.
+
+    ParseTreeMessageCascadeNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        receiver: receiver;
+        cascadedMessages: cascadedMessages asArray;
+        yourself
+}.
+
+Parser !{
+parseLowPrecedenceExpression :: ParseTreeNode.
+    if: self peekKind = TokenKind Keyword then: {
+        return: self parseKeywordApplication.
+    }.
+
+    self parseMessageCascade
+}.
+
+Parser !{
+parseAssignmentExpression :: ParseTreeNode.
+    let startingPosition := position.
+    let assignedStore := self parseLowPrecedenceExpression.
+    if: self peekKind ~= TokenKind Assignment then: {
+        return: assignedStore
+    }.
+
+    self advance.
+    let assignedValue := self parseAssignmentExpression.
+    ParseTreeAssignmentNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+		storage: assignedStore;
+		value: assignedValue;
+        yourself
+}.
+
+Parser !{
+parseCommaExpresion :: ParseTreeNode.
+    let startingPosition := position.
+    let firstElement := self parseAssignmentExpression.
+    if: self peekKind ~= TokenKind Comma then: {
+        return: firstElement
+    }.
+
+    let tupleElements := OrderedCollection new.
+    tupleElements add: firstElement.
+
+    while: self peekKind = TokenKind Comma do: {
+        self advance.
+        let nextElement := self parseAssignmentExpression.
+        tupleElements add: nextElement
+    }.
+
+    ParseTreeTupleNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        elements: tupleElements asArray;
+        yourself
+}.
+
+Parser !{
+parseExpression :: ParseTreeNode.
+    self parseCommaExpresion
+}.
+
+Parser !{
+parseExpressionListUntilEndOrDelimiter: (TokenKind)delimiter :: ParseTreeNode list.
+    let expressions := OrderedCollection new.
+
+    ## Leading dots.
+    while: self peekKind = TokenKind Dot do: {
+        self advance
+    }.
+
+    let expectsExpressions mutable := true.
+    while: (self atEnd not && (self peekKind ~= delimiter)) do: {
+        if: expectsExpressions not then: {
+            expressions add: (self makeErrorAtCurrentSourcePosition: "Expected dot before expression.")
+        }.
+
+        let expression := self parseExpression.
+        expressions add: expression.
+
+        ## Trailing dots
+        expectsExpressions := false.
+        while: self peekKind = TokenKind Dot do: {
+            expectsExpressions := true.
+            self advance
+        }.
+    }.
+
+    expressions asArray
+}.
+
+Parser !{
+parseSequenceUntilEndOrDelimiter: (TokenKind)delimiter :: ParseTreeNode.
+    let startingPosition := position.
+    let expressions := self parseExpressionListUntilEndOrDelimiter: delimiter.
+    if: expressions size = 1 then: {
+        return: (expressions at: 0)
+    }.
+
+    ParseTreeSequenceNode new
+        sourcePosition: (self sourcePositionFrom: startingPosition);
+        elements: expressions;
+        yourself
+}.
+
+Parser !{
+parseSourceCode: (SourceCode)aSourceCode tokens: (ParseTreeNode list)aTokenList :: ParseTreeNode.
+    sourceCode := aSourceCode.
+    tokenCount := aTokenList size.
+    tokens := aTokenList.
+    position := 0.
+
+    self parseSequenceUntilEndOrDelimiter: TokenKind EndOfSource
+}.
+
+Parser !{
+parseSourceCode: (SourceCode)aSourceCode :: ParseTreeNode.
+    let tokenList := Scanner new scanSourceCode: aSourceCode.
+    self parseSourceCode: aSourceCode tokens: tokenList
+}.
+
+}

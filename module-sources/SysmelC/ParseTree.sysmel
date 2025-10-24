@@ -1,0 +1,1503 @@
+namespace SysmelC definition: {
+public: [
+class ParseTreeNode withSuperclass: Value fields: #{}.
+].
+
+## Error Node
+public: [
+class ParseTreeErrorNode withSuperclass: ParseTreeNode fields: #{
+    errorMessage: String.
+    innerNodes: ParseTreeNode list
+}
+].
+
+##ParseTreeNode !{
+##type :: SysmelType.
+##    CompilationContext current ParseTreeNodeType
+##}.
+
+ParseTreeNode !{
+isErrorNode :: Boolean.
+    false.
+}.
+
+ParseTreeErrorNode !{
+isErrorNode :: Boolean.
+    true.
+}.
+
+ParseTreeErrorNode !{
+errorMessage :: String.
+    errorMessage
+}.
+
+ParseTreeErrorNode !{
+errorMessage: (String)newErrorMessage :: Void.
+    errorMessage := newErrorMessage
+}.
+
+ParseTreeErrorNode !{
+innerNodes :: ParseTreeNode list.
+    innerNodes
+}.
+
+ParseTreeErrorNode !{
+innerNodes: (ParseTreeNode list)newInnerNodes :: Void.
+    innerNodes := newInnerNodes
+}.
+
+## Application
+public: [
+class ParseTreeApplicationNode withSuperclass: ParseTreeNode fields: #{
+    functional: ParseTreeNode.
+    arguments: ParseTreeNode list
+}
+].
+
+ParseTreeNode !{
+isApplicationNode :: Boolean.
+    false.
+}.
+
+ParseTreeApplicationNode !{
+isApplicationNode :: Boolean.
+    true.
+}.
+
+ParseTreeApplicationNode !{
+functional :: ParseTreeNode.
+    functional
+}.
+
+ParseTreeApplicationNode !{
+functional: (ParseTreeNode)newFunctional :: Void.
+    functional := newFunctional
+}.
+
+ParseTreeApplicationNode !{
+arguments :: ParseTreeNode list.
+    arguments
+}.
+
+ParseTreeApplicationNode !{
+arguments: (ParseTreeNode list)newArguments :: Void.
+    arguments := newArguments
+}.
+
+
+## Argument definition
+public: [
+class ParseTreeArgumentDefinitionNode withSuperclass: ParseTreeNode fields: #{
+    name: Symbol.
+    typeExpression: Value
+}
+].
+
+ParseTreeNode !{
+isArgumentDefinitionNode :: Boolean.
+    false.
+}.
+
+ParseTreeArgumentDefinitionNode !{
+isArgumentDefinitionNode :: Boolean.
+    true.
+}.
+
+ParseTreeArgumentDefinitionNode !{
+name :: Symbol.
+    name
+}.
+
+ParseTreeArgumentDefinitionNode !{
+name: (Symbol)newName :: Void.
+    name := newName
+}.
+
+ParseTreeArgumentDefinitionNode !{
+typeExpression :: Value.
+    typeExpression
+}.
+
+ParseTreeArgumentDefinitionNode !{
+typeExpression: (Value)newType :: Void.
+    typeExpression := newType
+}.
+
+## ParseTreeNode list
+public: [
+class ParseTreeArrayNode withSuperclass: ParseTreeNode fields: #{
+    elements: ParseTreeNode list
+}
+].
+
+ParseTreeNode !{
+isArrayNode :: Boolean.
+    false.
+}.
+
+ParseTreeArrayNode !{
+isArrayNode :: Boolean.
+    true.
+}.
+
+ParseTreeArrayNode !{
+elements :: ParseTreeNode list.
+    elements
+}.
+
+ParseTreeArrayNode !{
+elements: (ParseTreeNode list)newElements :: Void.
+    elements := newElements
+}.
+
+## Assignment
+public: [
+class ParseTreeAssignmentNode withSuperclass: ParseTreeNode fields: #{
+    storage: ParseTreeNode.
+    value: ParseTreeNode
+}
+].
+
+ParseTreeNode !{
+isAssignmentNode :: Boolean.
+    false.
+}.
+
+ParseTreeAssignmentNode !{
+isAssignmentNode :: Boolean.
+    true.
+}.
+
+ParseTreeAssignmentNode !{
+storage :: ParseTreeNode.
+    storage
+}.
+
+ParseTreeAssignmentNode !{
+storage: (ParseTreeNode)newStorage :: Void.
+    storage := newStorage
+}.
+
+ParseTreeAssignmentNode !{
+value :: ParseTreeNode.
+    value
+}.
+
+ParseTreeAssignmentNode !{
+value: (ParseTreeNode)newValue :: Void.
+    value := newValue
+}.
+
+## Association
+public: [
+class ParseTreeAssociationNode withSuperclass: ParseTreeNode fields: #{
+    key: ParseTreeNode.
+    value: ParseTreeNode
+}
+].
+
+ParseTreeNode !{
+isAssociationNode :: Boolean.
+    false.
+}.
+
+ParseTreeAssociationNode !{
+isAssociationNode :: Boolean.
+    true.
+}.
+
+ParseTreeAssociationNode !{
+key :: ParseTreeNode.
+    key
+}.
+
+ParseTreeAssociationNode !{
+key: (ParseTreeNode)newKey :: Void.
+    key := newKey
+}.
+
+ParseTreeAssociationNode !{
+value :: ParseTreeNode.
+    value
+}.
+
+ParseTreeAssociationNode !{
+value: (ParseTreeNode)newValue :: Void.
+    value := newValue
+}.
+
+## Binary expression sequence
+public: [
+class ParseTreeBinaryExpressionSequenceNode withSuperclass: ParseTreeNode fields: #{
+    operands: ParseTreeNode list.
+}
+].
+
+ParseTreeNode !{
+isBinaryExpressionSequenceNode :: Boolean.
+    false.
+}.
+
+ParseTreeBinaryExpressionSequenceNode !{
+isBinaryExpressionSequenceNode :: Boolean.
+    true.
+}.
+
+ParseTreeBinaryExpressionSequenceNode !{
+operands :: ParseTreeNode list.
+    operands
+}.
+
+ParseTreeBinaryExpressionSequenceNode !{
+operands: (ParseTreeNode list)newOperands :: Void.
+    operands := newOperands
+}.
+
+## ParseTreeFunctionalDependentTypeNode
+public: [
+class ParseTreeFunctionalDependentTypeNode withSuperclass: ParseTreeNode fields: #{
+    argumentDefinitions: ParseTreeNode list.
+    resultTypeExpression: ParseTreeNode.
+    selector: Symbol
+}
+].
+
+ParseTreeNode !{
+isFunctionalDependentType :: Boolean.
+    false.
+}.
+
+ParseTreeFunctionalDependentTypeNode !{
+isFunctionalDependentType :: Boolean.
+    true.
+}.
+
+ParseTreeFunctionalDependentTypeNode !{
+argumentDefinitions :: ParseTreeNode list.
+    argumentDefinitions
+}.
+
+ParseTreeFunctionalDependentTypeNode !{
+argumentDefinitions: (ParseTreeNode list)newArguments :: Void.
+    argumentDefinitions := newArguments
+}.
+
+ParseTreeFunctionalDependentTypeNode !{
+resultTypeExpression :: ParseTreeNode.
+    resultTypeExpression
+}.
+
+ParseTreeFunctionalDependentTypeNode !{
+resultTypeExpression: (ParseTreeNode)newResultTypeExpression :: Void.
+    resultTypeExpression := newResultTypeExpression
+}.
+
+ParseTreeFunctionalDependentTypeNode !{
+selector :: Symbol.
+    selector
+}.
+
+ParseTreeFunctionalDependentTypeNode !{
+selector: (Symbol)newSelector :: Void.
+    selector := newSelector
+}.
+
+ParseTreeFunctionalDependentTypeNode !{
+addSelfWithType: (ParseTreeNode)aTypeExpression :: Void.
+    let selfArgument := ParseTreeArgumentDefinitionNode new
+		sourcePosition: sourcePosition;
+		name: #self;
+		typeExpression: aTypeExpression;
+		yourself.
+
+    argumentDefinitions := ((ParseTreeNode list new: 1)
+                                at: 0 put: selfArgument;
+                                yourself) -- argumentDefinitions
+}.
+
+## Block closure node
+public: [
+class ParseTreeBlockClosureNode withSuperclass: ParseTreeNode fields: #{
+    functionType: ParseTreeFunctionalDependentTypeNode.
+    body: ParseTreeNode
+}
+].
+
+ParseTreeNode !{
+isBlockClosureNode :: Boolean.
+    false.
+}.
+
+ParseTreeBlockClosureNode !{
+isBlockClosureNode :: Boolean.
+    true.
+}.
+
+ParseTreeBlockClosureNode !{
+functionType :: ParseTreeFunctionalDependentTypeNode.
+    functionType
+}.
+
+ParseTreeBlockClosureNode !{
+functionType: (ParseTreeFunctionalDependentTypeNode)newFunctionType :: Void.
+    functionType := newFunctionType
+}.
+
+ParseTreeBlockClosureNode !{
+body :: ParseTreeNode.
+    body
+}.
+
+ParseTreeBlockClosureNode !{
+body: (ParseTreeNode)newBody :: Void.
+    body := newBody
+}.
+
+## IdentifierReference.
+public: [
+class ParseTreeIdentifierReferenceNode withSuperclass: ParseTreeNode fields: #{
+    value: Symbol
+}.
+].
+
+ParseTreeNode !{
+isIdentifierReferenceNode :: Boolean.
+    false.
+}.
+
+ParseTreeIdentifierReferenceNode !{
+isIdentifierReferenceNode :: Boolean.
+    true.
+}.
+
+ParseTreeIdentifierReferenceNode !{
+value :: Symbol.
+    value
+}.
+
+ParseTreeIdentifierReferenceNode !{
+value: (Symbol)newValue :: Void.
+    value := newValue
+}.
+
+## Immutable dictionary node
+public: [
+class ParseTreeImmutableDictionaryNode withSuperclass: ParseTreeNode fields: #{
+    dictionaryType: ParseTreeNode.
+    elements: ParseTreeNode list
+}.
+].
+
+ParseTreeNode !{
+isImmutableDictionaryNode :: Boolean.
+    false.
+}.
+
+ParseTreeImmutableDictionaryNode !{
+isImmutableDictionaryNode :: Boolean.
+    true.
+}.
+
+ParseTreeImmutableDictionaryNode !{
+dictionaryType :: ParseTreeNode.
+    dictionaryType
+}.
+
+ParseTreeImmutableDictionaryNode !{
+dictionaryType: (ParseTreeNode)newType :: Void.
+    dictionaryType := newType
+}.
+
+ParseTreeImmutableDictionaryNode !{
+elements :: ParseTreeNode list.
+    elements
+}.
+
+ParseTreeImmutableDictionaryNode !{
+elements: (ParseTreeNode list)newElements :: Void.
+    elements := newElements
+}.
+
+## Lexical block
+public: [
+class ParseTreeLexicalBlockNode withSuperclass: ParseTreeNode fields: #{
+    body: ParseTreeNode
+}
+].
+
+ParseTreeNode !{
+isLexicalBlockNode :: Boolean.
+    false.
+}.
+
+ParseTreeLexicalBlockNode !{
+isLexicalBlockNode :: Boolean.
+    true.
+}.
+
+ParseTreeLexicalBlockNode !{
+body :: ParseTreeNode.
+    body
+}.
+
+ParseTreeLexicalBlockNode !{
+body: (ParseTreeNode)newBody :: Void.
+    body := newBody
+}.
+
+## Literal boolean
+public: [
+class ParseTreeLiteralBooleanNode withSuperclass: ParseTreeNode fields: #{
+    value: Boolean
+}
+].
+
+ParseTreeNode !{
+isLiteralBooleanNode :: Boolean.
+    false.
+}.
+
+ParseTreeLiteralBooleanNode !{
+isLiteralBooleanNode :: Boolean.
+    true.
+}.
+
+ParseTreeLiteralBooleanNode !{
+value :: Boolean.
+    value
+}.
+
+ParseTreeLiteralBooleanNode !{
+value: (Boolean)newValue :: Void.
+    value := newValue
+}.
+
+## Literal character
+public: [
+class ParseTreeLiteralCharacterNode withSuperclass: ParseTreeNode fields: #{
+    value: Character
+}.
+].
+
+ParseTreeNode !{
+isLiteralCharacterNode :: Boolean.
+    false.
+}.
+
+ParseTreeLiteralCharacterNode !{
+isLiteralCharacterNode :: Boolean.
+    true.
+}.
+
+ParseTreeLiteralCharacterNode !{
+value :: Character.
+    value
+}.
+
+ParseTreeLiteralCharacterNode !{
+value: (Character)newValue :: Void.
+    value := newValue
+}.
+
+
+## Literal float
+public: [
+class ParseTreeLiteralFloatNode withSuperclass: ParseTreeNode fields: #{
+    value: Float
+}.
+].
+
+ParseTreeNode !{
+isLiteralFloatNode :: Boolean.
+    false.
+}.
+
+ParseTreeLiteralFloatNode !{
+isLiteralFloatNode :: Boolean.
+    true.
+}.
+
+ParseTreeLiteralFloatNode !{
+value :: Float.
+    value
+}.
+
+ParseTreeLiteralFloatNode !{
+value: (Float)newValue :: Void.
+    value := newValue
+}.
+
+## Literal integer
+public: [
+class ParseTreeLiteralIntegerNode withSuperclass: ParseTreeNode fields: #{
+    value: Integer
+}.
+].
+
+ParseTreeNode !{
+isLiteralIntegerNode :: Boolean.
+    false.
+}.
+
+ParseTreeLiteralIntegerNode !{
+isLiteralIntegerNode :: Boolean.
+    true.
+}.
+
+ParseTreeLiteralIntegerNode !{
+value :: Integer.
+    value
+}.
+
+ParseTreeLiteralIntegerNode !{
+value: (Integer)newValue :: Void.
+    value := newValue
+}.
+
+## Literal string.
+public: [
+class ParseTreeLiteralStringNode withSuperclass: ParseTreeNode fields: #{
+    value: String
+}.
+].
+
+ParseTreeNode !{
+isLiteralStringNode :: Boolean.
+    false.
+}.
+
+ParseTreeLiteralStringNode !{
+isLiteralStringNode :: Boolean.
+    true.
+}.
+
+ParseTreeLiteralStringNode !{
+value :: String.
+    value
+}.
+
+ParseTreeLiteralStringNode !{
+value: (String)newValue :: Void.
+    value := newValue
+}.
+
+## Literal symbol.
+public: [
+class ParseTreeLiteralSymbolNode withSuperclass: ParseTreeNode fields: #{
+    value: Symbol
+}.
+].
+
+ParseTreeNode !{
+isLiteralSymbolNode :: Boolean.
+    false.
+}.
+
+ParseTreeLiteralSymbolNode !{
+isLiteralSymbolNode :: Boolean.
+    true.
+}.
+
+ParseTreeLiteralSymbolNode !{
+value :: Symbol.
+    value
+}.
+
+ParseTreeLiteralSymbolNode !{
+value: (Symbol)newValue :: Void.
+    value := newValue
+}.
+
+## Cascaded Message
+public: [
+class ParseTreeCascadedMessageNode withSuperclass: ParseTreeNode fields: #{
+    selector: ParseTreeNode.
+    arguments: ParseTreeNode list
+}
+].
+
+ParseTreeNode !{
+isCascadedMessageNode :: Boolean.
+    false.
+}.
+
+ParseTreeCascadedMessageNode !{
+isCascadedMessageNode :: Boolean.
+    true.
+}.
+
+ParseTreeCascadedMessageNode !{
+selector :: ParseTreeNode.
+    selector
+}.
+
+ParseTreeCascadedMessageNode !{
+selector: (ParseTreeNode)newSelector :: Void.
+    selector := newSelector
+}.
+
+ParseTreeCascadedMessageNode !{
+arguments :: ParseTreeNode list.
+    arguments
+}.
+
+ParseTreeCascadedMessageNode !{
+arguments: (ParseTreeNode list)newArguments :: Void.
+    arguments := newArguments
+}.
+
+## Message cascade
+public: [
+class ParseTreeMessageCascadeNode withSuperclass: ParseTreeNode fields: #{
+    receiver: ParseTreeNode.
+    cascadedMessages: ParseTreeNode list
+}
+].
+
+ParseTreeNode !{
+isMessageCascadeNode :: Boolean.
+    false.
+}.
+
+ParseTreeMessageCascadeNode !{
+isMessageCascadeNode :: Boolean.
+    true.
+}.
+
+ParseTreeMessageCascadeNode !{
+receiver :: ParseTreeNode.
+    receiver
+}.
+
+ParseTreeMessageCascadeNode !{
+receiver: (ParseTreeNode)newReceiver :: Void.
+    receiver := newReceiver
+}.
+
+ParseTreeMessageCascadeNode !{
+cascadedMessages :: ParseTreeNode list.
+    cascadedMessages
+}.
+
+ParseTreeMessageCascadeNode !{
+cascadedMessages: (ParseTreeNode list)newCascadedMessages :: Void.
+    cascadedMessages := newCascadedMessages
+}.
+
+## Message Send
+public: [
+class ParseTreeMessageSendNode withSuperclass: ParseTreeNode fields: #{
+    receiver: ParseTreeNode.
+    selector: ParseTreeNode.
+    arguments: ParseTreeNode list
+}
+].
+
+ParseTreeNode !{
+isMessageSendNode :: Boolean.
+    false.
+}.
+
+ParseTreeMessageSendNode !{
+isMessageSendNode :: Boolean.
+    true.
+}.
+
+ParseTreeMessageSendNode !{
+receiver :: ParseTreeNode.
+    receiver
+}.
+
+ParseTreeMessageSendNode !{
+receiver: (ParseTreeNode)newReceiver :: Void.
+    receiver := newReceiver
+}.
+
+ParseTreeMessageSendNode !{
+selector :: ParseTreeNode.
+    selector
+}.
+
+ParseTreeMessageSendNode !{
+selector: (ParseTreeNode)newSelector :: Void.
+    selector := newSelector
+}.
+
+ParseTreeMessageSendNode !{
+arguments :: ParseTreeNode list.
+    arguments
+}.
+
+ParseTreeMessageSendNode !{
+arguments: (ParseTreeNode list)newArguments :: Void.
+    arguments := newArguments
+}.
+
+## Function node
+public: [
+class ParseTreeFunctionNode withSuperclass: ParseTreeNode fields: #{
+    functionType: ParseTreeFunctionalDependentTypeNode.
+    nameExpression: ParseTreeNode.
+    body: ParseTreeNode
+}
+].
+
+ParseTreeNode !{
+isFunctionNode :: Boolean.
+    false.
+}.
+
+ParseTreeFunctionNode !{
+isFunctionNode :: Boolean.
+    true.
+}.
+
+ParseTreeFunctionNode !{
+functionType :: ParseTreeFunctionalDependentTypeNode.
+    functionType
+}.
+
+ParseTreeFunctionNode !{
+functionType: (ParseTreeFunctionalDependentTypeNode)newFunctionType :: Void.
+    functionType := newFunctionType
+}.
+
+ParseTreeFunctionNode !{
+nameExpression :: ParseTreeNode.
+    nameExpression
+}.
+
+ParseTreeFunctionNode !{
+nameExpression: (ParseTreeNode)newNameExpression :: Void.
+    nameExpression := newNameExpression
+}.
+
+ParseTreeFunctionNode !{
+body :: ParseTreeNode.
+    body
+}.
+
+ParseTreeFunctionNode !{
+body: (ParseTreeNode)newBody :: Void.
+    body := newBody
+}.
+
+## Method node
+public: [
+class ParseTreeMethodNode withSuperclass: ParseTreeNode fields: #{
+    functionType: ParseTreeFunctionalDependentTypeNode.
+    selector: Symbol.
+    body: ParseTreeNode
+}
+].
+
+ParseTreeNode !{
+isMethodNode :: Boolean.
+    false.
+}.
+
+ParseTreeMethodNode !{
+isMethodNode :: Boolean.
+    true.
+}.
+
+ParseTreeMethodNode !{
+functionType :: ParseTreeFunctionalDependentTypeNode.
+    functionType
+}.
+
+ParseTreeMethodNode !{
+functionType: (ParseTreeFunctionalDependentTypeNode)newFunctionType :: Void.
+    functionType := newFunctionType
+}.
+
+ParseTreeMethodNode !{
+selector :: Symbol.
+    selector
+}.
+
+ParseTreeMethodNode !{
+selector: (Symbol)newSelector :: Void.
+    selector := newSelector
+}.
+
+ParseTreeMethodNode !{
+body :: ParseTreeNode.
+    body
+}.
+
+ParseTreeMethodNode !{
+body: (ParseTreeNode)newBody :: Void.
+    body := newBody
+}.
+
+## AddMethodNode
+public: [
+class ParseTreeAddMethodNode withSuperclass: ParseTreeNode fields: #{
+    owner: ParseTreeNode.
+    method: ParseTreeMethodNode.
+}
+].
+
+ParseTreeNode !{
+isAddMethodNode :: Boolean.
+    false.
+}.
+
+ParseTreeAddMethodNode !{
+isAddMethodNode :: Boolean.
+    true.
+}.
+
+ParseTreeAddMethodNode !{
+owner :: ParseTreeNode.
+    owner
+}.
+
+ParseTreeAddMethodNode !{
+owner: (ParseTreeNode)newOwner :: Void.
+    owner := newOwner
+}.
+
+ParseTreeAddMethodNode !{
+method :: ParseTreeMethodNode.
+    method
+}.
+
+ParseTreeAddMethodNode !{
+method: (ParseTreeMethodNode)newMethod :: Void.
+    method := newMethod
+}.
+
+## Namespace node
+public: [
+class ParseTreeNamespaceNode withSuperclass: ParseTreeNode fields: #{
+    nameExpression: ParseTreeNode.
+    definitionBody: ParseTreeNode
+}.
+].
+
+ParseTreeNode !{
+isNamespaceNode :: Boolean.
+    false.
+}.
+
+ParseTreeNamespaceNode !{
+isNamespaceNode :: Boolean.
+    true.
+}.
+
+ParseTreeNamespaceNode !{
+nameExpression :: ParseTreeNode.
+    nameExpression
+}.
+
+ParseTreeNamespaceNode !{
+nameExpression: (ParseTreeNode)newExpression :: Void.
+    nameExpression := newExpression
+}.
+
+ParseTreeNamespaceNode !{
+definitionBody :: ParseTreeNode.
+    definitionBody
+}.
+
+ParseTreeNamespaceNode !{
+definitionBody: (ParseTreeNode)newExpression :: Void.
+    definitionBody := newExpression
+}.
+
+## Public node
+public: [
+class ParseTreePublicNode withSuperclass: ParseTreeNode fields: #{
+    exportList: ParseTreeNode.
+}.
+].
+
+ParseTreeNode !{
+isPublicNode :: Boolean.
+    false.
+}.
+
+ParseTreePublicNode !{
+isPublicNode :: Boolean.
+    true.
+}.
+
+ParseTreePublicNode !{
+exportList :: ParseTreeNode.
+    exportList
+}.
+
+ParseTreePublicNode !{
+exportList: (ParseTreeNode)newExportList :: Void.
+    exportList := newExportList
+}.
+
+## Quasi quote node
+public: [
+class ParseTreeQuasiQuoteNode withSuperclass: ParseTreeNode fields: #{
+    expression: ParseTreeNode
+}.
+].
+
+ParseTreeNode !{
+isQuasiQuoteNode :: Boolean.
+    false.
+}.
+
+ParseTreeQuasiQuoteNode !{
+isQuasiQuoteNode :: Boolean.
+    true.
+}.
+
+ParseTreeQuasiQuoteNode !{
+expression :: ParseTreeNode.
+    expression
+}.
+
+ParseTreeQuasiQuoteNode !{
+expression: (ParseTreeNode)newExpression :: Void.
+    expression := newExpression
+}.
+
+## Quasi unquote node
+public: [
+class ParseTreeQuasiUnquoteNode withSuperclass: ParseTreeNode fields: #{
+    expression: ParseTreeNode
+}.
+].
+
+ParseTreeNode !{
+isQuasiUnquoteNode :: Boolean.
+    false.
+}.
+
+ParseTreeQuasiUnquoteNode !{
+isQuasiUnquoteNode :: Boolean.
+    true.
+}.
+
+ParseTreeQuasiUnquoteNode !{
+expression :: ParseTreeNode.
+    expression
+}.
+
+ParseTreeQuasiUnquoteNode !{
+expression: (ParseTreeNode)newExpression :: Void.
+    expression := newExpression
+}.
+
+## Splicde node
+public: [
+class ParseTreeSpliceNode withSuperclass: ParseTreeNode fields: #{
+    expression: ParseTreeNode
+}.
+].
+
+ParseTreeNode !{
+isSpliceNode :: Boolean.
+    false.
+}.
+
+ParseTreeSpliceNode !{
+isSpliceNode :: Boolean.
+    true.
+}.
+
+ParseTreeSpliceNode !{
+expression :: ParseTreeNode.
+    expression
+}.
+
+ParseTreeSpliceNode !{
+expression: (ParseTreeNode)newExpression :: Void.
+    expression := newExpression
+}.
+
+## Quote node
+public: [
+class ParseTreeQuoteNode withSuperclass: ParseTreeNode fields: #{
+    expression: ParseTreeNode
+}.
+].
+
+ParseTreeNode !{
+isQuoteNode :: Boolean.
+    false.
+}.
+
+ParseTreeQuoteNode !{
+isQuoteNode :: Boolean.
+    true.
+}.
+
+ParseTreeQuoteNode !{
+expression :: ParseTreeNode.
+    expression
+}.
+
+ParseTreeQuoteNode !{
+expression: (ParseTreeNode)newExpression :: Void.
+    expression := newExpression
+}.
+
+## Sequence node
+public: [
+class ParseTreeSequenceNode withSuperclass: ParseTreeNode fields: #{
+    elements: ParseTreeNode list
+}.
+].
+
+ParseTreeNode !{
+isSequenceNode :: Boolean.
+    false.
+}.
+
+ParseTreeSequenceNode !{
+isSequenceNode :: Boolean.
+    true.
+}.
+
+ParseTreeSequenceNode !{
+elements :: ParseTreeNode list.
+    elements
+}.
+
+ParseTreeSequenceNode !{
+elements: (ParseTreeNode list)newElements :: Void.
+    elements := newElements
+}.
+
+## Tuple node
+public: [
+class ParseTreeTupleNode withSuperclass: ParseTreeNode fields: #{
+    elements: ParseTreeNode list
+}.
+].
+
+ParseTreeNode !{
+isTupleNode :: Boolean.
+    false.
+}.
+
+ParseTreeTupleNode !{
+isTupleNode :: Boolean.
+    true.
+}.
+
+ParseTreeTupleNode !{
+elements :: ParseTreeNode list.
+    elements
+}.
+
+ParseTreeTupleNode !{
+elements: (ParseTreeNode list)newElements :: Void.
+    elements := newElements
+}.
+
+## SplitReceiverForCascade
+## 
+ParseTreeNode !{
+splitReceiverForCascade :: ParseTreeNode list.
+    (ParseTreeNode list new: 2)
+        at: 0 put: self;
+        at: 1 put: nil;
+        yourself
+}.
+
+ParseTreeMessageSendNode !{
+splitReceiverForCascade :: ParseTreeNode list.
+    (ParseTreeNode list new: 2)
+        at: 0 put: receiver;
+        at: 1 put: (ParseTreeCascadedMessageNode new
+            sourcePosition: sourcePosition;
+            selector: selector;
+            arguments: arguments;
+            yourself);
+        yourself
+}.
+
+
+## Variable definition node
+public: [
+class ParseTreeVariableDefinitionNode withSuperclass: ParseTreeNode fields: #{
+    nameExpression: ParseTreeNode.
+    optionalTypeExpression: ParseTreeNode.
+    optionalInitialValue: ParseTreeNode.
+    isMutable: Boolean.
+}.
+].
+
+ParseTreeNode !{
+isVariableDefinitionNode :: Boolean.
+    false.
+}.
+
+ParseTreeVariableDefinitionNode !{
+isVariableDefinitionNode :: Boolean.
+    true.
+}.
+
+ParseTreeVariableDefinitionNode !{
+nameExpression :: ParseTreeNode.
+    nameExpression
+}.
+
+ParseTreeVariableDefinitionNode !{
+nameExpression: (ParseTreeNode)newValue :: Void.
+    nameExpression := newValue
+}.
+
+ParseTreeVariableDefinitionNode !{
+optionalTypeExpression :: ParseTreeNode.
+    optionalTypeExpression
+}.
+
+ParseTreeVariableDefinitionNode !{
+optionalTypeExpression: (ParseTreeNode)newValue :: Void.
+    optionalTypeExpression := newValue
+}.
+
+ParseTreeVariableDefinitionNode !{
+optionalInitialValue :: ParseTreeNode.
+    optionalInitialValue
+}.
+
+ParseTreeVariableDefinitionNode !{
+optionalInitialValue: (ParseTreeNode)newValue :: Void.
+    optionalInitialValue := newValue
+}.
+
+ParseTreeVariableDefinitionNode !{
+isMutable :: Boolean.
+    isMutable
+}.
+
+ParseTreeVariableDefinitionNode !{
+isMutable: (Boolean)newValue :: Void.
+    isMutable := newValue
+}.
+
+## Class definition node
+public: [
+class ParseTreeClassDefinitionNode withSuperclass: ParseTreeNode fields: #{
+    nameExpression: ParseTreeNode.
+    superclass: ParseTreeNode.
+    metaFields: ParseTreeNode.
+    fields: ParseTreeNode.
+}
+].
+
+ParseTreeNode !{
+isClassDefinitionNode :: Boolean.
+    false.
+}.
+
+ParseTreeClassDefinitionNode !{
+isClassDefinitionNode :: Boolean.
+    true.
+}.
+
+ParseTreeClassDefinitionNode !{
+nameExpression :: ParseTreeNode.
+    nameExpression
+}.
+
+ParseTreeClassDefinitionNode !{
+nameExpression: (ParseTreeNode)newValue :: Void.
+    nameExpression := newValue
+}.
+
+ParseTreeClassDefinitionNode !{
+superclass :: ParseTreeNode.
+    superclass
+}.
+
+ParseTreeClassDefinitionNode !{
+superclass: (ParseTreeNode)newValue :: Void.
+    superclass := newValue
+}.
+
+ParseTreeClassDefinitionNode !{
+metaFields :: ParseTreeNode.
+    metaFields
+}.
+
+ParseTreeClassDefinitionNode !{
+metaFields: (ParseTreeNode)newValue :: Void.
+    metaFields := newValue
+}.
+
+ParseTreeClassDefinitionNode !{
+fields :: ParseTreeNode.
+    fields
+}.
+
+ParseTreeClassDefinitionNode !{
+fields: (ParseTreeNode)newValue :: Void.
+    fields := newValue
+}.
+
+## Enum definition node
+public: [
+class ParseTreeEnumDefinitionNode withSuperclass: ParseTreeNode fields: #{
+    nameExpression: ParseTreeNode.
+    baseType: ParseTreeNode.
+    values: ParseTreeNode.
+}
+].
+
+ParseTreeNode !{
+isEnumDefinitionNode :: Boolean.
+    false.
+}.
+
+ParseTreeEnumDefinitionNode !{
+isEnumDefinitionNode :: Boolean.
+    true.
+}.
+
+ParseTreeEnumDefinitionNode !{
+nameExpression :: ParseTreeNode.
+    nameExpression
+}.
+
+ParseTreeEnumDefinitionNode !{
+nameExpression: (ParseTreeNode)newValue :: Void.
+    nameExpression := newValue
+}.
+
+ParseTreeEnumDefinitionNode !{
+baseType :: ParseTreeNode.
+    baseType
+}.
+
+ParseTreeEnumDefinitionNode !{
+baseType: (ParseTreeNode)newValue :: Void.
+    baseType := newValue
+}.
+
+ParseTreeEnumDefinitionNode !{
+values :: ParseTreeNode.
+    values
+}.
+
+ParseTreeEnumDefinitionNode !{
+values: (ParseTreeNode)newValue :: Void.
+    values := newValue
+}.
+
+## RecordDefinitionNode
+public: [
+class ParseTreeRecordDefinitionNode withSuperclass: ParseTreeNode fields: #{
+    nameExpression: ParseTreeNode.
+    fields: ParseTreeNode.
+}
+].
+
+ParseTreeNode !{
+isRecordDefinitionNode :: Boolean.
+    false.
+}.
+
+ParseTreeRecordDefinitionNode !{
+isRecordDefinitionNode :: Boolean.
+    true.
+}.
+
+ParseTreeRecordDefinitionNode !{
+nameExpression :: ParseTreeNode.
+    nameExpression
+}.
+
+ParseTreeRecordDefinitionNode !{
+nameExpression: (ParseTreeNode)newValue :: Void.
+    nameExpression := newValue
+}.
+
+ParseTreeRecordDefinitionNode !{
+fields :: ParseTreeNode.
+    fields
+}.
+
+ParseTreeRecordDefinitionNode !{
+fields: (ParseTreeNode)newFields :: Void.
+    fields := newFields
+}.
+
+## ReturnNode
+public: [
+class ParseTreeReturnNode withSuperclass: ParseTreeNode fields: #{
+    resultValueExpression: ParseTreeNode.
+}
+].
+
+ParseTreeNode !{
+isReturnNode :: Boolean.
+    false.
+}.
+
+ParseTreeReturnNode !{
+isReturnNode :: Boolean.
+    true.
+}.
+
+ParseTreeReturnNode !{
+resultValueExpression :: ParseTreeNode.
+    resultValueExpression
+}.
+
+ParseTreeReturnNode !{
+resultValueExpression: (ParseTreeNode)newResultExpression :: Void.
+    resultValueExpression := newResultExpression
+}.
+
+## If Selection Node
+public: [
+class ParseTreeIfSelectionNode withSuperclass: ParseTreeNode fields: #{
+    condition: ParseTreeNode.
+    trueExpression: ParseTreeNode.
+    falseExpression: ParseTreeNode
+}
+].
+
+ParseTreeNode !{
+isIfSelectionNode :: Boolean.
+    false.
+}.
+
+ParseTreeIfSelectionNode !{
+isIfSelectionNode :: Boolean.
+    true.
+}.
+
+ParseTreeIfSelectionNode !{
+condition :: ParseTreeNode.
+    condition
+}.
+
+ParseTreeIfSelectionNode !{
+condition: (ParseTreeNode)newCondition :: Void.
+    condition := newCondition
+}.
+
+ParseTreeIfSelectionNode !{
+trueExpression :: ParseTreeNode.
+    trueExpression
+}.
+
+ParseTreeIfSelectionNode !{
+trueExpression: (ParseTreeNode)newExpression :: Void.
+    trueExpression := newExpression
+}.
+
+ParseTreeIfSelectionNode !{
+falseExpression :: ParseTreeNode.
+    falseExpression
+}.
+
+ParseTreeIfSelectionNode !{
+falseExpression: (ParseTreeNode)newExpression :: Void.
+    falseExpression := newExpression
+}.
+
+## While loop node
+public: [
+class ParseTreeWhileLoopNode withSuperclass: ParseTreeNode fields: #{
+    condition: ParseTreeNode.
+    bodyExpression: ParseTreeNode.
+    optionalContinueExpression: ParseTreeNode.
+}
+].
+
+ParseTreeNode !{
+isWhileLoopNode :: Boolean.
+    false.
+}.
+
+ParseTreeWhileLoopNode !{
+isWhileLoopNode :: Boolean.
+    true.
+}.
+
+ParseTreeWhileLoopNode !{
+condition :: ParseTreeNode.
+    condition
+}.
+
+ParseTreeWhileLoopNode !{
+condition: (ParseTreeNode)newCondition :: Void.
+    condition := newCondition
+}.
+
+ParseTreeWhileLoopNode !{
+bodyExpression :: ParseTreeNode.
+    bodyExpression
+}.
+
+ParseTreeWhileLoopNode !{
+bodyExpression: (ParseTreeNode)newExpression :: Void.
+    bodyExpression := newExpression
+}.
+
+ParseTreeWhileLoopNode !{
+optionalContinueExpression :: ParseTreeNode.
+    optionalContinueExpression
+}.
+
+ParseTreeWhileLoopNode !{
+optionalContinueExpression: (ParseTreeNode)newExpression :: Void.
+    optionalContinueExpression := newExpression
+}.
+
+## Do while loop node
+public: [
+class ParseTreeDoWhileLoopNode withSuperclass: ParseTreeNode fields: #{
+    bodyExpression: ParseTreeNode.
+    optionalContinueExpression: ParseTreeNode.
+    condition: ParseTreeNode.
+}
+].
+
+ParseTreeNode !{
+isDoWhileLoopNode :: Boolean.
+    false.
+}.
+
+ParseTreeDoWhileLoopNode !{
+isDoWhileLoopNode :: Boolean.
+    true.
+}.
+
+ParseTreeDoWhileLoopNode !{
+condition :: ParseTreeNode.
+    condition
+}.
+
+ParseTreeDoWhileLoopNode !{
+condition: (ParseTreeNode)newCondition :: Void.
+    condition := newCondition
+}.
+
+ParseTreeDoWhileLoopNode !{
+bodyExpression :: ParseTreeNode.
+    bodyExpression
+}.
+
+ParseTreeDoWhileLoopNode !{
+bodyExpression: (ParseTreeNode)newExpression :: Void.
+    bodyExpression := newExpression
+}.
+
+ParseTreeDoWhileLoopNode !{
+optionalContinueExpression :: ParseTreeNode.
+    optionalContinueExpression
+}.
+
+ParseTreeDoWhileLoopNode !{
+optionalContinueExpression: (ParseTreeNode)newExpression :: Void.
+    optionalContinueExpression := newExpression
+}.
+
+}.

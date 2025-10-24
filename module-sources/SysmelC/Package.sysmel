@@ -1,5 +1,7 @@
 ## Some declarations
 loadFileOnce: "SourceCode.sysmel".
-##loadFileOnce: "ValueAndType.sysmel".
+loadFileOnce: "ValueAndType.sysmel".
 
 loadFileOnce: "Scanner.sysmel".
+loadFileOnce: "ParseTree.sysmel".
+loadFileOnce: "Parser.sysmel".

@@ -1,0 +1,22 @@
+namespace SysmelC definition: {
+public: [
+class Value withSuperclass: Object fields:#{
+    sourcePosition: SourcePosition
+}.
+
+class SysmelType withSuperclass: Value fields:#{
+}.
+
+].
+
+Value !{
+sourcePosition :: SourcePosition.
+    sourcePosition
+}.
+
+Value !{
+sourcePosition: (SourcePosition)newSourcePosition :: Void.
+    sourcePosition := newSourcePosition
+}
+
+}

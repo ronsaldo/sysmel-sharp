@@ -102,6 +102,15 @@
                     list.elements[index] = valueToStore;
                     return list;
                 }));
+            AddMethod(new PrimitiveFunction("--", false, true,
+                new SimpleFunctionType(null, [this, this], this),
+                (Value[] arguments) => {
+                    ListValue leftList = (ListValue)arguments[0];
+                    ListValue rightList = (ListValue)arguments[1];
+
+                    Value[] concatenade = leftList.elements.Concat(rightList.elements).ToArray();
+                    return new ListValue(leftList.sourcePosition, concatenade, this);
+                }));
 
             return methodDictionary;
         }
