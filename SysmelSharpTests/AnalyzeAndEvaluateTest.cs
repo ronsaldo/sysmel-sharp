@@ -399,6 +399,12 @@ namespace SysmelSharpTests
         }
 
         [TestMethod]
+        public void TestMutableLetMetabuilderWithInitialType()
+        {
+            Value value = EvaluateString("class TestClass withFields: #{}. let var mutable type: TestClass := nil. var := TestClass new");
+        }
+
+        [TestMethod]
         public void TestLetMetabuilderAnalysisAndBuilder()
         {
             Value function = EvaluateString("{:: Integer | let var := 42. var }");
@@ -1633,6 +1639,39 @@ namespace SysmelSharpTests
             Value value = EvaluateString("Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}. {:: MyDynamicPair | MyDynamicPair#{second: 2}}");
             Assert.IsTrue(value.IsFunctionValue());
             value.DumpToConsole();
+        }
+
+        [TestMethod]
+        public void TestNilEquality()
+        {
+            Value value = EvaluateString("nil == nil");
+            Assert.IsTrue(value.AsBoolean());
+
+            value = EvaluateString("nil ~~ nil");
+            Assert.IsFalse(value.AsBoolean());
+        }
+
+        [TestMethod]
+        public void TestClassIdentityEquals()
+        {
+            Value value = EvaluateString("class testClass withFields: #{}. testClass new == nil");
+            Assert.IsFalse(value.AsBoolean());
+
+            value = EvaluateString("class testClass withFields: #{}. testClass new ~~ nil");
+            Assert.IsTrue(value.AsBoolean());
+
+            value = EvaluateString("class testClass withFields: #{}. testClass new == testClass new");
+            Assert.IsFalse(value.AsBoolean());
+
+            value = EvaluateString("class testClass withFields: #{}. testClass new ~~ testClass new");
+            Assert.IsTrue(value.AsBoolean());
+
+            value = EvaluateString("class testClass withFields: #{}. let a := testClass new. a == a");
+            Assert.IsTrue(value.AsBoolean());
+
+            value = EvaluateString("class testClass withFields: #{}. let a := testClass new. a ~~ a");
+            Assert.IsFalse(value.AsBoolean());
+
         }
     }
 }

@@ -1,1 +1,2 @@
 loadFileOnce: "ScannerTests.sysmel".
+loadFileOnce: "ParserTests.sysmel".

@@ -1,0 +1,433 @@
+namespace SysmelC definition: {
+function parseSourceString(sourceString: String) => ParseTreeNode := {
+    let sourceCode := makeSourceCodeForString(sourceString).
+    Parser new parseSourceCode: sourceCode
+}.
+
+## testAddMethod
+{
+    let parseTree := parseSourceString("ProtoObject !{yourself self}").
+    assert: parseTree isAddMethodNode.
+    assert: parseTree owner isIdentifierReferenceNode.
+    assert: parseTree owner value = #ProtoObject.
+
+    assert: parseTree method isMethodNode.
+    assert: parseTree method selector = #yourself.
+}.
+
+## testApplicationNode
+{
+    let parseTree := parseSourceString("x()").
+    assert: parseTree isApplicationNode.
+    assert: parseTree functional isIdentifierReferenceNode.
+    assert: parseTree functional value = #x.
+    assert: parseTree arguments size = 0.
+}.
+
+## testApplicationNode2
+{
+    let parseTree := parseSourceString("x(42)").
+    assert: parseTree isApplicationNode.
+    assert: parseTree functional isIdentifierReferenceNode.
+    assert: parseTree functional value = #x.
+
+    assert: parseTree arguments size = 1.
+    assert: parseTree arguments first isLiteralIntegerNode.
+    assert: parseTree arguments first value = 42.
+}.
+
+## testApplicationNode3
+{
+    let parseTree := parseSourceString("x(42. 5)").
+    assert: parseTree isApplicationNode.
+    assert: parseTree functional isIdentifierReferenceNode.
+    assert: parseTree functional value = #x.
+
+    assert: parseTree arguments size = 2.
+    assert: parseTree arguments first isLiteralIntegerNode.
+    assert: parseTree arguments first value = 42.
+
+    assert: parseTree arguments second isLiteralIntegerNode.
+    assert: parseTree arguments second value = 5.
+}.
+
+## testArray
+{
+    let parseTree := parseSourceString("[]").
+    assert: parseTree isArrayNode.
+    assert: parseTree elements size = 0.
+}.
+
+## testArray2
+{
+    let parseTree := parseSourceString("[1 . 2]").
+    assert: parseTree isArrayNode.
+    assert: parseTree elements size = 2.
+
+    assert: parseTree elements first isLiteralIntegerNode.
+    assert: parseTree elements first value = 1.
+
+    assert: parseTree elements second isLiteralIntegerNode.
+    assert: parseTree elements second value = 2.
+}.
+
+## testAssignment
+{
+    let parseTree := parseSourceString("x := 45").
+    assert: parseTree isAssignmentNode.
+
+    assert: parseTree storage isIdentifierReferenceNode.
+    assert: parseTree storage value = #x.
+
+    assert: parseTree value isLiteralIntegerNode.
+    assert: parseTree value value = 45.
+}.
+
+## testAssociationExpression
+{
+    let parseTree := parseSourceString("5 : 6").
+    assert: parseTree isAssociationNode.
+
+    assert: parseTree key isLiteralIntegerNode.
+    assert: parseTree key value = 5.
+
+    assert: parseTree value isLiteralIntegerNode.
+    assert: parseTree value value = 6.
+}.
+
+## testBinaryExpression
+{
+    let parseTree := parseSourceString("1 + 2").
+    assert: parseTree isBinaryExpressionSequenceNode.
+
+    assert: parseTree operands first isLiteralIntegerNode.
+    assert: parseTree operands first value = 1.
+
+    assert: parseTree operands second isLiteralSymbolNode.
+    assert: parseTree operands second value = #+.
+
+    assert: parseTree operands third isLiteralIntegerNode.
+    assert: parseTree operands third value = 2.
+}.
+
+## testBinaryMethod
+{
+    let parseTree := parseSourceString("!{+ operand self}").
+    assert: parseTree isMethodNode.
+    assert: parseTree selector = #+.
+}.
+
+## testBlock
+{
+    let parseTree := parseSourceString("{}").
+    assert: parseTree isLexicalBlockNode.
+}.
+
+## testBlockClosure
+{
+    let parseTree := parseSourceString("{:x | x}").
+    assert: parseTree isBlockClosureNode.
+}.
+
+## testBlockClosure2
+{
+    let parseTree := parseSourceString("{:(Int32)x :: Int32 | x}").
+    assert: parseTree isBlockClosureNode.
+}.
+
+## testDictionaryExpression
+{
+    let parseTree := parseSourceString("#{first: 1}").
+    assert: parseTree isImmutableDictionaryNode.
+    assert: parseTree elements size = 1.
+    assert: parseTree elements first isAssociationNode.
+
+    assert: parseTree elements first key isLiteralSymbolNode.
+    assert: parseTree elements first key value = #first.
+
+    assert: parseTree elements first value isLiteralIntegerNode.
+    assert: parseTree elements first value value = 1.
+}.
+
+## testDictionaryExpression2
+{
+    let parseTree := parseSourceString("#{first: 1. second: 2}").
+    assert: parseTree isImmutableDictionaryNode.
+    assert: parseTree elements size = 2.
+    assert: parseTree elements first isAssociationNode.
+
+    assert: parseTree elements first key isLiteralSymbolNode.
+    assert: parseTree elements first key value = #first.
+
+    assert: parseTree elements first value isLiteralIntegerNode.
+    assert: parseTree elements first value value = 1.
+
+    assert: parseTree elements second isAssociationNode.
+
+    assert: parseTree elements second key isLiteralSymbolNode.
+    assert: parseTree elements second key value = #second.
+
+    assert: parseTree elements second value isLiteralIntegerNode.
+    assert: parseTree elements second value value = 2.
+}.
+
+## testDictionaryExpression3
+{
+    let parseTree := parseSourceString("#{first: 1. second: 2 . #assoc : 5}").
+    assert: parseTree isImmutableDictionaryNode.
+    assert: parseTree elements size = 3.
+    assert: parseTree elements first isAssociationNode.
+
+    assert: parseTree elements first key isLiteralSymbolNode.
+    assert: parseTree elements first key value = #first.
+
+    assert: parseTree elements first value isLiteralIntegerNode.
+    assert: parseTree elements first value value = 1.
+
+    assert: parseTree elements second isAssociationNode.
+
+    assert: parseTree elements second key isLiteralSymbolNode.
+    assert: parseTree elements second key value = #second.
+
+    assert: parseTree elements second value isLiteralIntegerNode.
+    assert: parseTree elements second value value = 2.
+
+    assert: parseTree elements third isAssociationNode.
+
+    assert: parseTree elements third key isLiteralSymbolNode.
+    assert: parseTree elements third key value = #assoc.
+
+    assert: parseTree elements third value isLiteralIntegerNode.
+    assert: parseTree elements third value value = 5.
+}.
+
+## testEmptyDictionaryExpression
+{
+    let parseTree := parseSourceString("#{}").
+    assert: parseTree isImmutableDictionaryNode.
+    assert: parseTree elements size = 0.
+}.
+
+## testEmptyString
+{
+    let parseTree := parseSourceString("").
+    assert: parseTree isSequenceNode.
+    assert: parseTree elements size = 0.
+}.
+
+## testIdentifier
+{
+    let parseTree := parseSourceString("test").
+    assert: parseTree isIdentifierReferenceNode.
+    assert: parseTree value = #test.
+}.
+
+## testKeywordApplicationNode
+{
+    let parseTree := parseSourceString("if: true then: 1 else: 2").
+    assert: parseTree isApplicationNode.
+    
+    assert: parseTree functional isIdentifierReferenceNode.
+    assert: parseTree functional value = #if:then:else:.
+
+    assert: parseTree arguments size = 3.
+    assert: parseTree arguments first isIdentifierReferenceNode.
+    assert: parseTree arguments first value = #true.
+
+    assert: parseTree arguments second isLiteralIntegerNode.
+    assert: parseTree arguments second value = 1.
+
+    assert: parseTree arguments third isLiteralIntegerNode.
+    assert: parseTree arguments third value = 2.
+
+}.
+
+## testKeywordMessageSendNode
+{
+    let parseTree := parseSourceString("42 perform: #+ with: 2").
+    assert: parseTree isMessageSendNode.
+    
+    assert: parseTree receiver isLiteralIntegerNode.
+    assert: parseTree receiver value = 42.
+
+    assert: parseTree arguments size = 2.
+    assert: parseTree arguments first isLiteralSymbolNode.
+    assert: parseTree arguments first value = #+.
+
+    assert: parseTree arguments second isLiteralIntegerNode.
+    assert: parseTree arguments second value = 2.
+
+}.
+
+## testKeywordMethod
+{
+    let parseTree := parseSourceString("!{test: first with: second}").
+    assert: parseTree isMethodNode.
+    assert: parseTree selector = #test:with:.
+}.
+
+## testLiteralCharacter
+{
+    let parseTree := parseSourceString("'A'").
+    assert: parseTree isLiteralCharacterNode.
+    assert: parseTree value = 'A'.
+}.
+
+## testLiteralInteger
+{
+    let parseTree := parseSourceString("42").
+    assert: parseTree isLiteralIntegerNode.
+    assert: parseTree value = 42.
+}.
+
+## testLiteralInteger2
+{
+    let parseTree := parseSourceString("42 . 58").
+    assert: parseTree isSequenceNode.
+    assert: parseTree elements size = 2.
+
+    assert: (parseTree elements at: 0) isLiteralIntegerNode.
+    assert: (parseTree elements at: 0) value = 42.
+
+    assert: (parseTree elements at: 1) isLiteralIntegerNode.
+    assert: (parseTree elements at: 1) value = 58.
+}.
+
+## TODO: Fixme
+#*## testLiteralFloat
+{
+    let parseTree := parseSourceString("42.5").
+    assert: parseTree isLiteralFloatNode.
+    assert: parseTree value = 42.5.
+}.
+*#
+
+## testLiteralString
+{
+    let parseTree := parseSourceString("\"Hello World\"").
+    assert: parseTree isLiteralStringNode.
+    assert: parseTree value = "Hello World".
+}.
+
+## testLiteralSymbol
+{
+    let parseTree := parseSourceString("#test").
+    assert: parseTree isLiteralSymbolNode.
+    assert: parseTree value = #test.
+}.
+
+## testLiteralSymbol2
+{
+    let parseTree := parseSourceString("#test:with:").
+    assert: parseTree isLiteralSymbolNode.
+    assert: parseTree value = #test:with:.
+}.
+
+## TODO: Fixme.
+#*## testMessageCascade
+{
+    let parseTree := parseSourceString("42 perform: #+ with: 2; perform: #- with: 5; + 7; yourself").
+    assert: parseTree isMessageCascadeNode.
+    assert: parseTree receiver isLiteralIntegerNode.
+    assert: parseTree receiver value = 42.
+
+    assert: parseTree cascadedMessages size = 4.
+}.
+*#
+
+## testParenthesis
+{
+    let parseTree := parseSourceString("(42)").
+    assert: parseTree isLiteralIntegerNode.
+    assert: parseTree value = 42.
+}.
+
+## testParenthesis2
+{
+    let parseTree := parseSourceString("()").
+    assert: parseTree isTupleNode.
+    assert: parseTree elements size = 0.
+}.
+
+## testQuasiQuote
+{
+    let parseTree := parseSourceString("``expr").
+    assert: parseTree isQuasiQuoteNode.
+    assert: parseTree expression isIdentifierReferenceNode.
+    assert: parseTree expression value = #expr.
+}.
+
+## testQuasiUnquote
+{
+    let parseTree := parseSourceString("`,expr").
+    assert: parseTree isQuasiUnquoteNode.
+    assert: parseTree expression isIdentifierReferenceNode.
+    assert: parseTree expression value = #expr.
+}.
+
+## testQuote
+{
+    let parseTree := parseSourceString("`'expr").
+    assert: parseTree isQuoteNode.
+    assert: parseTree expression isIdentifierReferenceNode.
+    assert: parseTree expression value = #expr.
+}.
+
+## testSplice
+{
+    let parseTree := parseSourceString("`@expr").
+    assert: parseTree isSpliceNode.
+    assert: parseTree expression isIdentifierReferenceNode.
+    assert: parseTree expression value = #expr.
+}.
+
+## testTuple
+{
+    let parseTree := parseSourceString("1, 2, 3").
+    assert: parseTree isTupleNode.
+    assert: parseTree elements size = 3.
+
+    assert: (parseTree elements at: 0) isLiteralIntegerNode.
+    assert: (parseTree elements at: 0) value = 1.
+
+    assert: (parseTree elements at: 1) isLiteralIntegerNode.
+    assert: (parseTree elements at: 1) value = 2.
+
+    assert: (parseTree elements at: 2) isLiteralIntegerNode.
+    assert: (parseTree elements at: 2) value = 3.
+}.
+
+## testUnaryMessageSend
+{
+    let parseTree := parseSourceString("42 negated").
+    
+    assert: parseTree isMessageSendNode.
+    assert: parseTree receiver isLiteralIntegerNode.
+    assert: parseTree receiver value = 42.
+
+    assert: parseTree selector isLiteralSymbolNode.
+    assert: parseTree selector value = #negated.
+
+    assert: parseTree arguments size = 0.
+}.
+
+## testUnaryMethod
+{
+    let parseTree := parseSourceString("!{unary}").
+    
+    assert: parseTree isMethodNode.
+    assert: parseTree selector = #unary.
+}.
+
+## testUnaryMethod2
+{
+    let parseTree := parseSourceString("!{unary self}").
+    
+    assert: parseTree isMethodNode.
+    assert: parseTree selector = #unary.
+
+    assert: parseTree body isIdentifierReferenceNode.
+    assert: parseTree body value = #self
+}.
+
+} ## End of namespace SysmelC

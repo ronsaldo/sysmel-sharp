@@ -25,5 +25,10 @@ namespace LibSysmelSharp
                 nextUniverseType = new UniverseType(sourcePosition, index + 1);
             return nextUniverseType;
         }
+
+        public override bool IsUniverseType()
+        {
+            return true;
+        }
     }
 }

@@ -1,4 +1,5 @@
 namespace SysmelC definition: {
+
 public: [
 class Parser withSuperclass: Object fields:#{
     sourceCode: SourceCode.
@@ -7,6 +8,21 @@ class Parser withSuperclass: Object fields:#{
     position: Integer.
 }.
 ].
+
+let ParseTreeNodeArrayList := System Collections ArrayList(ParseTreeNode).
+ParseTreeNode list !{
+first :: ParseTreeNode.
+    self at: 0
+}.
+ParseTreeNode list !{
+second :: ParseTreeNode.
+    self at: 1
+}.
+
+ParseTreeNode list !{
+third :: ParseTreeNode.
+    self at: 2
+}.
 
 Parser !{
 atEnd :: Boolean.
@@ -294,7 +310,7 @@ parseArray :: ParseTreeNode.
     if: self peekKind = TokenKind RightBracket then: {
         self advance
     } else: {
-        expressions := expressions -- (ParseTreeNode list new
+        expressions := expressions -- ((ParseTreeNode list new: 1)
             at: 0 put: (self makeErrorAtCurrentSourcePosition: "Missing right bracket.");
             yourself)
     }.
@@ -332,7 +348,7 @@ Parser !{
 parseBlockFunctionalType :: ParseTreeFunctionalDependentTypeNode.
 	let hasFunctionalTypeComponents mutable := false.
 	let startingPosition := position.
-	let arguments := OrderedCollection new.
+	let arguments := ParseTreeNodeArrayList new.
 
     while: self peekKind = TokenKind Colon do: {
         let argument := self parseBlockArgument.
@@ -358,7 +374,7 @@ parseBlockFunctionalType :: ParseTreeFunctionalDependentTypeNode.
 
     ParseTreeFunctionalDependentTypeNode new
         sourcePosition: (self sourcePositionFrom: startingPosition);
-        argumentDefinitions: arguments asArray;
+        argumentDefinitions: arguments asList;
         resultTypeExpression: resultTypeExpression;
         yourself
 
@@ -436,7 +452,7 @@ parseImmutableDictionary :: ParseTreeImmutableDictionaryNode.
     }.
 
     let expectsExpression mutable := true.
-    let elements := OrderedCollection new.
+    let elements := ParseTreeNodeArrayList new.
 
     while: self atEnd not && (self peekKind ~= TokenKind RightCurlyBracket) do: {
         if: expectsExpression not then: {
@@ -463,7 +479,7 @@ parseImmutableDictionary :: ParseTreeImmutableDictionaryNode.
 
     ParseTreeImmutableDictionaryNode new
         sourcePosition: (self sourcePositionFrom: startingPosition);
-		elements: elements asArray;
+		elements: elements asList;
 		yourself
 }.
 
@@ -496,7 +512,7 @@ parseMethodHeader :: ParseTreeFunctionalDependentTypeNode.
     let startingPosition := position.
     let receiverType := self parseOptionalTypeExpression.
 
-    let arguments := OrderedCollection new.
+    let arguments := ParseTreeNodeArrayList new.
     let selectorText mutable := "".
 
     let headerTokenKind := self peekKind.
@@ -524,7 +540,7 @@ parseMethodHeader :: ParseTreeFunctionalDependentTypeNode.
     let sourcePosition := self sourcePositionFrom: startingPosition.
     ParseTreeFunctionalDependentTypeNode new
         sourcePosition: sourcePosition;
-        argumentDefinitions: arguments asArray;
+        argumentDefinitions: arguments asList;
         selector: selectorText asSymbol;
         addSelfWithType: receiverType;
         resultTypeExpression: resultTypeExpression;
@@ -604,7 +620,9 @@ parseUnaryPostfixExpression :: ParseTreeNode.
             if: self peekKind = TokenKind RightParent then: {
                 self advance
             } else: {
-                callArguments := callArguments -- (ParseTreeNode list with: (self makeErrorAtCurrentSourcePosition: "Expected a right parent"))
+                callArguments := callArguments -- ((ParseTreeNode list new: 1)
+                    at: 0 put: (self makeErrorAtCurrentSourcePosition: "Expected a right parent");
+                    yourself)
             }.
 
             receiver := ParseTreeApplicationNode new
@@ -714,7 +732,7 @@ parseBinaryExpressionSequence :: ParseTreeNode.
         return: firstOperand
     }.
 
-    let operands := OrderedCollection new.
+    let operands := ParseTreeNodeArrayList new.
     operands add: firstOperand.
 
     while: isBinaryOperatorToken(self peekKind) do: {
@@ -730,7 +748,7 @@ parseBinaryExpressionSequence :: ParseTreeNode.
 
     ParseTreeBinaryExpressionSequenceNode new
         sourcePosition: (self sourcePositionFrom: startingPosition);
-        operands: operands asArray;
+        operands: operands asList;
         yourself
 }.
 
@@ -758,7 +776,7 @@ parseKeywordApplication :: ParseTreeNode.
     assert: self peekKind = TokenKind Keyword.
     let startingPosition := position.
     let selectorValue mutable := "".
-    let arguments := OrderedCollection new.
+    let arguments := ParseTreeNodeArrayList new.
 
     while: self peekKind = TokenKind Keyword do: {
         let token := self next.
@@ -775,7 +793,7 @@ parseKeywordApplication :: ParseTreeNode.
             sourcePosition: sourcePosition;
             value: selectorValue asSymbol;
             yourself);
-        arguments: arguments asArray;
+        arguments: arguments asList;
         yourself
 }.
 
@@ -789,7 +807,7 @@ parseKeywordMessage :: ParseTreeNode.
     }.
 
     let selectorText mutable := "".
-    let arguments := OrderedCollection new.
+    let arguments := ParseTreeNodeArrayList new.
 
     while: self peekKind = TokenKind Keyword do: {  
         let keyword := self next.
@@ -807,7 +825,7 @@ parseKeywordMessage :: ParseTreeNode.
             sourcePosition: sourcePosition;
             value: selectorText asSymbol;
             yourself);
-        arguments: arguments asArray;
+        arguments: arguments asList;
         yourself
 }.
 
@@ -842,7 +860,7 @@ parseBinaryCascadedMessage :: ParseTreeNode.
             sourcePosition: operatorToken sourcePosition;
             value: operatorToken getText asSymbol;
             yourself);
-        arguments: (ParseTreeNode list with: argument);
+        arguments: ((ParseTreeNode list new: 1) at: 0 put: argument; yourself);
         yourself
 }.
 
@@ -852,7 +870,7 @@ parseKeywordCascadedMessage :: ParseTreeNode.
     assert: self peekKind = TokenKind Keyword.
 
     let selectorText mutable := "".
-    let arguments := OrderedCollection new.
+    let arguments := ParseTreeNodeArrayList new.
     while: self peekKind = TokenKind Keyword do: {
         let keyword := self next.
         let argument := self parseAssociationExpression.
@@ -868,7 +886,7 @@ parseKeywordCascadedMessage :: ParseTreeNode.
             sourcePosition: sourcePosition;
             value: selectorText asSymbol;
             yourself);
-        arguments: arguments asArray;
+        arguments: arguments asList;
         yourself
 }.
 
@@ -896,11 +914,11 @@ parseMessageCascade :: ParseTreeNode.
         return: receiver
     }.
 
-    let cascadedMessages := OrderedCollection new.
+    let cascadedMessages := ParseTreeNodeArrayList new.
     let split := receiver splitReceiverForCascade.
-    receiver := split first.
-    let splitCascaded := split second.
-    if: nil ~= splitCascaded then: {
+    receiver := split at: 0.
+    let splitCascaded := split at: 1.
+    if: nil ~~ splitCascaded then: {
         cascadedMessages add: splitCascaded
     }.
 
@@ -912,7 +930,7 @@ parseMessageCascade :: ParseTreeNode.
     ParseTreeMessageCascadeNode new
         sourcePosition: (self sourcePositionFrom: startingPosition);
         receiver: receiver;
-        cascadedMessages: cascadedMessages asArray;
+        cascadedMessages: cascadedMessages asList;
         yourself
 }.
 
@@ -950,7 +968,7 @@ parseCommaExpresion :: ParseTreeNode.
         return: firstElement
     }.
 
-    let tupleElements := OrderedCollection new.
+    let tupleElements := ParseTreeNodeArrayList new.
     tupleElements add: firstElement.
 
     while: self peekKind = TokenKind Comma do: {
@@ -961,7 +979,7 @@ parseCommaExpresion :: ParseTreeNode.
 
     ParseTreeTupleNode new
         sourcePosition: (self sourcePositionFrom: startingPosition);
-        elements: tupleElements asArray;
+        elements: tupleElements asList;
         yourself
 }.
 
@@ -972,7 +990,7 @@ parseExpression :: ParseTreeNode.
 
 Parser !{
 parseExpressionListUntilEndOrDelimiter: (TokenKind)delimiter :: ParseTreeNode list.
-    let expressions := OrderedCollection new.
+    let expressions := ParseTreeNodeArrayList new.
 
     ## Leading dots.
     while: self peekKind = TokenKind Dot do: {
@@ -996,7 +1014,7 @@ parseExpressionListUntilEndOrDelimiter: (TokenKind)delimiter :: ParseTreeNode li
         }.
     }.
 
-    expressions asArray
+    expressions asList
 }.
 
 Parser !{
@@ -1014,7 +1032,7 @@ parseSequenceUntilEndOrDelimiter: (TokenKind)delimiter :: ParseTreeNode.
 }.
 
 Parser !{
-parseSourceCode: (SourceCode)aSourceCode tokens: (ParseTreeNode list)aTokenList :: ParseTreeNode.
+parseSourceCode: (SourceCode)aSourceCode tokens: (ScannedToken list)aTokenList :: ParseTreeNode.
     sourceCode := aSourceCode.
     tokenCount := aTokenList size.
     tokens := aTokenList.

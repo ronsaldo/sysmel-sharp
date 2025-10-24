@@ -958,6 +958,17 @@ namespace LibSysmelSharp
         }
         void RegisterObjectTypePrimitives()
         {
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("==", false, true,
+                new SimpleFunctionType(null, [ProtoObjectClassType, DynamicType], BooleanType),
+                (Value[] arguments) => {
+                    return BooleanValue.GetWithValue(arguments[0].Equals(arguments[1]));
+                }));
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("~~", false, true,
+                new SimpleFunctionType(null, [ProtoObjectClassType, DynamicType], BooleanType),
+                (Value[] arguments) => {
+                    return BooleanValue.GetWithValue(!arguments[0].Equals(arguments[1]));
+                }));
+
             ProtoObjectClassType.AddMethod(new PrimitiveFunction("initialize", false, false,
                 new SimpleFunctionType(null, [ProtoObjectClassType], VoidType),
                 (Value[] arguments) => {
@@ -1005,6 +1016,20 @@ namespace LibSysmelSharp
                 }));
         }
 
+        public void RegisterUndefinedObjectPrimitives()
+        {
+            UndefinedObjectType.AddMethod(new PrimitiveFunction("==", false, true,
+                new SimpleFunctionType(null, [UndefinedObjectType, DynamicType], BooleanType),
+                (Value[] arguments) => {
+                    return BooleanValue.GetWithValue(arguments[0].Equals(arguments[1]));
+                }));
+            UndefinedObjectType.AddMethod(new PrimitiveFunction("~~", false, true,
+                new SimpleFunctionType(null, [UndefinedObjectType, DynamicType], BooleanType),
+                (Value[] arguments) => {
+                    return BooleanValue.GetWithValue(!arguments[0].Equals(arguments[1]));
+                }));
+        }
+
         void RegisterPrimitives()
         {
             RegisterBooleanPrimitives();
@@ -1022,6 +1047,7 @@ namespace LibSysmelSharp
             RegisterIntegerTypePrimitives(CharacterType);
 
             RegisterObjectTypePrimitives();
+            RegisterUndefinedObjectPrimitives();
         }
     }
 }

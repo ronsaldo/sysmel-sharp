@@ -46,7 +46,8 @@ namespace LibSysmelSharp
 
             if (isMutable)
             {
-                SysmelType valueType = initialValue.GetSysmelType();
+                SysmelType valueType = typeValue == null ? initialValue.GetSysmelType() : typeValue;
+
                 MutableValueBox boxValue = new MutableValueBox(sourcePosition, initialValue, valueType.MutableBox());
                 ReferenceLikeValue referenceValue = new ReferenceLikeValue(sourcePosition, boxValue, 0, valueType.Ref());
                 if (nameSymbolValue != null)
@@ -81,7 +82,7 @@ namespace LibSysmelSharp
             if (isMutable)
             {
                 Debug.Assert(builder.allocaBuilder != null);
-                SysmelType valueType = initialValue.GetSysmelType();
+                SysmelType valueType = typeValue == null ? initialValue.GetSysmelType() : typeValue;
                 HIRAlloca alloca = builder.allocaBuilder.Alloca(sourcePosition, valueType, valueType.Ref());
                 builder.StorePointer(sourcePosition, alloca, initialValue);
 

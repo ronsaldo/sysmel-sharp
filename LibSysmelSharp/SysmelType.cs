@@ -59,6 +59,11 @@ namespace LibSysmelSharp
             // TODO: Check for nullable types.
             if (other.IsUndefinedObjectType())
                 return true;
+            if(IsUniverseType())
+            {
+                if (other.IsBehaviorType())
+                    return true;
+            }
             return other.IsSubtypeOf(this);
         }
 
@@ -174,6 +179,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsUniverseType()
+        {
+            return false;
+
+        }
         public virtual Value MakeDefaultValue()
         {
             throw new NotImplementedException();
