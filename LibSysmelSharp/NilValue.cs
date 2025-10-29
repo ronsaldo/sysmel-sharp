@@ -29,5 +29,19 @@ namespace LibSysmelSharp
         {
             return Intrinsics.GetSingleton().UndefinedObjectType;
         }
+
+        public override bool AsBoolean()
+        {
+            return false;
+        }
+
+        public override long AsInteger()
+        {
+            return 0;
+        }
+        public override double AsFloat()
+        {
+            return 0.0;
+        }
     }
 }

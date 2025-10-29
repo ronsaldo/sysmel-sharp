@@ -631,6 +631,11 @@ namespace LibSysmelSharp
                 (Value[] arguments) => {
                     return new FloatValue(arguments[0].sourcePosition, (double)arguments[0].AsInteger(), FloatType);
                 }));
+            integerType.AddMethod(new PrimitiveFunction("asString", false, true,
+                new SimpleFunctionType(null, [integerType], StringType),
+                (Value[] arguments) => {
+                    return new StringValue(null, arguments[0].AsInteger().ToString(), StringType);
+                }));
 
 
             integerType.AddMethod(new PrimitiveFunction("asChar8", false, true,
@@ -787,6 +792,12 @@ namespace LibSysmelSharp
                     double leftValue = arguments[0].AsFloat();
                     double rightValue = arguments[1].AsFloat();
                     return BooleanValue.GetWithValue(leftValue >= rightValue);
+                }));
+            
+            floatType.AddMethod(new PrimitiveFunction("asInteger", false, true,
+                new SimpleFunctionType(null, [floatType], IntegerType),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, (long)arguments[0].AsFloat(), IntegerType);
                 }));
         }
 

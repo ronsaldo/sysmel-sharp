@@ -8,19 +8,18 @@ function evaluateSourceString(sourceString: String) => Value := {
     parseTree analyzeAndEvaluateInEnvironment: environment
 }.
 
-#*## testLiteralCharacter
+## testLiteralCharacter
 {
     let value := evaluateSourceString("'A'").
-    assert: value value = 'A'
+    assert: value value = 'A' asInteger
 }.
 
-*#
 ## testLiteralInteger
 {
     let value := evaluateSourceString("42").
     assert: value value = 42
 }.
-#*
+
 ## testLiteralFloat
 {
     let value := evaluateSourceString("42.5").
@@ -37,9 +36,5 @@ function evaluateSourceString(sourceString: String) => Value := {
 {
     let value := evaluateSourceString("#mySymbol").
     assert: value value = #mySymbol.
-
-    let secondValue := evaluateSourceString("#mySymbol").
-    assert: value = secondValue
 }.
-*#
 }

@@ -1,0 +1,13 @@
+namespace SysmelC definition: {
+let SymbolHashtable := System Collections Dictionary(Symbol. Value).
+
+public: [
+
+class Namespace withSuperclass: Value fields: #{
+    name: Symbol.
+    parent: Namespace.
+    symbolDictionary: SymbolHashtable
+}.
+].
+
+}.

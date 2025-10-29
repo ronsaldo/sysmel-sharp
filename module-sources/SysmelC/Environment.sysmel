@@ -1,4 +1,5 @@
 namespace SysmelC definition: {
+
 let SymbolHashtable := System Collections Dictionary(Symbol. Value).
 
 public: [

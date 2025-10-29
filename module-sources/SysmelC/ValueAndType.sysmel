@@ -3,8 +3,27 @@ public: [
 class Value withSuperclass: Object fields:#{
     sourcePosition: SourcePosition
 }.
+].
 
+let SymbolHashtable := System Collections Dictionary(Symbol . Value).
+
+public: [
 class SysmelType withSuperclass: Value fields:#{
+}.
+
+class SimpleType withSuperclass: SysmelType fields:#{
+    methodDictionary: SymbolHashtable
+}.
+
+class NominalType withSuperclass: SimpleType fields:#{
+    name: Symbol.
+    valueSize: Integer.
+    valueAlignment: Integer.
+    valueIsPointer: Boolean.
+}.
+
+class TypeUniverse withSuperclass: SimpleType fields:#{
+    index: Integer
 }.
 
 ].
@@ -28,6 +47,63 @@ type :: SysmelType.
 SysmelType !{
 isReferenceLikeType :: Boolean.
     false
+}.
+
+## Nominal type
+NominalType !{
+name :: Symbol.
+    name
+}.
+
+NominalType !{
+name: (Symbol)newName :: Void.
+    name := newName
+}.
+
+NominalType !{
+valueSize :: Integer.
+    valueSize
+}.
+
+NominalType !{
+valueSize: (Integer)newValueSize :: Void.
+    valueSize := newValueSize
+}.
+
+NominalType !{
+valueAlignment :: Integer.
+    valueAlignment
+}.
+
+NominalType !{
+valueAlignment: (Integer)newValueAlignment :: Void.
+    valueAlignment := newValueAlignment
+}.
+
+NominalType !{
+valueIsPointer :: Boolean.
+    valueIsPointer
+}.
+
+NominalType !{
+valueIsPointer: (Boolean) newValue :: Void.
+    valueIsPointer := newValue
+}.
+
+NominalType !{
+defaultValue :: Value.
+    UndefinedValue uniqueInstance
+}.
+
+## TypeUniverse
+TypeUniverse !{
+index :: Integer.
+    index
+}.
+
+TypeUniverse !{
+index: (Integer)newIndex :: Void.
+    newIndex
 }.
 
 }

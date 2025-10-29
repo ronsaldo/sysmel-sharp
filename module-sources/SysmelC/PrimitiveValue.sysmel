@@ -1,0 +1,270 @@
+namespace SysmelC definition: {
+public: [
+
+class PrimitiveValue withSuperclass: Value fields: #{
+}.
+
+class BooleanValue withSuperclass: PrimitiveValue fields: #{
+    value: Boolean
+}.
+
+class VoidValue withSuperclass: PrimitiveValue fields: #{
+}.
+
+class UndefinedValue withSuperclass: PrimitiveValue fields: #{
+}.
+
+class PrimitiveNumericalValue withSuperclass: PrimitiveValue fields: #{
+}.
+
+class CharacterValue withSuperclass: PrimitiveNumericalValue fields: #{
+    value: Character.
+    type: SysmelType
+}.
+
+class FloatValue withSuperclass: PrimitiveNumericalValue fields: #{
+    value: Float.
+    type: SysmelType
+}.
+
+class IntegerValue withSuperclass: PrimitiveNumericalValue fields: #{
+    value: Integer.
+    type: SysmelType
+}.
+
+class StringValue withSuperclass: PrimitiveValue fields: #{
+    value: String.
+    type: SysmelType
+}.
+
+class SymbolValue withSuperclass: PrimitiveValue fields: #{
+    value: Symbol.
+    type: SysmelType
+}.
+
+].
+
+
+Value !{
+plusOne :: Value.
+    printLine(self).
+    error: "Not a value with successor."
+}.
+
+## PrimitiveValue
+PrimitiveValue !{
+isConstantValue :: Boolean.
+    true
+}.
+
+## BooleanValue
+Value !{
+asBoolean :: Boolean.
+    error: "Not a boolean value"
+}.
+
+BooleanValue class !{
+with: (Boolean)value :: BooleanValue.
+    BooleanValue new value: value; yourself
+}.
+
+BooleanValue !{
+asBoolean :: Boolean.
+    value
+}.
+
+BooleanValue !{
+value :: Boolean.
+    value
+}.
+
+BooleanValue !{
+value: (Boolean)newValue :: Void.
+    value := newValue
+}.
+
+BooleanValue !{
+type :: SysmelType.
+    CompilationContext current BooleanType
+}.
+
+## VoidValue
+let voidValueSingleton := VoidValue basicNew.
+VoidValue class !{
+uniqueInstance :: VoidValue.
+    voidValueSingleton
+}.
+
+VoidValue !{
+type :: SysmelType.
+    CompilationContext current VoidType
+}.
+
+## UndefinedValue
+Value !{
+isUndefinedValue :: Boolean.
+    false
+}.
+
+UndefinedValue !{
+isUndefinedValue :: Boolean.
+    true
+}.
+
+let undefinedValueSingleton := UndefinedValue basicNew.
+UndefinedValue class !{
+uniqueInstance :: UndefinedValue.
+    undefinedValueSingleton
+}.
+
+UndefinedValue !{
+type :: SysmelType.
+    CompilationContext current UndefinedObjectType
+}.
+
+PrimitiveNumericalValue !{
+asInteger :: Integer
+    error: "Subclass responsibility"
+}.
+
+## CharacterValue
+CharacterValue !{
+asInteger :: Integer.
+    value asInteger
+}.
+
+CharacterValue !{
+value :: Character.
+    value
+}.
+
+CharacterValue !{
+value: (Character)newValue :: Void.
+    value := newValue
+}.
+
+CharacterValue !{
+type :: SysmelType.
+    type
+}.
+
+CharacterValue !{
+type: (SysmelType)aType :: Void.
+    type := aType
+}.
+
+## FloatValue
+FloatValue !{
+asInteger :: Integer.
+    value asInteger
+}.
+
+FloatValue !{
+value :: Float.
+    value
+}.
+
+FloatValue !{
+value: (Float)newValue :: Void.
+    value := newValue
+}.
+
+FloatValue !{
+type :: SysmelType.
+    type
+}.
+
+FloatValue !{
+type: (SysmelType)aType :: Void.
+    type := aType
+}.
+
+## IntegerValue
+IntegerValue !{
+asInteger :: Integer.
+    value
+}.
+
+IntegerValue !{
+plusOne :: Value.
+    IntegerValue new value: self asInteger + 1; type: type; yourself
+}.
+
+IntegerValue !{
+value :: Integer.
+    value
+}.
+
+IntegerValue !{
+value: (Integer)newValue :: Void.
+    value := newValue
+}.
+
+IntegerValue !{
+type :: SysmelType.
+    type
+}.
+
+IntegerValue !{
+type: (SysmelType)aType :: Void.
+    type := aType
+}.
+
+IntegerValue !{
+printString :: String.
+    value asString
+}.
+
+## String value
+StringValue !{
+value :: String.
+    value
+}.
+
+StringValue !{
+value: (String)newValue :: Void.
+    value := newValue
+}.
+
+StringValue !{
+type :: SysmelType.
+    type
+}.
+
+StringValue !{
+type: (SysmelType)aType :: Void.
+    type := aType
+}.
+
+StringValue !{
+printString :: String.
+    value
+}.
+
+## Symbol value
+SymbolValue !{
+value :: Symbol.
+    value
+}.
+
+SymbolValue !{
+value: (Symbol)newValue :: Void.
+    value := newValue
+}.
+
+SymbolValue !{
+type :: SysmelType.
+    type
+}.
+
+SymbolValue !{
+type: (SysmelType)aType :: Void.
+    type := aType
+}.
+
+SymbolValue !{
+printString :: String.
+    value asString
+}.
+
+}.

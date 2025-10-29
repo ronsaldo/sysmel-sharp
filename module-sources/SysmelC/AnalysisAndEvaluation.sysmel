@@ -66,4 +66,35 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     error: errorMessage.
 }.
 
+## Literals
+ParseTreeLiteralBooleanNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    BooleanValue new value: value; yourself
+}.
+
+ParseTreeLiteralCharacterNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    IntegerValue new value: value asInteger; type: CompilationContext current CharacterType; yourself
+}.
+
+ParseTreeLiteralFloatNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    FloatValue new value: value; type: CompilationContext current FloatType; yourself
+}.
+
+ParseTreeLiteralIntegerNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    IntegerValue new value: value; type: CompilationContext current IntegerType; yourself
+}.
+
+ParseTreeLiteralStringNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    StringValue new value: value; type: CompilationContext current StringType; yourself
+}.
+
+ParseTreeLiteralSymbolNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    SymbolValue new value: value; type: CompilationContext current SymbolType; yourself
+}.
+
 }
