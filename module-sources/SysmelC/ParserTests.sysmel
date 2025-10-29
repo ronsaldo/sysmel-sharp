@@ -321,7 +321,6 @@ function parseSourceString(sourceString: String) => ParseTreeNode := {
     assert: parseTree value = #test:with:.
 }.
 
-## TODO: Fixme.
 ## testMessageCascade
 {
     let parseTree := parseSourceString("42 perform: #+ with: 2; perform: #- with: 5; + 7; yourself").
