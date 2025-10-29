@@ -25,6 +25,11 @@ namespace LibSysmelSharp
             return this.Equals(Intrinsics.GetSingleton().VoidType);
         }
 
+        public override bool IsControlFlowEscapeType()
+        {
+            return this.Equals(Intrinsics.GetSingleton().ControlFlowEscapeType);
+        }
+
         public override bool IsDynamicType()
         {
             return this.Equals(Intrinsics.GetSingleton().DynamicType);

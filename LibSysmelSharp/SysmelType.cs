@@ -132,6 +132,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsControlFlowEscapeType()
+        {
+            return false;
+        }
+
         public virtual bool IsVoidType()
         {
             return false;

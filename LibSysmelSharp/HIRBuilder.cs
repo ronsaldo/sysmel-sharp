@@ -80,6 +80,11 @@ namespace LibSysmelSharp
             return AddLiteral(sourcePosition, VoidValue.GetSingleton());
         }
 
+        public HIRValue GetControlFlowEscapeLiteral(SourcePosition? sourcePosition)
+        {
+            return AddLiteral(sourcePosition, ControlFlowEscapeValue.GetSingleton());
+
+        }
         public HIRLoadInstruction LoadPointer(SourcePosition? sourcePosition, HIRValue storage)
         {
             SysmelType storageType = storage.GetSysmelType();

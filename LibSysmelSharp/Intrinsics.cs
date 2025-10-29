@@ -18,6 +18,7 @@ namespace LibSysmelSharp
         public UniverseType TypeUniverse0;
 
         public NominalType VoidType;
+        public NominalType ControlFlowEscapeType;
         public NominalType UndefinedObjectType;
         public NominalType DynamicType;
 
@@ -120,9 +121,10 @@ namespace LibSysmelSharp
             TypeUniverse0 = new UniverseType(null, 0);
             globalNamespace.SetSymbolBinding("Type", TypeUniverse0);
 
-            VoidType            = CreateNominalType("Void");
-            UndefinedObjectType = CreateNominalType("UndefinedObject");
-            DynamicType         = CreateNominalType("Dynamic");
+            VoidType              = CreateNominalType("Void");
+            ControlFlowEscapeType = CreateNominalType("ControlFlowEscapeType");
+            UndefinedObjectType   = CreateNominalType("UndefinedObject");
+            DynamicType           = CreateNominalType("Dynamic");
 
             BooleanType   = CreateNominalType("Boolean");
             CharacterType = CreateNominalType("Character");

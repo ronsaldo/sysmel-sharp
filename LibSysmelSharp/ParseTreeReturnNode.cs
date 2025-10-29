@@ -26,7 +26,7 @@ namespace LibSysmelSharp
             else
                 builder.ReturnValue(sourcePosition, resultValue);
 
-            return builder.GetVoidLiteral(sourcePosition);
+            return builder.GetControlFlowEscapeLiteral(sourcePosition);
         }
     }
 }

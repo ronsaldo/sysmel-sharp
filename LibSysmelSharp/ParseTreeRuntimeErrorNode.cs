@@ -24,7 +24,7 @@
         {
             HIRValue errorMessageValue = errorMessage.AnalyzeAndBuildWithExpectedType(builder, Intrinsics.GetSingleton().StringType);
             builder.RuntimeError(sourcePosition, errorMessageValue);
-            return builder.GetVoidLiteral(sourcePosition);
+            return builder.GetControlFlowEscapeLiteral(sourcePosition);
         }
     }
 }

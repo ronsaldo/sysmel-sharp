@@ -36,6 +36,9 @@ namespace LibSysmelSharp
         public virtual Value CastAnalyzedAndEvaluatedValueToExpectedType(Value evaluationResult, SysmelType? expectedType)
         {
             SysmelType valueType = evaluationResult.GetSysmelType();
+            if (valueType.IsControlFlowEscapeType())
+                return evaluationResult;
+
             if (expectedType == null)
             {
                 if (valueType.IsReferenceType())
@@ -224,6 +227,8 @@ namespace LibSysmelSharp
         public virtual HIRValue CastHIRValueToExpectedType(HIRBuilder builder, HIRValue buildResult, SysmelType? expectedType)
         {
             SysmelType valueType = buildResult.GetSysmelType();
+            if (valueType.IsControlFlowEscapeType())
+                return buildResult;
             if (expectedType == null)
             {
                 if (valueType.IsReferenceType())
@@ -392,6 +397,11 @@ namespace LibSysmelSharp
             return false;
         }
 
+        public virtual bool IsControlFlowEscapeValue()
+        {
+            return false;
+
+        }
         public virtual bool IsNilValue()
         {
             return false;
