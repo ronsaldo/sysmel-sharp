@@ -1,0 +1,62 @@
+namespace SysmelC definition: {
+let SymbolHashtable := System Collections Dictionary(Symbol. Value).
+
+public: [
+
+class Environment withSuperclass: Value fields: #{
+}.
+
+class EmptyEnvironment withSuperclass: Environment fields: #{
+}.
+
+class LexicalEnvironment withSuperclass: Environment fields: #{
+    parent: Environment.
+    localSymbols: SymbolHashtable.
+}.
+].
+
+## Environment
+Environment !{
+lookupRecursively: (Symbol)aSymbol :: Value.
+    error: "Subclass responsibility"
+}.
+
+## EmptyEnvironment
+EmptyEnvironment !{
+lookupRecursively: (Symbol)aSymbol :: Value.
+    nil
+}.
+
+## Lexical environment
+LexicalEnvironment class !{
+withParent: (Environment)aParent :: LexicalEnvironment.
+    LexicalEnvironment new parent: aParent; yourself
+}.
+
+LexicalEnvironment !{
+initialize :: Void.
+    localSymbols := SymbolHashtable new.
+}.
+
+LexicalEnvironment !{
+setSymbol: (Symbol)symbol binding: (Value)binding :: Void.
+    localSymbols at: symbol put: binding
+}.
+
+LexicalEnvironment !{
+lookupRecursively: (Symbol)aSymbol :: Value.
+    let localSymbol := localSymbols atOrNil: aSymbol.
+    if: nil ~~ localSymbol then: {
+        return: localSymbol
+    }.
+
+    parent lookupRecursively: aSymbol
+}.
+
+LexicalEnvironment !{
+parent: (Environment)newParent :: Void.
+    parent := newParent
+}.
+
+
+}.

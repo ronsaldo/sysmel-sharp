@@ -17,6 +17,17 @@ sourcePosition :: SourcePosition.
 Value !{
 sourcePosition: (SourcePosition)newSourcePosition :: Void.
     sourcePosition := newSourcePosition
-}
+}.
+
+Value !{
+type :: SysmelType.
+    error: "Subclass responsibility.".
+}.
+
+## SysmelType
+SysmelType !{
+isReferenceLikeType :: Boolean.
+    false
+}.
 
 }

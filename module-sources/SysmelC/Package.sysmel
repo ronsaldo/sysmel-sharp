@@ -5,3 +5,6 @@ loadFileOnce: "ValueAndType.sysmel".
 loadFileOnce: "Scanner.sysmel".
 loadFileOnce: "ParseTree.sysmel".
 loadFileOnce: "Parser.sysmel".
+
+loadFileOnce: "Environment.sysmel".
+loadFileOnce: "AnalysisAndEvaluation.sysmel".

@@ -1,0 +1,45 @@
+namespace SysmelC definition: {
+function evaluateSourceString(sourceString: String) => Value := {
+    let sourceCode := makeSourceCodeForString(sourceString).
+    let parseTree := Parser new parseSourceCode: sourceCode.
+    ##let systemEnvironment := NamespaceEnvironment withParent: EmptyEnvironment new namespace: CompilationContext current globalNamespace.
+    let systemEnvironment := EmptyEnvironment new.
+    let environment := LexicalEnvironment withParent: systemEnvironment.
+    parseTree analyzeAndEvaluateInEnvironment: environment
+}.
+
+#*## testLiteralCharacter
+{
+    let value := evaluateSourceString("'A'").
+    assert: value value = 'A'
+}.
+
+*#
+## testLiteralInteger
+{
+    let value := evaluateSourceString("42").
+    assert: value value = 42
+}.
+#*
+## testLiteralFloat
+{
+    let value := evaluateSourceString("42.5").
+    assert: value value = 42.5
+}.
+
+## testLiteralString
+{
+    let value := evaluateSourceString("\"Hello World\"").
+    assert: value value = "Hello World"
+}.
+
+## testLiteralSymbol
+{
+    let value := evaluateSourceString("#mySymbol").
+    assert: value value = #mySymbol.
+
+    let secondValue := evaluateSourceString("#mySymbol").
+    assert: value = secondValue
+}.
+*#
+}

@@ -1,0 +1,69 @@
+namespace SysmelC definition: {
+Value !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    self
+}.
+
+Value !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment withExpectedType: (SysmelType)anExpectedType :: Value.
+    let evaluationResult := self analyzeAndEvaluateInEnvironment: environment.
+    self castAnalyzedAndEvaluatedValue: evaluationResult toExpectedType: anExpectedType
+}.
+
+Value !{
+castAnalyzedAndEvaluatedValue: (Value)valueToCast toExpectedType: (SysmelType)anExpectedType :: Value.
+    #*if: (nil = anExpectedType) || (anExpectedType isSatisfiedByValue: valueToCast) then: {
+        return: valueToCast
+    }.
+
+    if: valueToCast type isReferenceLikeType then: {
+        error: "ToDo: loadRef".
+        return: (self castAnalyzedAndEvaluatedValue: valueToCast loadValue toExpectedType: anExpectedType).
+    }.
+
+    if: anExpectedType = CompilationContext current DynamicType then: {
+        if: valueToCast type = CompilationContext current DynamicType then: {
+            return: valueToCast
+        }.
+
+        return: (DynamicValue new
+            sourcePosition: valueToCast sourcePosition;
+            value: valueToCast;
+            yourself).
+    }.
+
+    if: valueToCast type = CompilationContext current DynamicType then: {
+        return: (self castAnalyzedAndEvaluatedValue: valueToCast unboxFromDynamicValue toExpectedType: anExpectedType)
+    }.
+
+    ## TODO: implement this part.
+    Stdio stderr printLine: valueToCast.
+    Stdio stderr printLine: anExpectedType.
+    error: "Failed to perform cast."
+    *#
+    valueToCast
+}.
+
+Value !{
+analyzeAndEvaluateInEnvironmentWithDecayedType: (LexicalEnvironment)anEnvironment :: Value.
+    let evaluationResult := self analyzeAndEvaluateInEnvironment: anEnvironment.
+    if: evaluationResult type isReferenceLikeType then: {
+        error: "ToDo: decay reference"
+    }.
+
+    evaluationResult
+}.
+
+ParseTreeNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    printLine(self).
+    error: "Subclass responsibility".
+}.
+
+ParseTreeErrorNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    printLine(sourcePosition).
+    error: errorMessage.
+}.
+
+}
