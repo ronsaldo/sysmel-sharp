@@ -10,4 +10,83 @@ class Namespace withSuperclass: Value fields: #{
 }.
 ].
 
+## Namespace
+Value !{
+isNamespace :: Boolean.
+    false
+}.
+
+Value !{
+asNamespace :: Namespace.
+    error: "Value is not a namespace."
+}.
+
+Namespace !{
+isNamespace :: Boolean.
+    true
+}.
+
+Namespace !{
+asNamespace :: Namespace.
+    self
+}.
+
+Namespace !{
+type :: SysmelType.
+    CompilationContext current NamespaceType
+}.
+
+Namespace !{
+initialize :: Void.
+    symbolDictionary := SymbolHashtable new
+}.
+
+Namespace !{
+name :: Symbol.
+    name
+}.
+
+Namespace !{
+name: (Symbol)aName :: Void.
+    name := aName
+}.
+
+Namespace !{
+parent :: Namespace.
+    parent
+}.
+
+Namespace !{
+parent: (Namespace)newParent :: Void.
+    parent := newParent
+}.
+
+Namespace !{
+lookSymbol: (Symbol)aName :: Value.
+    symbolDictionary atOrNil: aName 
+}.
+
+Namespace !{
+setSymbol: (Symbol)symbol binding: (Value)binding :: Void.
+    symbolDictionary at: symbol put: binding
+}.
+
+Namespace !{
+getOrCreateNamespaceWithName: (Symbol)childNamespaceName :: Namespace.
+    let existent := self lookSymbol: childNamespaceName.
+    if: nil ~~ existent then: {
+        if: existent isNamespace not then: {
+            error: "Namespace name clash for " -- childNamespaceName printString
+        }.
+        return: existent asNamespace
+    }.
+
+    let newChild := Namespace new
+        name: childNamespaceName;
+        parent: self;
+        yourself.
+    self setSymbol: childNamespaceName binding: newChild.
+    newChild
+}.
+
 }.

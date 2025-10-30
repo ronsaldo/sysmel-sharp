@@ -38,9 +38,13 @@ class SimpleType withSuperclass: SysmelType fields:#{
 
 class NominalType withSuperclass: SimpleType fields:#{
     name: Symbol.
+}.
+
+class IntegerType withSuperclass: NominalType fields:#{
     valueSize: Integer.
     valueAlignment: Integer.
     valueIsPointer: Boolean.
+    isSigned: Boolean.
 }.
 
 class TypeUniverse withSuperclass: SimpleType fields:#{
@@ -102,6 +106,11 @@ type: (SysmelType) newType :: Void.
     type := newType.
 }.
 
+NominalType !{
+defaultValue :: Value.
+    UndefinedValue uniqueInstance
+}.
+
 ## Nominal type
 NominalType !{
 name :: Symbol.
@@ -113,39 +122,35 @@ name: (Symbol)newName :: Void.
     name := newName
 }.
 
-NominalType !{
+## Integer type
+IntegerType !{
 valueSize :: Integer.
     valueSize
 }.
 
-NominalType !{
+IntegerType !{
 valueSize: (Integer)newValueSize :: Void.
     valueSize := newValueSize
 }.
 
-NominalType !{
+IntegerType !{
 valueAlignment :: Integer.
     valueAlignment
 }.
 
-NominalType !{
+IntegerType !{
 valueAlignment: (Integer)newValueAlignment :: Void.
     valueAlignment := newValueAlignment
 }.
 
-NominalType !{
-valueIsPointer :: Boolean.
-    valueIsPointer
+IntegerType !{
+isSigned :: Boolean.
+    isSigned
 }.
 
-NominalType !{
-valueIsPointer: (Boolean) newValue :: Void.
-    valueIsPointer := newValue
-}.
-
-NominalType !{
-defaultValue :: Value.
-    UndefinedValue uniqueInstance
+IntegerType !{
+isSigned: (Boolean)newIsSigned :: Void.
+    isSigned := newIsSigned
 }.
 
 ## TypeUniverse

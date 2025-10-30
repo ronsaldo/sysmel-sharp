@@ -84,7 +84,7 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
 
 ParseTreeLiteralIntegerNode !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
-    IntegerValue new value: value; type: CompilationContext current IntegerType; yourself
+    IntegerValue new value: value; type: CompilationContext current LargeIntegerType; yourself
 }.
 
 ParseTreeLiteralStringNode !{

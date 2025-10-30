@@ -14,6 +14,12 @@ class LexicalEnvironment withSuperclass: Environment fields: #{
     parent: Environment.
     localSymbols: SymbolHashtable.
 }.
+
+class NamespaceEnvironment withSuperclass: Environment fields: #{
+    parent: Environment.
+    namespaceValue: Namespace
+}.
+
 ].
 
 ## Environment
@@ -57,6 +63,37 @@ lookupRecursively: (Symbol)aSymbol :: Value.
 LexicalEnvironment !{
 parent: (Environment)newParent :: Void.
     parent := newParent
+}.
+
+## Namespace environment
+NamespaceEnvironment class !{
+withParent: (Environment)aParent namespace: (Namespace)aNamespace :: NamespaceEnvironment.
+    NamespaceEnvironment new parent: aParent; namespace: aNamespace; yourself
+}.
+
+NamespaceEnvironment !{
+parent: (Environment)newParent :: Void.
+    parent := newParent
+}.
+
+NamespaceEnvironment !{
+namespace: (Namespace)aNamespace :: Void.
+    namespaceValue := aNamespace
+}.
+
+NamespaceEnvironment !{
+lookupRecursively: (Symbol)aSymbol :: Value.
+    let namespaceSymbol := namespaceValue lookSymbol: aSymbol.
+    if: nil ~~ namespaceSymbol then: {
+        return: namespaceSymbol
+    }.
+
+    parent lookupRecursively: aSymbol
+}.
+
+NamespaceEnvironment !{
+lookupNamespace :: Namespace.
+    namespaceValue
 }.
 
 

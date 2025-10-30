@@ -2,8 +2,7 @@ namespace SysmelC definition: {
 function evaluateSourceString(sourceString: String) => Value := {
     let sourceCode := makeSourceCodeForString(sourceString).
     let parseTree := Parser new parseSourceCode: sourceCode.
-    ##let systemEnvironment := NamespaceEnvironment withParent: EmptyEnvironment new namespace: CompilationContext current globalNamespace.
-    let systemEnvironment := EmptyEnvironment new.
+    let systemEnvironment := NamespaceEnvironment withParent: EmptyEnvironment new namespace: CompilationContext current globalNamespace.
     let environment := LexicalEnvironment withParent: systemEnvironment.
     parseTree analyzeAndEvaluateInEnvironment: environment
 }.

@@ -16,7 +16,7 @@ class CompilationContext withSuperclass: Object fields: #{
     BooleanType: NominalType.
     CharacterType: NominalType.
     FloatType: NominalType.
-    IntegerType: NominalType.
+    LargeIntegerType: IntegerType.
     StringType: NominalType.
     SymbolType: NominalType.
 
@@ -27,7 +27,21 @@ class CompilationContext withSuperclass: Object fields: #{
     MacroContextType: NominalType.
     MetaBuilderType: NominalType.
     NamespaceType: NominalType.
+    
+    Char8Type: IntegerType.
+    Char16Type: IntegerType.
+    Char32Type: IntegerType.
 
+    UInt8Type: IntegerType.
+    UInt16Type: IntegerType.
+    UInt32Type: IntegerType.
+    UInt64Type: IntegerType.
+
+    Int8Type: IntegerType.
+    Int16Type: IntegerType.
+    Int32Type: IntegerType.
+    Int64Type: IntegerType.
+    
     DynamicListType: ListType.
     ByteArrayType: ListType.
 
@@ -60,103 +74,89 @@ initialize :: Void.
     currentEntitiesWithPendingAnalysis := OrderedCollection new.
     listTypeCache := TypeCacheDictionary new.
 
-    BooleanType := NominalType new
-        name: #Boolean;
-		valueSize: 1;
-		valueAlignment: 1;
-		valueIsPointer: false;
-        yourself.
+    BooleanType := NominalType new name: #Boolean; yourself.
+    CharacterType := NominalType new name: #Character; yourself.
+    FloatType := NominalType new name: #Float; yourself.
+    LargeIntegerType := IntegerType new name: #Integer; valueSize: pointerSize; valueAlignment: pointerAlignment; isSigned: true; yourself.
 
-    CharacterType := NominalType new
-        name: #Character;
-		valueSize: 4;
-		valueAlignment: 4;
-		valueIsPointer: false;
-        yourself.
+    StringType := NominalType new name: #StringType; yourself.
+    SymbolType := NominalType new name: #SymbolType; yourself.
 
-    FloatType := NominalType new
-        name: #Float;
-		valueSize: 8;
-		valueAlignment: 8;
-		valueIsPointer: false;
-        yourself.
+    VoidType := NominalType new name: #Void; yourself.
+    UndefinedObjectType := NominalType new name: #UndefinedObject; yourself.
 
-    IntegerType := NominalType new
-        name: #Integer;
-		valueSize: 8;
-		valueAlignment: 8;
-		valueIsPointer: false;
-        yourself.
-    StringType := NominalType new
-        name: #StringType;
-		valueSize: 8;
-		valueAlignment: 8;
-		valueIsPointer: false;
-        yourself.
-    SymbolType := NominalType new
-        name: #SymbolType;
-		valueSize: 8;
-		valueAlignment: 8;
-		valueIsPointer: false;
-        yourself.
-
-    VoidType := NominalType new
-        name: #Void;
-		valueSize: 0;
-		valueAlignment: 1;
-		valueIsPointer: false;
-        yourself.
-
-    UndefinedObjectType := NominalType new
-        name: #UndefinedObject;
-		valueSize: pointerSize;
-		valueAlignment: pointerAlignment;
-		valueIsPointer: true;
-        yourself.
-
-    DynamicType := NominalType new
-        name: #Dynamic;
-		valueSize: pointerSize;
-		valueAlignment: pointerAlignment;
-		valueIsPointer: true;
-        yourself.
-    
-    ParseTreeNodeType := NominalType new
-        name: #ParseTreeNode;
-		valueSize: pointerSize;
-		valueAlignment: pointerAlignment;
-		valueIsPointer: true;
-        yourself.
-
-    MacroContextType := NominalType new
-        name: #MacroContext;
-		valueSize: pointerSize;
-		valueAlignment: pointerAlignment;
-		valueIsPointer: true;
-        yourself.
-
-    MetaBuilderType := NominalType new
-        name: #MetaBuilder;
-		valueSize: pointerSize;
-		valueAlignment: pointerAlignment;
-		valueIsPointer: true;
-        yourself.
-
-    NamespaceType := NominalType new
-        name: #Namespace;
-		valueSize: pointerSize;
-		valueAlignment: pointerAlignment;
-		valueIsPointer: true;
-        yourself.
+    DynamicType := NominalType new name: #Dynamic; yourself.
+    ParseTreeNodeType := NominalType new name: #ParseTreeNode; yourself.
+    MacroContextType := NominalType new name: #MacroContext; yourself.
+    MetaBuilderType := NominalType new name: #MetaBuilder; yourself.
+    NamespaceType := NominalType new name: #Namespace; yourself.
 
     Type0Type := TypeUniverse new index: 0; yourself.
 
+    Char8Type  := IntegerType new name: #Char8;  valueSize: 1; valueAlignment: 1; isSigned: false; yourself.
+    Char16Type := IntegerType new name: #Char16; valueSize: 2; valueAlignment: 2; isSigned: false; yourself.
+    Char32Type := IntegerType new name: #Char32; valueSize: 4; valueAlignment: 4; isSigned: false; yourself.
+
+    UInt8Type  := IntegerType new name: #UInt8;  valueSize: 1; valueAlignment: 1; isSigned: false; yourself.
+    UInt16Type := IntegerType new name: #UInt16; valueSize: 2; valueAlignment: 2; isSigned: false; yourself.
+    UInt32Type := IntegerType new name: #UInt32; valueSize: 4; valueAlignment: 4; isSigned: false; yourself.
+    UInt64Type := IntegerType new name: #UInt64; valueSize: 8; valueAlignment: 8; isSigned: false; yourself.
+
+    Int8Type  := IntegerType new name: #Int8;  valueSize: 1; valueAlignment: 1; isSigned: true; yourself.
+    Int16Type := IntegerType new name: #Int16; valueSize: 2; valueAlignment: 2; isSigned: true; yourself.
+    Int32Type := IntegerType new name: #Int32; valueSize: 4; valueAlignment: 4; isSigned: true; yourself.
+    Int64Type := IntegerType new name: #Int64; valueSize: 8; valueAlignment: 8; isSigned: true; yourself.
+
     DynamicListType := self getOrCreateListOfType: DynamicType.
-    ##ByteArrayType: ListType.
+    ByteArrayType := self getOrCreateListOfType: UInt8Type.
 
-
-    ##self registerGlobalsInSystemNamespace.
+    self registerGlobalsInSystemNamespace.
     ##self registerPrimitives.
+}.
+
+CompilationContext !{
+registerNominalType: (NominalType)aNominalType.
+    globalNamespace setSymbol: aNominalType name binding: aNominalType.
+}.
+
+CompilationContext !{
+registerGlobalsInSystemNamespace :: Void.
+    globalNamespace := Namespace new name: #__global__; yourself.
+    globalNamespace setSymbol: #Type binding: Type0Type.
+
+    self registerNominalType: BooleanType.
+    self registerNominalType: CharacterType.
+    self registerNominalType: FloatType.
+    self registerNominalType: LargeIntegerType.
+    self registerNominalType: StringType.
+    self registerNominalType: SymbolType.
+
+    self registerNominalType: VoidType.
+    self registerNominalType: UndefinedObjectType.
+    self registerNominalType: DynamicType.
+    self registerNominalType: ParseTreeNodeType.
+    self registerNominalType: MacroContextType.
+    self registerNominalType: MetaBuilderType.
+    self registerNominalType: NamespaceType.
+    
+    self registerNominalType: Char8Type.
+    self registerNominalType: Char16Type.
+    self registerNominalType: Char32Type.
+
+    self registerNominalType: UInt8Type.
+    self registerNominalType: UInt16Type.
+    self registerNominalType: UInt32Type.
+    self registerNominalType: UInt64Type.
+
+    self registerNominalType: Int8Type.
+    self registerNominalType: Int16Type.
+    self registerNominalType: Int32Type.
+    self registerNominalType: Int64Type.
+
+    globalNamespace setSymbol: #false binding: (BooleanValue new value: false; yourself).
+    globalNamespace setSymbol: #true binding: (BooleanValue new value: true; yourself).
+    globalNamespace setSymbol: #nil binding: UndefinedValue uniqueInstance.
+    globalNamespace setSymbol: #void binding: VoidValue uniqueInstance.
 }.
 
 CompilationContext !{
@@ -180,8 +180,8 @@ FloatType :: NominalType.
 }.
 
 CompilationContext !{
-IntegerType :: NominalType.
-    IntegerType
+LargeIntegerType :: IntegerType.
+    LargeIntegerType
 }.
 
 CompilationContext !{

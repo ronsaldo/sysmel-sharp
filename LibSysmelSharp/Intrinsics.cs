@@ -980,6 +980,12 @@ namespace LibSysmelSharp
                     string str = arguments[0].AsSymbol();
                     return new StringValue(null, str, StringType);
                 }));
+            SymbolType.AddMethod(new PrimitiveFunction("printString", false, true,
+                new SimpleFunctionType(null, [SymbolType], StringType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsSymbol();
+                    return new StringValue(null, "#" + str, StringType);
+                }));
         }
 
         void RegisterTypePrimitives()
