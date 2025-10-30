@@ -61,7 +61,7 @@ scanFor: (K)key :: Integer.
     let i mutable := naturalIndex.
     while: (i < capacity) do: {
         let keyOrNull := keys at: i.
-        if: (keyOrNull = nil) || (keyOrNull = key)  then: {
+        if: (nil == keyOrNull) || (key = keyOrNull)  then: {
             return: i
         }.
     } continueWith: (i := i + 1).
@@ -69,7 +69,7 @@ scanFor: (K)key :: Integer.
     i := 0.
     while: (i < capacity) do: {
         let keyOrNull := keys at: i.
-        if: (keyOrNull = nil) || (keyOrNull = key)  then: {
+        if: (nil == keyOrNull) || (key = keyOrNull)  then: {
             return: i
         }.
     } continueWith: (i := i + 1).
@@ -121,7 +121,7 @@ at: (K)key put: (V)value :: Void.
     if: bucketIndex < 0 then: { error: "Bucket error." }.
 
     let storedKey := keys at: bucketIndex.
-    if: storedKey = nil then: {
+    if: nil == storedKey then: {
         keys at: bucketIndex put: key.
         values at: bucketIndex put: value.
         size := size + 1.

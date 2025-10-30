@@ -97,4 +97,22 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     SymbolValue new value: value; type: CompilationContext current SymbolType; yourself
 }.
 
+## ParseTreeListNode
+ParseTreeListNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let elementCount := elements size.
+    let elementValues := Value list new: elementCount.
+    let i mutable := 0.
+    while: (i < elementCount) do: {
+        let elementValue := (elements at: i) analyzeAndEvaluateInEnvironmentWithDecayedType: environment.
+        elementValues at: i put: elementValue
+    } continueWith: (i := i + 1).
+
+    ListValue new
+        sourcePosition: sourcePosition;
+        elements: elementValues;
+        type: CompilationContext current DynamicListType;
+        yourself
+}.
+
 }

@@ -37,4 +37,18 @@ function evaluateSourceString(sourceString: String) => Value := {
     let value := evaluateSourceString("#mySymbol").
     assert: value value = #mySymbol.
 }.
+
+## testEmptyList
+{
+    let value := evaluateSourceString("[]").
+    assert: value elements size = 0.
+}.
+
+## testList
+{
+    let value := evaluateSourceString("[1 . 2]").
+    assert: value elements size = 2.
+    assert: (value elements at: 0) value = 1.
+    assert: (value elements at: 1) value = 2.
+}.
 }

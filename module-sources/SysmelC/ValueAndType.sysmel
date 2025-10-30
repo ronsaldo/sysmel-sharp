@@ -92,6 +92,16 @@ elements: (Value list) newElements :: Void.
     elements := newElements.
 }.
 
+ListValue !{
+type :: SysmelType.
+    type
+}.
+
+ListValue !{
+type: (SysmelType) newType :: Void.
+    type := newType.
+}.
+
 ## Nominal type
 NominalType !{
 name :: Symbol.

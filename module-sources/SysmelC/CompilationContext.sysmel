@@ -28,6 +28,9 @@ class CompilationContext withSuperclass: Object fields: #{
     MetaBuilderType: NominalType.
     NamespaceType: NominalType.
 
+    DynamicListType: ListType.
+    ByteArrayType: ListType.
+
     Type0Type: TypeUniverse.
 }.
 
@@ -148,6 +151,10 @@ initialize :: Void.
 
     Type0Type := TypeUniverse new index: 0; yourself.
 
+    DynamicListType := self getOrCreateListOfType: DynamicType.
+    ##ByteArrayType: ListType.
+
+
     ##self registerGlobalsInSystemNamespace.
     ##self registerPrimitives.
 }.
@@ -220,6 +227,16 @@ MetaBuilderType :: NominalType.
 CompilationContext !{
 NamespaceType :: NominalType.
     NamespaceType
+}.
+
+CompilationContext !{
+DynamicListType :: ListType.
+    DynamicListType
+}.
+
+CompilationContext !{
+ByteArrayType :: ListType.
+    ByteArrayType
 }.
 
 CompilationContext !{
