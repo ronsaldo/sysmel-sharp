@@ -26,13 +26,13 @@ namespace LibSysmelSharp
 
         public override Value AnalyzeAndEvaluateInEnvironment(Environment environment)
         {
-            Value functionalValue = functional.AnalyzeAndEvaluateInEnvironment(environment);
+            Value functionalValue = functional.AnalyzeAndEvaluateInEnvironmentWithDecayedType(environment);
             return functionalValue.AnalyzeAndEvaluateApplicationInEnvironment(this, environment);
         }
 
         public override HIRValue AnalyzeAndBuild(HIRBuilder builder)
         {
-            HIRValue functionalValue = functional.AnalyzeAndBuild(builder);
+            HIRValue functionalValue = functional.AnalyzeAndBuildWithDecayedType(builder);
             return functionalValue.AnalyzeAndBuildApplication(this, builder);
         }
         public override ParseTreeArgumentDefinitionNode ParseAsArgumentDefinitionInEnvironment(Environment environment)

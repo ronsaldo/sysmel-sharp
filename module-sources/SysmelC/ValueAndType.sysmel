@@ -416,4 +416,103 @@ TupleType !{
         yourself
 }.
 
+## FunctionalValue
+FunctionalValue !{
+type :: FunctionType.
+    type
+}.
+
+FunctionalValue !{
+type: (FunctionType)newType :: Void.
+    type := newType
+}.
+
+FunctionalValue !{
+name :: Symbol.
+    name
+}.
+
+FunctionalValue !{
+name: (Symbol)newName :: Void.
+    name := newName
+}.
+
+FunctionalValue !{
+exportedName :: Symbol.
+    name
+}.
+
+FunctionalValue !{
+isCompileTimeFunction :: Boolean.
+    isCompileTimeFunction
+}.
+
+FunctionalValue !{
+isCompileTimeFunction: (Boolean)newValue :: Void.
+    isCompileTimeFunction := newValue
+}.
+
+FunctionalValue !{
+isConstantValue :: Boolean.
+    true
+}.
+
+FunctionalValue !{
+evaluateWithArguments: (Value list)arguments :: Value.
+    error: "Subclass responsibility."
+}.
+
+FunctionalValue !{
+sanitizeArguments: (Value list)arguments :: Value list.
+    let argumentCount := type argumentDefinitions size.
+    let argumentDefinitions := type argumentDefinitions.
+    let sanitizedArguments := Value list new: argumentCount.
+
+    let i mutable := 0.
+    while: (i < argumentCount) do: {
+        let argumentDefinition := argumentDefinitions at: i.
+        let argumentValue := arguments at: i.
+        let castedValue := argumentValue castAnalyzedAndEvaluatedValue: argumentValue toExpectedType: argumentDefinition type.
+        sanitizedArguments at: i put: castedValue.        
+    } continueWith: (i := i + 1).
+    
+    sanitizedArguments
+}.
+
+## PrimitiveFunctionValue
+PrimitiveFunctionValue !{
+primitiveName :: Symbol.
+    primitiveName
+}.
+
+PrimitiveFunctionValue !{
+primitiveName: (Symbol)newPrimitiveName :: Void.
+    primitiveName := newPrimitiveName
+}.
+
+PrimitiveFunctionValue !{
+isCompileTimeFunction :: Boolean.
+    isCompileTimeFunction
+}.
+
+PrimitiveFunctionValue !{
+isCompileTimeFunction: (Boolean)newValue :: Void.
+    isCompileTimeFunction := newValue
+}.
+
+PrimitiveFunctionValue !{
+implementation :: (Value list) => Value.
+    implementation
+}.
+
+PrimitiveFunctionValue !{
+implementation: ((Value list) => Value)newValue :: Void.
+    implementation := newValue
+}.
+
+PrimitiveFunctionValue !{
+evaluateWithArguments: (Value list)arguments :: Value.
+    implementation(self sanitizeArguments: arguments)
+}.
+
 }
