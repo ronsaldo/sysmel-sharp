@@ -13,6 +13,33 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: value = CompilationContext current Int32Type
 }.
 
+## testIfExpression
+{
+    let value := evaluateSourceString("if: true then: 1 else: 2").
+    assert: value type = CompilationContext current LargeIntegerType.
+    assert: value value = 1.
+}.
+
+## testIfExpression2
+{
+    let value := evaluateSourceString("if: false then: 1 else: 2").
+    assert: value type = CompilationContext current LargeIntegerType.
+    assert: value value = 2.
+}.
+
+## testIfExpression3
+{
+    let value := evaluateSourceString("if: true then: 1").
+    assert: value type = CompilationContext current LargeIntegerType.
+    assert: value value = 1.
+}.
+
+## testIfExpression4
+{
+    let value := evaluateSourceString("if: false then: 1").
+    assert: value type = CompilationContext current VoidType.
+}.
+
 ## testLexicalBlock
 {
     let value := evaluateSourceString("{42}").

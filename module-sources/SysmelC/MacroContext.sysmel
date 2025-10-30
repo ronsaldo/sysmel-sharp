@@ -1,0 +1,34 @@
+namespace SysmelC definition: {
+public: [
+class MacroContext withSuperclass: Value fields:#{
+    environment: LexicalEnvironment.
+}.
+].
+
+## MacroContext
+Value !{
+asMacroContext :: MacroContext.
+    error: "Not a valid macro context value"
+}.
+
+MacroContext !{
+asMacroContext :: MacroContext.
+    self
+}.
+
+MacroContext !{
+environment :: LexicalEnvironment.
+    environment
+}.
+
+MacroContext !{
+environment: (LexicalEnvironment) newValue :: Void.
+    environment := newValue
+}.
+
+MacroContext !{
+type :: NominalType.
+    CompilationContext current MacroContextType
+}.
+
+}. ## End of namespace SysmelC

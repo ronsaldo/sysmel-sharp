@@ -8,6 +8,7 @@ loadFileOnce: "Parser.sysmel".
 
 loadFileOnce: "Namespace.sysmel".
 loadFileOnce: "Environment.sysmel".
+loadFileOnce: "MacroContext.sysmel".
 loadFileOnce: "CompilationContext.sysmel".
 loadFileOnce: "PrimitiveValue.sysmel".
 loadFileOnce: "AnalysisAndEvaluation.sysmel".

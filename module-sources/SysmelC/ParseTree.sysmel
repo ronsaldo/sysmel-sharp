@@ -11,10 +11,20 @@ class ParseTreeErrorNode withSuperclass: ParseTreeNode fields: #{
 }
 ].
 
-##ParseTreeNode !{
-##type :: SysmelType.
-##    CompilationContext current ParseTreeNodeType
-##}.
+Value !{
+asParseTreeNode :: ParseTreeNode.
+    error: "ToDo: add literal value parse tree npde"
+}.
+
+ParseTreeNode !{
+asParseTreeNode :: ParseTreeNode.
+    self
+}.
+
+ParseTreeNode !{
+type :: SysmelType.
+    CompilationContext current ParseTreeNodeType
+}.
 
 ParseTreeNode !{
 isErrorNode :: Boolean.

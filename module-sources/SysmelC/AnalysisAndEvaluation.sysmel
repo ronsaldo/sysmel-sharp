@@ -66,6 +66,52 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     error: errorMessage.
 }.
 
+Value !{
+analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    error: "Not a functional value"
+}.
+
+FunctionalValue !{
+analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)environment :: Value.
+    if: isMacro then: {
+        let macroContext := MacroContext new
+            sourcePosition: applicationNode sourcePosition;
+            environment: environment;
+            yourself.
+
+        let argumentCount := applicationNode arguments size.
+        let macroArguments := Value list new: 1 + argumentCount.
+        macroArguments at: 0 put: macroContext.
+        let i mutable := 0.
+        while: i < argumentCount  do: {
+            macroArguments at: i + 1 put: (applicationNode arguments at: i)
+        } continueWith: (i :=  i + 1).
+
+        let macroResult := self evaluateWithArguments: macroArguments.
+        return: (macroResult analyzeAndEvaluateInEnvironment: environment)
+    }.
+
+    #*
+    let functionType := type.
+    let argumentValues := applicationNode arguments collectWithIndex: {:each :(Integer)index |
+        let eachArgumentValue type: Value := each.
+        let argumentDefinition type: ArgumentValue := functionType argumentDefinitions at: index.
+        let argumentType := argumentDefinition type.
+        eachArgumentValue analyzeAndEvaluateInEnvironment: environment withExpectedType: argumentType
+    }.
+
+    self evaluateWithArguments: argumentValues*#
+    error: "Todo: FunctionalValue >> #analyzeAndEvaluateApplication"
+
+}.
+
+ParseTreeApplicationNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let functionalValue type: Value := functional analyzeAndEvaluateInEnvironmentWithDecayedType: environment.
+
+    functionalValue analyzeAndEvaluateApplication: self inEnvironment: environment
+}.
+
 ## Identifiers
 Value !{
 analyzeAndEvaluateIdentifierReference: (ParseTreeIdentifierReferenceNode)identifierReference inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
@@ -80,6 +126,24 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     }.
 
     lookupValue analyzeAndEvaluateIdentifierReference: self inEnvironment: environment
+}.
+
+## If selection.
+ParseTreeIfSelectionNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let conditionValue := condition analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current BooleanType.
+    let conditionBooleanValue := conditionValue asBoolean.
+    if: conditionBooleanValue then: {
+        if: nil ~~ trueExpression then: {
+            return: (trueExpression analyzeAndEvaluateInEnvironment: environment)
+        }
+    } else: {
+        if: nil ~~ falseExpression then: {
+            return: (falseExpression analyzeAndEvaluateInEnvironment: environment)
+        }
+    }.
+
+    VoidValue uniqueInstance
 }.
 
 ## Lexical block

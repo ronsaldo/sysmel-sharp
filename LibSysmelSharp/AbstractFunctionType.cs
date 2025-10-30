@@ -23,5 +23,10 @@
             return null;
         }
 
+        public override Value MakeDefaultValue()
+        {
+            return NilValue.GetSingleton();
+        }
+
     }
 }

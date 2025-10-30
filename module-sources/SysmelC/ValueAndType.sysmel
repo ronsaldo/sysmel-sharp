@@ -69,7 +69,6 @@ class SuperArgumentValue withSuperclass: Value fields: #{
 class FunctionType withSuperclass: SysmelType fields:#{
     argumentDefinitions: ArgumentValue list.
     resultTypeExpression: Value.
-    isMacro: Boolean.
     typeUniverse: TypeUniverse
 }.
 
@@ -77,11 +76,11 @@ class FunctionalValue withSuperclass: Value fields:#{
     type: FunctionType.
     name: Symbol.
     isCompileTimeFunction: Boolean.
+    isMacro: Boolean.
 }.
 
 class PrimitiveFunctionValue withSuperclass: FunctionalValue fields: #{
     primitiveName: Symbol.
-    isCompileTimeFunction: Boolean.
     implementation: (Value list) => Value.
 }.
 
@@ -453,6 +452,16 @@ isCompileTimeFunction: (Boolean)newValue :: Void.
 }.
 
 FunctionalValue !{
+isMacro :: Boolean.
+    isMacro
+}.
+
+FunctionalValue !{
+isMacro: (Boolean)newValue :: Void.
+    isMacro := newValue
+}.
+
+FunctionalValue !{
 isConstantValue :: Boolean.
     true
 }.
@@ -513,6 +522,28 @@ implementation: ((Value list) => Value)newValue :: Void.
 PrimitiveFunctionValue !{
 evaluateWithArguments: (Value list)arguments :: Value.
     implementation(self sanitizeArguments: arguments)
+}.
+
+FunctionType !{
+withSelector: (Symbol)selector makePrimitiveWithPrefix: (String)primitiveNamePrefix doing: ((Value list) => Value)implementation :: PrimitiveFunctionValue.
+    PrimitiveFunctionValue new
+        type: self;
+        name: selector;
+        isMacro: false;
+        primitiveName: (primitiveNamePrefix -- selector asString) asSymbol;
+        implementation: implementation;
+        yourself
+}.
+
+FunctionType !{
+withSelector: (Symbol)selector makePrimitiveMacroWithPrefix: (String)primitiveNamePrefix doing: ((Value list) => Value)implementation :: PrimitiveFunctionValue.
+    PrimitiveFunctionValue new
+        type: self;
+        name: selector;
+        isMacro: true;
+        primitiveName: (primitiveNamePrefix -- selector asString) asSymbol;
+        implementation: implementation;
+        yourself
 }.
 
 }
