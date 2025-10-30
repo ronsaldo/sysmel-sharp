@@ -1,6 +1,6 @@
 namespace SysmelC definition: {
 let OrderedCollection := System Collections ArrayList(Value).
-
+let TypeCacheDictionary := System Collections Dictionary(SysmelType . ListType).
 public: [
 class CompilationContext withSuperclass: Object fields: #{
     isInitialized: Boolean.
@@ -8,6 +8,8 @@ class CompilationContext withSuperclass: Object fields: #{
     pointerSize: Integer.
 
     currentEntitiesWithPendingAnalysis: OrderedCollection.
+
+    listTypeCache: TypeCacheDictionary.
 
     globalNamespace: Namespace.
     
@@ -53,6 +55,7 @@ initialize :: Void.
     pointerSize := 8.
     
     currentEntitiesWithPendingAnalysis := OrderedCollection new.
+    listTypeCache := TypeCacheDictionary new.
 
     BooleanType := NominalType new
         name: #Boolean;
@@ -194,15 +197,45 @@ UndefinedObjectType :: NominalType.
     UndefinedObjectType
 }.
 
-#*
-    UndefinedObjectType: NominalType.
-    DynamicType: NominalType.
-    ParseTreeNodeType: NominalType.
-    MacroContextType: NominalType.
-    MetaBuilderType: NominalType.
-    NamespaceType: NominalType.
+CompilationContext !{
+DynamicType :: NominalType.
+    DynamicType
+}.
 
-    Type0Type: TypeUniverse.
-*#
+CompilationContext !{
+ParseTreeNodeType :: NominalType.
+    ParseTreeNodeType
+}.
+
+CompilationContext !{
+MacroContextType :: NominalType.
+    MacroContextType
+}.
+
+CompilationContext !{
+MetaBuilderType :: NominalType.
+    MetaBuilderType
+}.
+
+CompilationContext !{
+NamespaceType :: NominalType.
+    NamespaceType
+}.
+
+CompilationContext !{
+Type0Type :: TypeUniverse.
+    Type0Type
+}.
+
+CompilationContext !{
+getOrCreateListOfType: (SysmelType)baseType :: ListType.
+    if: (listTypeCache includesKey: baseType) then: {
+        return: (listTypeCache at: baseType).
+    }.
+    
+    let newListType := ListType new baseType: baseType; yourself.
+    listTypeCache at: baseType put: newListType.
+    newListType
+}.
 
 }.

@@ -11,6 +11,27 @@ public: [
 class SysmelType withSuperclass: Value fields:#{
 }.
 
+class DerivedType withSuperclass: SysmelType fields:#{
+    baseType: SysmelType.
+}.
+
+class ListType withSuperclass: DerivedType fields:#{
+}.
+
+class ListValue withSuperclass: Value fields:#{
+    elements: Value list.
+    type: SysmelType
+}.
+
+class PointerLikeType withSuperclass: DerivedType fields:#{
+}.
+
+class PointerType withSuperclass: PointerLikeType fields:#{
+}.
+
+class ReferenceType withSuperclass: PointerLikeType fields:#{
+}.
+
 class SimpleType withSuperclass: SysmelType fields:#{
     methodDictionary: SymbolHashtable
 }.
@@ -47,6 +68,28 @@ type :: SysmelType.
 SysmelType !{
 isReferenceLikeType :: Boolean.
     false
+}.
+
+## DerivedType
+DerivedType !{
+baseType :: SysmelType.
+    baseType
+}.
+
+DerivedType !{
+baseType: (SysmelType)newBaseType :: Void.
+    baseType := newBaseType
+}.
+
+## ListValue
+ListValue !{
+elements :: Value list.
+    elements
+}.
+
+ListValue !{
+elements: (Value list) newElements :: Void.
+    elements := newElements.
 }.
 
 ## Nominal type

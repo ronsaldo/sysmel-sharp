@@ -125,27 +125,27 @@ typeExpression: (Value)newType :: Void.
 
 ## ParseTreeNode list
 public: [
-class ParseTreeArrayNode withSuperclass: ParseTreeNode fields: #{
+class ParseTreeListNode withSuperclass: ParseTreeNode fields: #{
     elements: ParseTreeNode list
 }
 ].
 
 ParseTreeNode !{
-isArrayNode :: Boolean.
+isListNode :: Boolean.
     false.
 }.
 
-ParseTreeArrayNode !{
-isArrayNode :: Boolean.
+ParseTreeListNode !{
+isListNode :: Boolean.
     true.
 }.
 
-ParseTreeArrayNode !{
+ParseTreeListNode !{
 elements :: ParseTreeNode list.
     elements
 }.
 
-ParseTreeArrayNode !{
+ParseTreeListNode !{
 elements: (ParseTreeNode list)newElements :: Void.
     elements := newElements
 }.

@@ -54,14 +54,14 @@ function parseSourceString(sourceString: String) => ParseTreeNode := {
 ## testArray
 {
     let parseTree := parseSourceString("[]").
-    assert: parseTree isArrayNode.
+    assert: parseTree isListNode.
     assert: parseTree elements size = 0.
 }.
 
 ## testArray2
 {
     let parseTree := parseSourceString("[1 . 2]").
-    assert: parseTree isArrayNode.
+    assert: parseTree isListNode.
     assert: parseTree elements size = 2.
 
     assert: parseTree elements first isLiteralIntegerNode.

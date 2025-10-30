@@ -1080,6 +1080,29 @@ namespace LibSysmelSharp
                 (Value[] arguments) => {
                     return BooleanValue.GetWithValue(!arguments[0].Equals(arguments[1]));
                 }));
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("identityhash", false, true,
+                new SimpleFunctionType(null, [ProtoObjectClassType], IntegerType),
+                (Value[] arguments) => {
+                    string str = arguments[0].AsSymbol();
+                    return new IntegerValue(null, str.GetHashCode() & 0x7fffffff, IntegerType);
+                }));
+
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("=", false, true,
+                new SimpleFunctionType(null, [ProtoObjectClassType, DynamicType], BooleanType),
+                (Value[] arguments) => {
+                    return BooleanValue.GetWithValue(arguments[0].Equals(arguments[1]));
+                }));
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("~=", false, true,
+                new SimpleFunctionType(null, [ProtoObjectClassType, DynamicType], BooleanType),
+                (Value[] arguments) => {
+                    return BooleanValue.GetWithValue(!arguments[0].PerformWithArguments("=", arguments).AsBoolean());
+                }));
+            ProtoObjectClassType.AddMethod(new PrimitiveFunction("hash", false, true,
+                new SimpleFunctionType(null, [ProtoObjectClassType], IntegerType),
+                (Value[] arguments) => {
+                    return arguments[0].PerformWithArguments("identity", arguments);
+                }));
+
 
             ProtoObjectClassType.AddMethod(new PrimitiveFunction("initialize", false, false,
                 new SimpleFunctionType(null, [ProtoObjectClassType], VoidType),

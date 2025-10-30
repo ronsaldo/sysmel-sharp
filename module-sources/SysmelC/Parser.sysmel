@@ -315,7 +315,7 @@ parseArray :: ParseTreeNode.
             yourself)
     }.
 
-    ParseTreeArrayNode new
+    ParseTreeListNode new
         sourcePosition: (self sourcePositionFrom: startingPosition);
         elements: expressions;
         yourself
