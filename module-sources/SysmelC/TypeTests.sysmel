@@ -1,0 +1,54 @@
+namespace SysmelC definition: {
+    let VoidType := CompilationContext current VoidType.
+    let Int32Type := CompilationContext current Int32Type.
+    let Int64Type := CompilationContext current Int64Type.
+
+    ## Tuple type creation.
+    {
+        let tupleType := Int32Type -- Int64Type.
+        assert: tupleType isTupleType.
+        assert: tupleType elements size = 2.
+        assert: (tupleType elements at: 0) == Int32Type.
+        assert: (tupleType elements at: 1) == Int64Type.
+    }.
+
+    {
+        let tupleType := Int32Type -- Int64Type -- Int64Type.
+        assert: tupleType isTupleType.
+        assert: tupleType elements size = 3.
+        assert: (tupleType elements at: 0) == Int32Type.
+        assert: (tupleType elements at: 1) == Int64Type.
+        assert: (tupleType elements at: 2) == Int64Type.
+    }.
+
+    ## Nullary Function type
+    {
+        let functionType := VoidType => Int32Type.
+        assert: functionType isFunctionType.
+        assert: functionType argumentDefinitions size = 0.
+        assert: functionType resultTypeExpression = Int32Type.
+    }.
+    
+    ## Unary Function type
+    {
+        let functionType := Int32Type => Int64Type.
+        assert: functionType isFunctionType.
+        assert: functionType argumentDefinitions size = 1.
+        assert: (functionType argumentDefinitions at: 0) type = Int32Type.
+        assert: (functionType argumentDefinitions at: 0) index = 0.
+        assert: functionType resultTypeExpression = Int64Type.
+    }.
+
+    ## Binary Function type
+    {
+        let functionType := (Int32Type -- Int64Type) => Int64Type.
+        assert: functionType isFunctionType.
+        assert: functionType argumentDefinitions size = 2.
+        assert: (functionType argumentDefinitions at: 0) type = Int32Type.
+        assert: (functionType argumentDefinitions at: 0) index = 0.
+        assert: (functionType argumentDefinitions at: 1) type = Int64Type.
+        assert: (functionType argumentDefinitions at: 1) index = 1.
+        assert: functionType resultTypeExpression = Int64Type.
+    }.
+
+}

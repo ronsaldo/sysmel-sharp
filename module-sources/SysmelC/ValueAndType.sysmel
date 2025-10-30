@@ -55,6 +55,36 @@ class TypeUniverse withSuperclass: SimpleType fields:#{
     index: Integer
 }.
 
+class ArgumentValue withSuperclass: Value fields: #{
+    name: Symbol.
+    type: SysmelType.
+    index: Integer
+}.
+
+class SuperArgumentValue withSuperclass: Value fields: #{
+    selfArgument: ArgumentValue.
+    type: SysmelType.
+}.
+
+class FunctionType withSuperclass: SysmelType fields:#{
+    argumentDefinitions: ArgumentValue list.
+    resultTypeExpression: Value.
+    isMacro: Boolean.
+    typeUniverse: TypeUniverse
+}.
+
+class FunctionalValue withSuperclass: Value fields:#{
+    type: FunctionType.
+    name: Symbol.
+    isCompileTimeFunction: Boolean.
+}.
+
+class PrimitiveFunctionValue withSuperclass: FunctionalValue fields: #{
+    primitiveName: Symbol.
+    isCompileTimeFunction: Boolean.
+    implementation: (Value list) => Value.
+}.
+
 ].
 
 Value !{
@@ -73,6 +103,16 @@ type :: SysmelType.
 }.
 
 ## SysmelType
+Value !{
+asType :: SysmelType.
+    error: "Not a type"
+}.
+
+SysmelType !{
+asType :: SysmelType.
+    self
+}.
+
 SysmelType !{
 isReferenceLikeType :: Boolean.
     false
@@ -200,11 +240,180 @@ SysmelType !{
 
 TupleType !{
 -- otherType :: SysmelType.
-
     TupleType new elements: elements -- ((SysmelType list new: 1)
         at: 0 put: otherType;
         yourself);
     yourself
+}.
+
+## ArgumentValue
+ArgumentValue !{
+name :: Symbol.
+    name
+}.
+
+ArgumentValue !{
+name: (Symbol)newName :: Void.
+    name := newName
+}.
+
+ArgumentValue !{
+type :: SysmelType.
+    type
+}.
+
+ArgumentValue !{
+type: (SysmelType)newType :: Void.
+    type := newType
+}.
+
+ArgumentValue !{
+index :: Integer.
+    index
+}.
+
+ArgumentValue !{
+index: (Integer)newIndex :: Void.
+    index := newIndex
+}.
+
+ArgumentValue !{
+isMacroContextArgument :: Boolean.
+    type = CompilationContext current MacroContextType
+}.
+
+## SuperArgumentValue
+Value !{
+isSuperArgumentValue :: Boolean.
+    false
+}.
+
+SuperArgumentValue !{
+isSuperArgumentValue :: Boolean.
+    true
+}.
+
+SuperArgumentValue !{
+selfArgument :: ArgumentValue.
+    selfArgument
+}.
+
+SuperArgumentValue !{
+selfArgument: (ArgumentValue)newSelf.
+    selfArgument := newSelf
+}.
+
+SuperArgumentValue !{
+type :: SysmelType.
+    type
+}.
+
+SuperArgumentValue !{
+type: (SysmelType)newType.
+    type := newType
+}.
+
+## Function type
+Value !{
+isFunctionType :: Boolean.
+    false
+}.
+
+FunctionType !{
+isFunctionType :: Boolean.
+    true
+}.
+
+Value !{
+asFunctionType :: FunctionType.
+    error: "Not a function type."
+}.
+
+FunctionType !{
+asFunctionType :: FunctionType.
+    self
+}.
+
+FunctionType !{
+argumentDefinitions :: ArgumentValue list.
+    argumentDefinitions
+}.
+
+FunctionType !{
+argumentDefinitions: (ArgumentValue list)newArguments :: Void.
+    argumentDefinitions := newArguments
+}.
+
+FunctionType !{
+resultTypeExpression :: Value.
+    resultTypeExpression
+}.
+
+FunctionType !{
+resultTypeExpression: (Value)newExpression :: Void.
+    resultTypeExpression := newExpression
+}.
+
+Value !{
+asReturnValueType :: SysmelType.
+    error: "Not a type with return value."
+}.
+
+SysmelType !{
+asReturnValueType :: SysmelType.
+    self
+}.
+
+FunctionType !{
+resultTypeReturnValue :: SysmelType.
+    resultTypeExpression asReturnValueType
+}.
+
+Value !{
+computeDependentResultTypeWithCallArguments: (Value list)callArguments :: SysmelType.
+    self asType
+}.
+
+FunctionType !{
+computeResultTypeWithArguments: (Value list)callArguments :: SysmelType.
+    resultTypeExpression computeDependentResultTypeWithCallArguments: callArguments
+}.
+
+SysmelType !{
+=> resultTypeExpression :: FunctionType.
+    if: self == CompilationContext current VoidType then: {
+        return: (FunctionType new
+            argumentDefinitions: ArgumentValue list new;
+            resultTypeExpression: resultTypeExpression;
+            yourself)
+    }.
+
+    let argumentValueList := ArgumentValue list new: 1.
+    argumentValueList at: 0 put: (ArgumentValue new type: self; index: 0; yourself).
+
+    FunctionType new
+        argumentDefinitions: argumentValueList;
+        resultTypeExpression: resultTypeExpression;
+        yourself
+}.
+
+TupleType !{
+=> resultTypeExpression :: FunctionType.
+    let argumentCount := elements size.
+    let argumentDefinitions := ArgumentValue list new: argumentCount.
+    let i mutable := 0.
+    while: (i < argumentCount) do: {
+        let argument := ArgumentValue new
+            type: (elements at: i);
+            index: i;
+            yourself.
+        argumentDefinitions at: i put: argument
+    } continueWith:(i := i + 1).
+
+    FunctionType new
+        argumentDefinitions: argumentDefinitions;
+        resultTypeExpression: resultTypeExpression;
+        yourself
 }.
 
 }
