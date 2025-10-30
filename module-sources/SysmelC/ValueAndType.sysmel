@@ -40,6 +40,10 @@ class NominalType withSuperclass: SimpleType fields:#{
     name: Symbol.
 }.
 
+class TupleType withSuperclass: SimpleType fields:#{
+    elements: SysmelType list.
+}.
+
 class IntegerType withSuperclass: NominalType fields:#{
     valueSize: Integer.
     valueAlignment: Integer.
@@ -71,6 +75,11 @@ type :: SysmelType.
 ## SysmelType
 SysmelType !{
 isReferenceLikeType :: Boolean.
+    false
+}.
+
+SysmelType !{
+isTupleType :: Boolean.
     false
 }.
 
@@ -162,6 +171,40 @@ index :: Integer.
 TypeUniverse !{
 index: (Integer)newIndex :: Void.
     newIndex
+}.
+
+## Tuple type
+TupleType !{
+isTupleType :: Boolean.
+    true
+}.
+
+TupleType !{
+elements :: SysmelType list.
+    elements
+}.
+
+TupleType !{
+elements: (SysmelType list)newElements :: Void.
+    elements := newElements
+}.
+
+SysmelType !{
+-- otherType :: SysmelType.
+    TupleType new elements: ((SysmelType list new: 2)
+        at: 0 put: self;
+        at: 1 put: otherType;
+        yourself);
+    yourself
+}.
+
+TupleType !{
+-- otherType :: SysmelType.
+
+    TupleType new elements: elements -- ((SysmelType list new: 1)
+        at: 0 put: otherType;
+        yourself);
+    yourself
 }.
 
 }
