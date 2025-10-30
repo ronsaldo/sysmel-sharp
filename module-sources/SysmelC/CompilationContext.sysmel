@@ -245,6 +245,61 @@ Type0Type :: TypeUniverse.
 }.
 
 CompilationContext !{
+Char8Type :: IntegerType.
+    Char8Type
+}.
+
+CompilationContext !{
+Char16Type :: IntegerType.
+    Char16Type
+}.
+
+CompilationContext !{
+Char32Type :: IntegerType.
+    Char32Type
+}.
+
+CompilationContext !{
+UInt8Type :: IntegerType.
+    UInt8Type
+}.
+
+CompilationContext !{
+UInt16Type :: IntegerType.
+    UInt16Type
+}.
+
+CompilationContext !{
+UInt32Type :: IntegerType.
+    UInt32Type
+}.
+
+CompilationContext !{
+UInt64Type :: IntegerType.
+    UInt64Type
+}.
+
+CompilationContext !{
+Int8Type :: IntegerType.
+    Int8Type
+}.
+
+CompilationContext !{
+Int16Type :: IntegerType.
+    Int16Type
+}.
+
+CompilationContext !{
+Int32Type :: IntegerType.
+    Int32Type
+}.
+
+CompilationContext !{
+Int64Type :: IntegerType.
+    Int64Type
+}.
+
+CompilationContext !{
 getOrCreateListOfType: (SysmelType)baseType :: ListType.
     if: (listTypeCache includesKey: baseType) then: {
         return: (listTypeCache at: baseType).

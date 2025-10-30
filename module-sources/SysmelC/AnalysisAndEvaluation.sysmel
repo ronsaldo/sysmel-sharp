@@ -66,6 +66,22 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     error: errorMessage.
 }.
 
+## Identifiers
+Value !{
+analyzeAndEvaluateIdentifierReference: (ParseTreeIdentifierReferenceNode)identifierReference inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    self
+}.
+
+ParseTreeIdentifierReferenceNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let lookupValue := environment lookupRecursively: value.
+    if: nil == lookupValue then: {
+        error: "Failed to find identifier for " -- value printString
+    }.
+
+    lookupValue analyzeAndEvaluateIdentifierReference: self inEnvironment: environment
+}.
+
 ## Literals
 ParseTreeLiteralBooleanNode !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.

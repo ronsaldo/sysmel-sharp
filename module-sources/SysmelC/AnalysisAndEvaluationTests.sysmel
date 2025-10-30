@@ -7,6 +7,12 @@ function evaluateSourceString(sourceString: String) => Value := {
     parseTree analyzeAndEvaluateInEnvironment: environment
 }.
 
+## testIdentifierReference
+{
+    let value := evaluateSourceString("Int32").
+    assert: value = CompilationContext current Int32Type
+}.
+
 ## testLiteralCharacter
 {
     let value := evaluateSourceString("'A'").
