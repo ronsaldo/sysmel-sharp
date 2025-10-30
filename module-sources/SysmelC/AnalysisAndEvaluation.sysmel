@@ -82,6 +82,13 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     lookupValue analyzeAndEvaluateIdentifierReference: self inEnvironment: environment
 }.
 
+## Lexical block
+ParseTreeLexicalBlockNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let childEnvironment := LexicalEnvironment withParent: environment.
+    body analyzeAndEvaluateInEnvironment: childEnvironment
+}.
+
 ## Literals
 ParseTreeLiteralBooleanNode !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.

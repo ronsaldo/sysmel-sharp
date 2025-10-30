@@ -13,6 +13,12 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: value = CompilationContext current Int32Type
 }.
 
+## testLexicalBlock
+{
+    let value := evaluateSourceString("{42}").
+    assert: value value = 42
+}.
+
 ## testLiteralCharacter
 {
     let value := evaluateSourceString("'A'").
