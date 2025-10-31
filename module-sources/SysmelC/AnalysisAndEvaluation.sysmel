@@ -360,15 +360,6 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
 ## Do while loop.
 ParseTreeDoWhileLoopNode !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
-    #*while: (condition analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current BooleanType) asBoolean do: {
-        if: nil ~~ bodyExpression then: {
-            bodyExpression analyzeAndEvaluateInEnvironment: environment
-        }.
-
-        if: nil ~~ optionalContinueExpression then: {
-            optionalContinueExpression analyzeAndEvaluateInEnvironment: environment
-        }.
-    }.*#
     do: {
         if: nil ~~ bodyExpression then: {
             bodyExpression analyzeAndEvaluateInEnvironment: environment
@@ -436,6 +427,36 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
         key: keyValue;
         value: valueValue;
         type: associationType;
+        yourself
+}.
+
+## Immutable dictionary.
+ParseTreeImmutableDictionaryNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    if: nil ~~ dictionaryType then: {
+        error: "TODO: dictionary make instance".
+        #*
+        let dictionaryTypeValue := dictionaryType analyzeAndEvaluateInEnvironment: environment.
+        return: (dictionaryTypeValue analyzeAndEvaluateDictionaryInstance: self inEnvironment: environment)
+        *#
+    }.
+
+    let elementCount := elements size.
+    let elementValues := AssociationValue list new: elementCount.
+    let i mutable := 0.
+    while: i < elementCount do: {
+        let element := elements at: i.
+        let analyzedElement := element analyzeAndEvaluateInEnvironmentWithDecayedType: environment.
+        elementValues at: i put: analyzedElement asAssociationValue
+    } continueWith: (i := i + 1).
+
+    let dynamicType := CompilationContext current DynamicType.
+    let associationType := AssociationType withKey: dynamicType andValue: dynamicType.
+    let dictionaryType := ImmutableDictionaryType withAssociationType: associationType.
+
+    ImmutableDictionaryValue new
+        elements: elementValues;
+        type: dictionaryType;
         yourself
 }.
 
