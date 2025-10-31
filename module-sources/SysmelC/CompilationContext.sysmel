@@ -240,9 +240,22 @@ registerDefinitionMacros :: Void.
 }.
 
 CompilationContext !{
+registerIntegerPrimitives: (NominalType)integerType :: Void.
+    let unaryOperationType := integerType => integerType.
+    let namePrefix := integerType name asString -- "::".
+
+    integerType addMethod: (unaryOperationType withSelector: #negated makePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue asInteger negated; type: integerType; yourself
+    }).
+}.
+
+CompilationContext !{
 registerPrimitives :: Void.
     self registerControlFlowMacros.
     self registerDefinitionMacros.
+    self registerIntegerPrimitives: LargeIntegerType.
 }.
 
 CompilationContext !{

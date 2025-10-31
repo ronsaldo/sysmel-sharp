@@ -145,6 +145,7 @@ addMethod: (FunctionalValue)aMethod :: Void.
 
 Value !{
 withSelector: (Symbol)selector addMethod: (FunctionalValue)aMethod :: Void.
+    printLine(self).
     error: "Not a valid value to hold a method."
 }.
 
@@ -226,12 +227,34 @@ type: (SysmelType) newType :: Void.
     type := newType.
 }.
 
+## SimpleType
+SimpleType !{
+initialize :: Void.
+    methodDictionary := SymbolHashtable new.
+}.
+
+SimpleType !{
+lookupSelector: (Symbol)selector :: Value.
+    methodDictionary atOrNil: selector
+}.
+
+SimpleType !{
+addMethod: (FunctionalValue)aMethod :: Void.
+    self withSelector: aMethod name addMethod: aMethod
+}.
+
+SimpleType !{
+withSelector: (Symbol)selector addMethod: (FunctionalValue)aMethod :: Void.
+    methodDictionary at: selector put: aMethod
+}.
+
+## Nominal type
+
 NominalType !{
 defaultValue :: Value.
     UndefinedValue uniqueInstance
 }.
 
-## Nominal type
 NominalType !{
 name :: Symbol.
     name
