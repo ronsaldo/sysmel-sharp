@@ -347,4 +347,45 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     receiverValue analyzeAndEvaluateMessageSend: self selector: selectorValue inEnvironment: environment
 }.
 
+## Do while loop.
+ParseTreeDoWhileLoopNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    #*while: (condition analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current BooleanType) asBoolean do: {
+        if: nil ~~ bodyExpression then: {
+            bodyExpression analyzeAndEvaluateInEnvironment: environment
+        }.
+
+        if: nil ~~ optionalContinueExpression then: {
+            optionalContinueExpression analyzeAndEvaluateInEnvironment: environment
+        }.
+    }.*#
+    do: {
+        if: nil ~~ bodyExpression then: {
+            bodyExpression analyzeAndEvaluateInEnvironment: environment
+        }.
+
+        if: nil ~~ optionalContinueExpression then: {
+            optionalContinueExpression analyzeAndEvaluateInEnvironment: environment
+        }.        
+    } while: (condition analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current BooleanType) asBoolean.
+
+    VoidValue uniqueInstance
+}.
+
+## While loop.
+ParseTreeWhileLoopNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    while: (condition analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current BooleanType) asBoolean do: {
+        if: nil ~~ bodyExpression then: {
+            bodyExpression analyzeAndEvaluateInEnvironment: environment
+        }.
+
+        if: nil ~~ optionalContinueExpression then: {
+            optionalContinueExpression analyzeAndEvaluateInEnvironment: environment
+        }.
+    }.
+
+    VoidValue uniqueInstance
+}.
+
 }

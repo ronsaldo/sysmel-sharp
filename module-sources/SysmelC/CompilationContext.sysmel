@@ -203,6 +203,50 @@ registerControlFlowMacros :: Void.
                     yourself
             }
     ).
+    globalNamespace setSymbol: #while:do:continueWith: binding: (
+        ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
+            withSelector: #while:do:continueWith: makePrimitiveMacroWithPrefix: "ControlFlow::" doing: {
+                :(Value list)arguments :: Value |
+                let context type: MacroContext := (arguments at: 0) asMacroContext.
+                let condition type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+                let bodyExpression type: ParseTreeNode := (arguments at: 2) asParseTreeNode.
+                let continueExpression type: ParseTreeNode := (arguments at: 3) asParseTreeNode.
+                ParseTreeWhileLoopNode new
+                    sourcePosition: context sourcePosition;
+                    condition: condition;
+                    bodyExpression: bodyExpression;
+                    optionalContinueExpression: continueExpression;
+                    yourself
+            }
+    ).
+    globalNamespace setSymbol: #while:do: binding: (
+        ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
+            withSelector: #while:do: makePrimitiveMacroWithPrefix: "ControlFlow::" doing: {
+                :(Value list)arguments :: Value |
+                let context type: MacroContext := (arguments at: 0) asMacroContext.
+                let condition type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+                let bodyExpression type: ParseTreeNode := (arguments at: 2) asParseTreeNode.
+                ParseTreeWhileLoopNode new
+                    sourcePosition: context sourcePosition;
+                    condition: condition;
+                    bodyExpression: bodyExpression;
+                    yourself
+            }
+    ).
+    globalNamespace setSymbol: #do:while: binding: (
+        ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
+            withSelector: #do:while: makePrimitiveMacroWithPrefix: "ControlFlow::" doing: {
+                :(Value list)arguments :: Value |
+                let context type: MacroContext := (arguments at: 0) asMacroContext.
+                let bodyExpression type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+                let condition type: ParseTreeNode := (arguments at: 2) asParseTreeNode.
+                ParseTreeDoWhileLoopNode new
+                    sourcePosition: context sourcePosition;
+                    bodyExpression: bodyExpression;
+                    condition: condition;
+                    yourself
+            }
+    ).
 }.
 
 CompilationContext !{
@@ -343,7 +387,7 @@ CompilationContext !{
 registerPrimitives :: Void.
     self registerControlFlowMacros.
     self registerDefinitionMacros.
-    
+
     self registerIntegerPrimitives: CharacterType.
     self registerIntegerPrimitives: LargeIntegerType.
     
