@@ -321,6 +321,16 @@ sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
     self loadValue sysmelPerform: selector withArguments: arguments
 }.
 
+EnumType !{
+sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
+    if: (arguments size = 0) && (namesAndValues includesKey: selector) then: {
+        let value := namesAndValues at: selector.
+        return: value
+    }.
+
+    super sysmelPerform: selector withArguments: arguments
+}.
+
 Value !{
 analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
     let selectorSymbol := selectorValue asSymbolValue.

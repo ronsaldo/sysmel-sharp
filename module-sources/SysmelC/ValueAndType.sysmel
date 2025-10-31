@@ -295,7 +295,6 @@ isEnumType :: Boolean.
 EnumType !{
 initialize :: Void.
     namesAndValues := SymbolHashtable new.
-    methodDictionary := SymbolHashtable new.
 }.
 
 EnumType !{
@@ -324,11 +323,51 @@ namesAndValues :: SymbolHashtable.
 }.
 
 EnumType !{
-methodDictionary :: SymbolHashtable.
+lookupSelector: (Symbol)selector :: Value.
+    self validMethodDictionary atOrNil: selector
+}.
+
+EnumType !{
+validMethodDictionary :: SymbolHashtable.
+    if: nil ~~ methodDictionary then: {
+        return: methodDictionary
+    }.
+
+    methodDictionary := SymbolHashtable new.
+
+    methodDictionary at: #value put: (self => baseType withSelector: #value makePrimitiveWithPrefix: "Enum" doing: {
+        :(Value list)arguments :: Value |
+        let enumValue := (arguments at: 0) asEnumValue.
+        enumValue value
+    }).
+
     methodDictionary
 }.
 
+
 ## EnumValue
+Value !{
+isEnumValue :: Boolean.
+    false.
+}.
+
+EnumValue !{
+isEnumValue :: Boolean.
+    true.
+}.
+
+Value !{
+asEnumValue :: EnumValue.
+    error: "Not an enum value"
+}.
+
+EnumValue !{
+asEnumValue :: EnumValue.
+    self
+}.
+
+
+
 EnumValue !{
 value :: Value.
     value

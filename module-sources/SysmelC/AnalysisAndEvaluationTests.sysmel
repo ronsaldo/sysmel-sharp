@@ -229,4 +229,62 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: (value namesAndValues at: #Third) value asInteger = 3.
 }.
 
+## testEnumTypeValueAccess
+{
+    let value := evaluateSourceString("Enum: #TestEnum withBaseType: Integer values: #{
+		First: 1.
+		Second: 2.
+        Third: .
+	}.
+    
+    TestEnum Third
+    ").
+
+    assert: value isEnumValue.
+    assert: value value asInteger = 3.
+}.
+
+## testEnumTypeValueAccess2
+{
+    let value := evaluateSourceString("Enum: #TestEnum withBaseType: Integer values: #{
+		First: 1.
+		Second: 2.
+        Third: .
+	}.
+    
+    TestEnum Third value
+    ").
+    assert: value value = 3
+}.
+
+## testEnumTypeMetaBuilder
+{
+    let value := evaluateSourceString("enum TestEnum baseType: Integer values: #{
+		First: 1.
+		Second: 2.
+        Third: .
+	}").
+
+    assert: value isEnumType.
+    assert: value namesAndValues size = 3.
+    assert: (value namesAndValues at: #First) value value = 1.
+    assert: (value namesAndValues at: #Second) value value = 2.
+    assert: (value namesAndValues at: #Third) value value = 3.
+}.
+
+## testEnumTypeMetaBuilder
+{
+    let value := evaluateSourceString("enum TestEnum baseType: Integer values: #{
+		First: 1.
+		Second: 2.
+        Third: .
+	}.
+    
+    TestEnum Third"
+    ).
+
+    assert: value isEnumValue.
+    assert: value value value = 3.
+}.
+
 }
