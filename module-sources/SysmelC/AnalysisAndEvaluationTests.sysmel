@@ -127,6 +127,42 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: value value = 47.
 }.
 
+## testLetMetabuilder
+{
+    let value := evaluateSourceString("let test := 42").
+    assert: value asInteger = 42
+}.
+
+## testLetMetabuilder2
+{
+    let value := evaluateSourceString("let test type: Integer := 42").
+    assert: value asInteger = 42
+}.
+
+## testLetMutableMetabuilder
+{
+    let value := evaluateSourceString("let test mutable := 42").
+    assert: value loadValue asInteger = 42.
+}.
+
+## testLetMutableMetabuilder2
+{
+    let value := evaluateSourceString("let test mutable := 42. test").
+    assert: value loadValue asInteger = 42.
+}.
+
+## testLetMutableMetabuilder3
+{
+    let value := evaluateSourceString("let test mutable := 42. test := 5").
+    assert: value loadValue asInteger = 5.
+}.
+
+## testLetMutableMetabuilder4
+{
+    let value := evaluateSourceString("let test mutable := 42. test + 5").
+    assert: value value = 47.
+}.
+
 ## testMessageSend
 {
     let value := evaluateSourceString("5 negated").

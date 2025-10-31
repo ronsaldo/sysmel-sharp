@@ -1,0 +1,115 @@
+namespace SysmelC definition: {
+public: [
+class MetaBuilder withSuperclass: Value fields: #{
+}.
+
+class MetaBuilderFactory withSuperclass: Value fields: #{
+    factoryMethod: (ParseTreeIdentifierReferenceNode => Value)
+}.
+
+class NamedMetaBuilder withSuperclass: MetaBuilder fields: #{
+    name: ParseTreeNode
+}.
+
+class LetMetaBuilder withSuperclass: NamedMetaBuilder fields: #{
+    typeExpression: ParseTreeNode.
+    isMutable: Boolean.
+}.
+
+].
+
+## MetaBuilder
+Value !{
+isMetaBuilder :: Boolean.
+    false
+}.
+
+MetaBuilder !{
+isMetaBuilder :: Boolean.
+    true
+}.
+
+MetaBuilder !{
+type :: NominalType.
+    CompilationContext current MetaBuilderType
+}.
+
+## MetaBuilderFactory
+MetaBuilderFactory class !{
+withFactoryMethod: (ParseTreeIdentifierReferenceNode => Value) factoryMethod :: MetaBuilderFactory.
+    MetaBuilderFactory new
+        factoryMethod: factoryMethod;
+        yourself.
+}.
+
+MetaBuilderFactory !{
+factoryMethod: (ParseTreeIdentifierReferenceNode => Value) newFactory.
+    factoryMethod := newFactory.
+}.
+
+MetaBuilderFactory !{
+analyzeAndEvaluateIdentifierReference: (ParseTreeIdentifierReferenceNode)identifierReference inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    factoryMethod(identifierReference)
+}.
+
+MetaBuilder !{
+analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    let selectorSymbol := selectorValue asSymbolValue.
+    if: (self hasMethodWithSelector: selectorSymbol) then: {
+        return: (self expandMessageSend: messageSend withSelectorSymbol: selectorSymbol inEnvironment: anEnvironment)
+    }.
+    
+    super analyzeAndEvaluateMessageSend: messageSend selector: selectorValue inEnvironment: anEnvironment
+
+}.
+
+MetaBuilder !{
+hasMethodWithSelector: (Symbol)selectorSymbol :: Boolean.
+    false
+}.
+
+MetaBuilder !{
+expandMessageSend: (ParseTreeMessageSendNode)messageSend withSelectorSymbol: (Symbol)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    error: "ToDo"
+}.
+
+NamedMetaBuilder !{
+analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    if: (nil == name) && (messageSend arguments size = 0) then: {
+        name := messageSend selector.
+        return: self
+    }.
+
+    super analyzeAndEvaluateMessageSend: messageSend selector: selectorValue inEnvironment: anEnvironment
+}.
+
+LetMetaBuilder !{
+hasMethodWithSelector: (Symbol)selectorSymbol :: Boolean.
+    (selectorSymbol = #mutable) || (selectorSymbol = #type:)
+}.
+
+LetMetaBuilder !{
+expandMessageSend: (ParseTreeMessageSendNode)messageSend withSelectorSymbol: (Symbol)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    if: selectorValue = #mutable then: {
+        isMutable := true.
+        return: self
+    }.
+    if: selectorValue = #type: then: {
+        typeExpression := messageSend arguments first.
+        return: self
+    }.
+    error: "Unimplemented method"
+}.
+
+LetMetaBuilder !{
+analyzeAndEvaluateAssignment: (ParseTreeAssignmentNode)assignment inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    ParseTreeVariableDefinitionNode new
+        sourcePosition: assignment sourcePosition;
+        nameExpression: name;
+        optionalTypeExpression: typeExpression;
+        optionalInitialValue: assignment value;
+        isMutable: isMutable;
+        analyzeAndEvaluateInEnvironment: anEnvironment
+}.
+
+}. ## End of namespace SysmelC

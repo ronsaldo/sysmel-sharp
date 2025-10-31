@@ -281,6 +281,10 @@ registerDefinitionMacros :: Void.
                     yourself
             }
     ).
+
+    globalNamespace setSymbol: #let binding: (MetaBuilderFactory withFactoryMethod: { :(ParseTreeIdentifierReferenceNode)node :: Value |
+        LetMetaBuilder new sourcePosition: node sourcePosition; yourself
+    }).
 }.
 
 CompilationContext !{
