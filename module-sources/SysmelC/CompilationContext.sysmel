@@ -288,13 +288,78 @@ registerIntegerPrimitives: (NominalType)integerType :: Void.
         let rightOperand := (arguments at: 1) asInteger.
         IntegerValue new value: leftOperand % rightOperand; type: integerType; yourself
     }).
+    
+    integerType addMethod: (comparisonOperationType withSelector: #= makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := arguments at: 0.
+        let rightOperand := arguments at: 1.
+        if: (nil == leftOperand) || (nil == rightOperand) then: {
+            return: (BooleanValue with: leftOperand == rightOperand)
+        }.
+
+        BooleanValue with: leftOperand asInteger = rightOperand asInteger
+    }).
+    integerType addMethod: (comparisonOperationType withSelector: #~= makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := arguments at: 0.
+        let rightOperand := arguments at: 1.
+        if: (nil == leftOperand) || (nil == rightOperand) then: {
+            return: (BooleanValue with: leftOperand ~~ rightOperand)
+        }.
+
+        BooleanValue with: leftOperand asInteger ~= rightOperand asInteger
+    }).
+    integerType addMethod: (comparisonOperationType withSelector: #< makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := arguments at: 0.
+        let rightOperand := arguments at: 1.
+
+        BooleanValue with: leftOperand asInteger < rightOperand asInteger
+    }).
+    integerType addMethod: (comparisonOperationType withSelector: #<= makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := arguments at: 0.
+        let rightOperand := arguments at: 1.
+
+        BooleanValue with: leftOperand asInteger <= rightOperand asInteger
+    }).
+    integerType addMethod: (comparisonOperationType withSelector: #> makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := arguments at: 0.
+        let rightOperand := arguments at: 1.
+
+        BooleanValue with: leftOperand asInteger > rightOperand asInteger
+    }).
+    integerType addMethod: (comparisonOperationType withSelector: #>= makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := arguments at: 0.
+        let rightOperand := arguments at: 1.
+
+        BooleanValue with: leftOperand asInteger >= rightOperand asInteger
+    }).
 }.
 
 CompilationContext !{
 registerPrimitives :: Void.
     self registerControlFlowMacros.
     self registerDefinitionMacros.
+    
+    self registerIntegerPrimitives: CharacterType.
     self registerIntegerPrimitives: LargeIntegerType.
+    
+    self registerIntegerPrimitives: Char8Type.
+    self registerIntegerPrimitives: Char16Type.
+    self registerIntegerPrimitives: Char32Type.
+
+    self registerIntegerPrimitives: UInt8Type.
+    self registerIntegerPrimitives: UInt16Type.
+    self registerIntegerPrimitives: UInt32Type.
+    self registerIntegerPrimitives: UInt64Type.
+    
+    self registerIntegerPrimitives: Int8Type.
+    self registerIntegerPrimitives: Int16Type.
+    self registerIntegerPrimitives: Int32Type.
+    self registerIntegerPrimitives: Int64Type.
 }.
 
 CompilationContext !{
