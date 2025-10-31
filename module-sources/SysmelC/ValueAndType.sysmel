@@ -11,6 +11,18 @@ public: [
 class SysmelType withSuperclass: Value fields:#{
 }.
 
+class AssociationType withSuperclass: SysmelType fields:#{
+    key: SysmelType.
+    value: SysmelType.
+    methodDictionary: SymbolHashtable.
+}.
+
+class AssociationValue withSuperclass: Value fields:#{
+    key: Value.
+    value: Value.
+    type: AssociationType.
+}.
+
 class DerivedType withSuperclass: SysmelType fields:#{
     baseType: SysmelType.
 }.
@@ -51,6 +63,19 @@ class PointerValue withSuperclass: PointerLikeValue fields:#{
 }.
 
 class ReferenceValue withSuperclass: PointerLikeValue fields:#{
+}.
+
+class EnumType withSuperclass: SysmelType fields:#{
+    name: Symbol.
+    baseType: SysmelType.
+    namesAndValues: SymbolHashtable.
+    methodDictionary: SymbolHashtable.
+}.
+
+class EnumValue withSuperclass: Value fields:#{
+    value: Value.
+    name: Symbol.
+    type: EnumType.
 }.
 
 class SimpleType withSuperclass: SysmelType fields:#{
@@ -103,6 +128,15 @@ class FunctionalValue withSuperclass: Value fields:#{
 class PrimitiveFunctionValue withSuperclass: FunctionalValue fields: #{
     primitiveName: Symbol.
     implementation: (Value list) => Value.
+}.
+
+class ImmutableDictionaryType withSuperclass: SysmelType fields: #{
+    associationType: AssociationType.
+}.
+
+class ImmutableDictionaryValue withSuperclass: Value fields: #{
+    elements: AssociationValue list.
+    type: ImmutableDictionaryType
 }.
 
 ].
@@ -159,6 +193,11 @@ exportedName :: Symbol.
     nil
 }.
 
+Value !{
+printString :: String.
+    "a Value"
+}.
+
 ## SysmelType
 Value !{
 asType :: SysmelType.
@@ -168,6 +207,16 @@ asType :: SysmelType.
 SysmelType !{
 asType :: SysmelType.
     self
+}.
+
+Value !{
+isType :: Boolean.
+    false
+}.
+
+SysmelType !{
+isType :: Boolean.
+    true
 }.
 
 SysmelType !{
@@ -188,6 +237,11 @@ lookupSelector: (Symbol)selector :: Value.
 SysmelType !{
 lookupValueSelector: (Symbol)selector :: Value.
     nil
+}.
+
+SysmelType !{
+defaultValue :: Value.
+    UndefinedValue uniqueInstance
 }.
 
 ## DerivedType
@@ -227,6 +281,84 @@ type: (SysmelType) newType :: Void.
     type := newType.
 }.
 
+## EnumType
+Value !{
+isEnumType :: Boolean.
+    false
+}.
+
+EnumType !{
+isEnumType :: Boolean.
+    true
+}.
+
+EnumType !{
+initialize :: Void.
+    namesAndValues := SymbolHashtable new.
+    methodDictionary := SymbolHashtable new.
+}.
+
+EnumType !{
+name :: Symbol.
+    name
+}.
+
+EnumType !{
+name: (Symbol)newName :: Void.
+    name := newName
+}.
+
+EnumType !{
+baseType :: SysmelType.
+    baseType
+}.
+
+EnumType !{
+baseType: (SysmelType)newBaseType :: Void.
+    baseType := newBaseType
+}.
+
+EnumType !{
+namesAndValues :: SymbolHashtable.
+    namesAndValues
+}.
+
+EnumType !{
+methodDictionary :: SymbolHashtable.
+    methodDictionary
+}.
+
+## EnumValue
+EnumValue !{
+value :: Value.
+    value
+}.
+
+EnumValue !{
+value: (Value)newValue :: Void.
+    value := newValue
+}.
+
+EnumValue !{
+name :: Symbol.
+    name
+}.
+
+EnumValue !{
+name: (Symbol)newName :: Void.
+    name := newName
+}.
+
+EnumValue !{
+type :: EnumType.
+    type
+}.
+
+EnumValue !{
+type: (EnumType)newType :: Void.
+    type := newType
+}.
+
 ## SimpleType
 SimpleType !{
 initialize :: Void.
@@ -249,12 +381,6 @@ withSelector: (Symbol)selector addMethod: (FunctionalValue)aMethod :: Void.
 }.
 
 ## Nominal type
-
-NominalType !{
-defaultValue :: Value.
-    UndefinedValue uniqueInstance
-}.
-
 NominalType !{
 name :: Symbol.
     name
@@ -294,6 +420,11 @@ isSigned :: Boolean.
 IntegerType !{
 isSigned: (Boolean)newIsSigned :: Void.
     isSigned := newIsSigned
+}.
+
+IntegerType !{
+defaultValue :: Value.
+    IntegerValue new value: 0; type: self; yourself
 }.
 
 ## TypeUniverse
@@ -829,6 +960,130 @@ isReferenceValue :: Boolean.
 ReferenceValue !{
 isReferenceValue :: Boolean.
     true
+}.
+
+## AssociationType
+AssociationType class !{
+withKey: (SysmelType)key andValue: (SysmelType)value :: AssociationType.
+    AssociationType new key: key; value: value; yourself
+}.
+
+AssociationType !{
+key :: SysmelType.
+    key
+}.
+
+AssociationType !{
+key: (SysmelType)newKey :: Void.
+    key := newKey
+}.
+
+AssociationType !{
+value :: SysmelType.
+    value
+}.
+
+AssociationType !{
+value: (SysmelType)newValue :: Void.
+    value := newValue
+}.
+
+## AssociationValue
+Value !{
+asAssociationValue
+    error: "Not an association value"
+}.
+
+AssociationValue !{
+asAssociationValue
+    self
+}.
+
+AssociationValue !{
+key :: Value.
+    key
+}.
+
+AssociationValue !{
+key: (Value)newKey :: Void.
+    key := newKey
+}.
+
+AssociationValue !{
+value :: Value.
+    value
+}.
+
+AssociationValue !{
+value: (Value)newValue :: Void.
+    value := newValue
+}.
+
+AssociationValue !{
+type :: AssociationType.
+    type
+}.
+
+AssociationValue !{
+type: (AssociationType)newType :: Void.
+    type := newType
+}.
+
+## ImmutableDictionaryType
+ImmutableDictionaryType class !{
+withAssociationType: (AssociationType)associationType :: ImmutableDictionaryType.
+    ImmutableDictionaryType new associationType: associationType; yourself
+}.
+
+ImmutableDictionaryType !{
+associationType :: AssociationType.
+    associationType
+}.
+
+ImmutableDictionaryType !{
+associationType: (AssociationType)newAssociationType :: Void.
+    associationType := newAssociationType
+}.
+
+## ImmutableDictionaryValue
+Value !{
+asImmutableDictionaryValue :: ImmutableDictionaryValue.
+    error: "Not an immutable dictionary value"
+}.
+
+ImmutableDictionaryValue !{
+asImmutableDictionaryValue :: ImmutableDictionaryValue.
+    self
+}.
+
+Value !{
+isImmutableDictionaryValue :: Boolean.
+    false
+}.
+
+ImmutableDictionaryValue !{
+isImmutableDictionaryValue :: Boolean.
+    true
+}.
+
+ImmutableDictionaryValue !{
+elements :: AssociationValue list.
+    elements
+}.
+
+ImmutableDictionaryValue !{
+elements: (AssociationValue list)newElements :: Void.
+    elements := newElements
+}.
+
+ImmutableDictionaryValue !{
+type :: ImmutableDictionaryType.
+    type
+}.
+
+ImmutableDictionaryValue !{
+type: (ImmutableDictionaryType)newType :: Void.
+    type := newType
 }.
 
 }

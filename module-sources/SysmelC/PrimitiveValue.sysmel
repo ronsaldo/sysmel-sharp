@@ -180,7 +180,6 @@ type: (SysmelType)aType :: Void.
 }.
 
 ## IntegerValue
-## BooleanValue
 Value !{
 asInteger :: Integer.
     error: "Not an integer value"

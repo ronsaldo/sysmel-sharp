@@ -404,4 +404,121 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
 
     childNamespace
 }.
+
+## Association node
+ParseTreeAssociationNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let keyValue := key analyzeAndEvaluateInEnvironmentWithDecayedType: environment.
+    let valueValue mutable type: Value := UndefinedValue uniqueInstance.
+    if: nil ~~ value then: {
+        valueValue := value analyzeAndEvaluateInEnvironmentWithDecayedType: environment.
+    }.
+
+    if: keyValue isType && valueValue isType then: {
+        return: (AssociationType withKey: keyValue asType andValue: valueValue asType)
+    }.
+
+    let keyType := keyValue type.
+    let valueType := valueValue type.
+    let associationType := AssociationType withKey: keyType andValue: valueType.
+    AssociationValue new
+        sourcePosition: sourcePosition;
+        key: keyValue;
+        value: valueValue;
+        type: associationType;
+        yourself
+}.
+
+## Enum
+Value !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)anEnvironment withEnumBaseType: (SysmelType)enumBaseType :: Value.
+    error: "Expected a dictionary or association instead of " -- self printString
+}.
+
+ParseTreeAssociationNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment withEnumBaseType: (SysmelType)enumBaseType :: Value.
+    let keyValue := key analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current SymbolType.
+    let valueValue mutable type: Value := UndefinedValue uniqueInstance.
+    if: nil ~~ value then: {
+        valueValue := value analyzeAndEvaluateInEnvironment: environment withExpectedType: enumBaseType.
+    }.
+
+    let associationType := AssociationType withKey: CompilationContext current SymbolType andValue: enumBaseType.
+    AssociationValue new
+        sourcePosition: sourcePosition;
+        key: keyValue;
+        value: valueValue;
+        type: associationType;
+        yourself.
+}.
+
+ParseTreeImmutableDictionaryNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment withEnumBaseType: (SysmelType)enumBaseType :: Value.
+    if: nil ~~ dictionaryType then: {
+        error: "TODO: dictionary make instance".
+        #*
+        let dictionaryTypeValue := dictionaryType analyzeAndEvaluateInEnvironment: environment.
+        return: (dictionaryTypeValue analyzeAndEvaluateDictionaryInstance: self inEnvironment: environment)
+        *#
+    }.
+
+    let elementCount := elements size.
+    let elementValues := AssociationValue list new: elementCount.
+    let i mutable := 0.
+    while: i < elementCount do: {
+        let element := elements at: i.
+        let analyzedElement := element analyzeAndEvaluateInEnvironment: environment withEnumBaseType: enumBaseType.
+        elementValues at: i put: analyzedElement asAssociationValue
+    } continueWith: (i := i + 1).
+
+    let associationType := AssociationType withKey: CompilationContext current SymbolType andValue: enumBaseType.
+    let dictionaryType := ImmutableDictionaryType withAssociationType: associationType.
+
+    ImmutableDictionaryValue new
+        elements: elementValues;
+        type: dictionaryType;
+        yourself
+}.
+
+
+ParseTreeEnumDefinitionNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let name := nameExpression analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current SymbolType.
+    let baseTypeValue := (baseType analyzeAndEvaluateInEnvironmentWithDecayedType: environment) asType.
+
+    let enumType := EnumType new
+        name: name asSymbolValue;
+        baseType: baseTypeValue;
+        yourself.
+    environment setSymbol: name asSymbolValue binding: enumType.
+
+    let enumValues := values analyzeAndEvaluateInEnvironment: environment withEnumBaseType: baseTypeValue.
+    let enumValuesDictionary := enumValues asImmutableDictionaryValue.
+    let namesAndValues := enumType namesAndValues.
+
+    let i mutable := 0.
+    let enumValueCount := enumValuesDictionary elements size.
+    let nextImplicitBaseTypeValue mutable := baseTypeValue defaultValue.
+    while: i < enumValueCount do: {
+        let assoc := enumValuesDictionary elements at: i.
+        let elementName := assoc key asSymbolValue.
+
+        let elementValue mutable := assoc value.
+        if: elementValue isUndefinedValue then: {
+            elementValue := nextImplicitBaseTypeValue
+        }.
+
+        let enumValue := EnumValue new
+            value: elementValue;
+            name: elementName;
+            type: enumType;
+            yourself.
+        namesAndValues at: elementName put: enumValue.
+
+        nextImplicitBaseTypeValue := elementValue plusOne
+    } continueWith: (i := i +1 ).
+
+    enumType
+}.
+
 }

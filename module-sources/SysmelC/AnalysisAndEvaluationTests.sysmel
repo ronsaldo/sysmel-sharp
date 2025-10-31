@@ -7,6 +7,13 @@ function evaluateSourceString(sourceString: String) => Value := {
     parseTree analyzeAndEvaluateInEnvironment: environment
 }.
 
+## testAssociation
+{
+    let value := evaluateSourceString("1 : 2").
+    assert: value key asInteger = 1.
+    assert: value value asInteger = 2.
+}.
+
 ## testIdentifierReference
 {
     let value := evaluateSourceString("Int32").
@@ -205,6 +212,21 @@ function evaluateSourceString(sourceString: String) => Value := {
     let value := evaluateSourceString("namespace TestMetaBuilderNamespace definition: {}").
     assert: value isNamespace.
     assert: value name = #TestMetaBuilderNamespace.
+}.
+
+## testEnumType
+{
+    let value := evaluateSourceString("Enum: #TestEnum withBaseType: Integer values: #{
+		First: 1.
+		Second: 2.
+        Third: .
+	}").
+
+    assert: value isEnumType.
+    assert: value namesAndValues size = 3.
+    assert: (value namesAndValues at: #First) value asInteger = 1.
+    assert: (value namesAndValues at: #Second) value asInteger = 2.
+    assert: (value namesAndValues at: #Third) value asInteger = 3.
 }.
 
 }

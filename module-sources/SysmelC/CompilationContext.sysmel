@@ -281,6 +281,24 @@ registerDefinitionMacros :: Void.
                     yourself
             }
     ).
+
+    globalNamespace setSymbol: #Enum:withBaseType:values: binding: (
+        ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
+            withSelector: #Enum:withBaseType:values: makePrimitiveMacroWithPrefix: "Definition::" doing: {
+                :(Value list)arguments :: Value |
+                let context type: MacroContext := (arguments at: 0) asMacroContext.
+                
+                let nameExpression type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+                let baseType type: ParseTreeNode := (arguments at: 2) asParseTreeNode.
+                let values type: ParseTreeNode := (arguments at: 3) asParseTreeNode.
+                ParseTreeEnumDefinitionNode new
+                    sourcePosition: context sourcePosition;
+                    nameExpression: nameExpression;
+                    baseType: baseType;
+                    values: values;
+                    yourself
+            }
+    ).
     globalNamespace setSymbol: #namespace:definition: binding: (
         ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
             withSelector: #namespace:definition: makePrimitiveMacroWithPrefix: "Definition::" doing: {
