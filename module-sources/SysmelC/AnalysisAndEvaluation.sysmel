@@ -388,4 +388,20 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     VoidValue uniqueInstance
 }.
 
+## Namespace
+ParseTreeNamespaceNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let name := nameExpression analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current SymbolType.
+    let ownerNamespace := environment lookupNamespace.
+    let childNamespace := ownerNamespace getOrCreateNamespaceWithName: name asSymbolValue.
+
+    let childNamespaceEnvironment := NamespaceEnvironment withParent: environment namespace: childNamespace.
+    let childLexicalEnvironment := LexicalEnvironment withParent: childNamespaceEnvironment.
+
+    if: nil ~~ definitionBody then: {
+        definitionBody analyzeAndEvaluateInEnvironment: childLexicalEnvironment
+    }.
+
+    childNamespace
+}.
 }

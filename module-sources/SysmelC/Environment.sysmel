@@ -28,9 +28,20 @@ lookupRecursively: (Symbol)aSymbol :: Value.
     error: "Subclass responsibility"
 }.
 
+Environment !{
+lookupNamespace :: Namespace.
+    printLine(self).
+    error: "Subclass responsibility"
+}.
+
 ## EmptyEnvironment
 EmptyEnvironment !{
 lookupRecursively: (Symbol)aSymbol :: Value.
+    nil
+}.
+
+EmptyEnvironment !{
+lookupNamespace :: Namespace.
     nil
 }.
 
@@ -63,6 +74,11 @@ lookupRecursively: (Symbol)aSymbol :: Value.
 LexicalEnvironment !{
 parent: (Environment)newParent :: Void.
     parent := newParent
+}.
+
+LexicalEnvironment !{
+lookupNamespace :: Namespace.
+    parent lookupNamespace
 }.
 
 ## Namespace environment

@@ -193,4 +193,18 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: value loadValue value = 10.
 }.
 
+## testNamespace
+{
+    let value := evaluateSourceString("namespace: #TestNamespace definition: {}").
+    assert: value isNamespace.
+    assert: value name = #TestNamespace.
+}.
+
+## testNamespaceMetabuilder
+{
+    let value := evaluateSourceString("namespace TestMetaBuilderNamespace definition: {}").
+    assert: value isNamespace.
+    assert: value name = #TestMetaBuilderNamespace.
+}.
+
 }

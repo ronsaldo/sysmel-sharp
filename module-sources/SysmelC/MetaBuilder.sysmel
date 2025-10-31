@@ -16,6 +16,10 @@ class LetMetaBuilder withSuperclass: NamedMetaBuilder fields: #{
     isMutable: Boolean.
 }.
 
+class NamespaceMetaBuilder withSuperclass: NamedMetaBuilder fields: #{
+}.
+
+
 ].
 
 ## MetaBuilder
@@ -110,6 +114,26 @@ analyzeAndEvaluateAssignment: (ParseTreeAssignmentNode)assignment inEnvironment:
         optionalInitialValue: assignment value;
         isMutable: isMutable;
         analyzeAndEvaluateInEnvironment: anEnvironment
+}.
+
+## Namespace meta builder.
+## NamespaceMetaBuilder
+NamespaceMetaBuilder !{
+hasMethodWithSelector: (Symbol)selectorSymbol :: Boolean.
+    selectorSymbol = #definition:
+}.
+
+NamespaceMetaBuilder !{
+expandMessageSend: (ParseTreeMessageSendNode)messageSend withSelectorSymbol: (Symbol)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    if: selectorValue = #definition: then: {
+        return: (ParseTreeNamespaceNode new
+            sourcePosition: messageSend sourcePosition;
+            nameExpression: name;
+            definitionBody: messageSend arguments first;
+            analyzeAndEvaluateInEnvironment: anEnvironment)
+    }.
+
+    error: "Unimplemented method"
 }.
 
 }. ## End of namespace SysmelC

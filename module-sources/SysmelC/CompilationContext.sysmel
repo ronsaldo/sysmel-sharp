@@ -281,9 +281,26 @@ registerDefinitionMacros :: Void.
                     yourself
             }
     ).
+    globalNamespace setSymbol: #namespace:definition: binding: (
+        ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
+            withSelector: #namespace:definition: makePrimitiveMacroWithPrefix: "Definition::" doing: {
+                :(Value list)arguments :: Value |
+                let context := (arguments at: 0) asMacroContext.
+                let nameExpression := (arguments at: 1) asParseTreeNode.
+                let bodyExpression := (arguments at: 2) asParseTreeNode.
+                ParseTreeNamespaceNode new
+                    sourcePosition: context sourcePosition;
+                    nameExpression: nameExpression;
+                    definitionBody: bodyExpression;
+                    yourself
+            }
+    ).
 
     globalNamespace setSymbol: #let binding: (MetaBuilderFactory withFactoryMethod: { :(ParseTreeIdentifierReferenceNode)node :: Value |
         LetMetaBuilder new sourcePosition: node sourcePosition; yourself
+    }).
+    globalNamespace setSymbol: #namespace binding: (MetaBuilderFactory withFactoryMethod: { :(ParseTreeIdentifierReferenceNode)node :: Value |
+        NamespaceMetaBuilder new sourcePosition: node sourcePosition; yourself
     }).
 }.
 
