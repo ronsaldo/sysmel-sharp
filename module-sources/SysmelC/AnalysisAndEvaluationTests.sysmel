@@ -128,4 +128,11 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: value value = 47.
 }.
 *#
+
+## testMessageSend
+{
+    let value := evaluateSourceString("5 negated").
+    assert: value value = -5.
+}.
+
 }

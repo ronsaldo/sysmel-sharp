@@ -268,5 +268,49 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     storageValue analyzeAndEvaluateAssignment: self inEnvironment: environment
 }.
 
+Value !{
+sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
+    let foundMethod := self lookupSelector: selector.
+    if: nil == foundMethod then: {
+        error: "Message not understood: " -- selector printString
+    }.
+
+    let evaluationArguments := Value list new: 1 + arguments size.
+    evaluationArguments at: 0 put: self.
+
+    let i mutable := 0.
+    while: (i < arguments size) do: {
+        evaluationArguments at: i + 1 put: (arguments at: i)
+    } continueWith: (i := i + 1).
+
+    foundMethod evaluateWithArguments: evaluationArguments
+}.
+
+
+Value !{
+analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    let selectorSymbol := selectorValue asSymbolValue.
+    let foundMethod := self lookupSelector: selectorSymbol.
+    if: (nil ~~ foundMethod) && (foundMethod isMacro) then: {
+        error: "ToDo: perform macro expansion."
+    }.
+
+    let argumentCount := messageSend arguments size.
+    let argumentValues := Value list new: argumentCount.
+    let i mutable := 0.
+    while: i < argumentCount do: {
+        let eachArg := messageSend arguments at: i.
+        argumentValues at: i put: (eachArg analyzeAndEvaluateInEnvironment: anEnvironment)
+    } continueWith: (i := i + 1).
+
+    self sysmelPerform: selectorSymbol withArguments: argumentValues
+}.
+
+ParseTreeMessageSendNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let receiverValue := receiver analyzeAndEvaluateInEnvironment: environment.
+    let selectorValue := selector analyzeAndEvaluateInEnvironment: environment.
+    receiverValue analyzeAndEvaluateMessageSend: self selector: selectorValue inEnvironment: environment
+}.
 
 }

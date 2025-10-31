@@ -119,7 +119,43 @@ sourcePosition: (SourcePosition)newSourcePosition :: Void.
 
 Value !{
 type :: SysmelType.
+    printLine(self).
     error: "Subclass responsibility.".
+}.
+
+Value !{
+lookupFieldName: (Symbol)aFieldName :: Value.
+    nil
+}.
+
+Value !{
+lookupSelector: (Symbol)selector :: Value.
+    self type lookupSelector: selector
+}.
+
+Value !{
+lookupValueSelector: (Symbol)selector :: Value.
+    self type lookupSelector: selector
+}.
+
+Value !{
+addMethod: (FunctionalValue)aMethod :: Void.
+    self withSelector: aMethod name addMethod: aMethod
+}.
+
+Value !{
+withSelector: (Symbol)selector addMethod: (FunctionalValue)aMethod :: Void.
+    error: "Not a valid value to hold a method."
+}.
+
+Value !{
+ensureAnalysis :: Void.
+    ## By default do nothing
+}.
+
+Value !{
+exportedName :: Symbol.
+    nil
 }.
 
 ## SysmelType
@@ -136,6 +172,21 @@ asType :: SysmelType.
 SysmelType !{
 isTupleType :: Boolean.
     false
+}.
+
+SysmelType !{
+type :: SysmelType.
+    CompilationContext current Type0Type
+}.
+
+SysmelType !{
+lookupSelector: (Symbol)selector :: Value.
+    nil
+}.
+
+SysmelType !{
+lookupValueSelector: (Symbol)selector :: Value.
+    nil
 }.
 
 ## DerivedType
@@ -472,6 +523,11 @@ isCompileTimeFunction: (Boolean)newValue :: Void.
     isCompileTimeFunction := newValue
 }.
 
+Value !{
+isMacro :: Boolean.
+    false
+}.
+
 FunctionalValue !{
 isMacro :: Boolean.
     isMacro
@@ -485,6 +541,11 @@ isMacro: (Boolean)newValue :: Void.
 FunctionalValue !{
 isConstantValue :: Boolean.
     true
+}.
+
+Value !{
+evaluateWithArguments: (Value list)arguments :: Value.
+    error: "Not a functional value."
 }.
 
 FunctionalValue !{
