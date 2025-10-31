@@ -194,8 +194,43 @@ registerControlFlowMacros :: Void.
 }.
 
 CompilationContext !{
+registerDefinitionMacros :: Void.
+    globalNamespace setSymbol: #let:with: binding: (
+        ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
+            withSelector: #let:with: makePrimitiveMacroWithPrefix: "Definition::" doing: {
+                :(Value list)arguments :: Value |
+                let context type: MacroContext := (arguments at: 0) asMacroContext.
+                let nameExpression type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+                let initialValueExpression type: ParseTreeNode := (arguments at: 2) asParseTreeNode.
+                ParseTreeVariableDefinitionNode new
+                    sourcePosition: context sourcePosition;
+                    nameExpression: nameExpression;
+                    optionalInitialValue: initialValueExpression;
+                    isMutable: false;
+                    yourself
+            }
+    ).
+    globalNamespace setSymbol: #let:mutableWith: binding: (
+        ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
+            withSelector: #let:mutableWith: makePrimitiveMacroWithPrefix: "Definition::" doing: {
+                :(Value list)arguments :: Value |
+                let context type: MacroContext := (arguments at: 0) asMacroContext.
+                let nameExpression type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+                let initialValueExpression type: ParseTreeNode := (arguments at: 2) asParseTreeNode.
+                ParseTreeVariableDefinitionNode new
+                    sourcePosition: context sourcePosition;
+                    nameExpression: nameExpression;
+                    optionalInitialValue: initialValueExpression;
+                    isMutable: true;
+                    yourself
+            }
+    ).
+}.
+
+CompilationContext !{
 registerPrimitives :: Void.
     self registerControlFlowMacros.
+    self registerDefinitionMacros.
 }.
 
 CompilationContext !{

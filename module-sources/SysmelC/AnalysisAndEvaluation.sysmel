@@ -202,4 +202,40 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
         yourself
 }.
 
+## ParseTreeVariableDefinitionNode
+ParseTreeVariableDefinitionNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let name := nameExpression analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current SymbolType.
+    let typeValue mutable type: SysmelType := nil.
+    if: nil ~~ optionalTypeExpression then: {
+        let typeExpressionValue := optionalTypeExpression analyzeAndEvaluateInEnvironment: environment.
+        typeValue := typeExpressionValue asType
+    }.
+    
+    let initialValue mutable type: Value := nil.
+    if: nil ~~ optionalInitialValue then: {
+        initialValue := optionalInitialValue analyzeAndEvaluateInEnvironment: environment withExpectedType: typeValue.
+    }.
+
+    if: isMutable then: {
+        error: "TODO: ParseTreeVariableDefinitionNode mutable"
+        #*let boxValue := MutableBoxValue new
+            value: initialValue;
+            type: (MutableBoxValueType withBaseType: initialValue type);
+            yourself.
+
+        let referenceValue := ReferenceValue new
+            storage: boxValue;
+            type: (ReferenceType withBaseType: initialValue type);
+            yourself.
+
+        environment setSymbol: name asSymbolValue binding: referenceValue.
+        return: referenceValue*#
+    }.
+
+    environment setSymbol: name asSymbolValue binding: initialValue.
+    initialValue
+}.
+
+
 }

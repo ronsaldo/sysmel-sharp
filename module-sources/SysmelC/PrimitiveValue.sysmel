@@ -242,6 +242,17 @@ printString :: String.
 }.
 
 ## Symbol value
+Value !{
+asSymbolValue :: Symbol.
+    error: "Not a symbol value"
+}.
+
+SymbolValue !{
+asSymbolValue :: Symbol.
+    value
+}.
+
+
 SymbolValue !{
 value :: Symbol.
     value
