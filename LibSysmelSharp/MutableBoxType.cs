@@ -7,7 +7,7 @@
         }
         public override bool IsMutableBoxType()
         {
-            return false;
+            return true;
         }
 
     }

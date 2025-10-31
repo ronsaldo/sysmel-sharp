@@ -1,6 +1,11 @@
 namespace SysmelC definition: {
 let OrderedCollection := System Collections ArrayList(Value).
-let TypeCacheDictionary := System Collections Dictionary(SysmelType . ListType).
+
+let PointerTypeChacheDictionary := System Collections Dictionary(SysmelType . PointerType).
+let ReferenceTypeChacheDictionary := System Collections Dictionary(SysmelType . ReferenceType).
+let MutableBoxTypeCacheDictionary := System Collections Dictionary(SysmelType . MutableBoxType).
+let ListTypeCacheDictionary := System Collections Dictionary(SysmelType . ListType).
+
 public: [
 class CompilationContext withSuperclass: Object fields: #{
     isInitialized: Boolean.
@@ -9,7 +14,10 @@ class CompilationContext withSuperclass: Object fields: #{
 
     currentEntitiesWithPendingAnalysis: OrderedCollection.
 
-    listTypeCache: TypeCacheDictionary.
+    pointerTypeChacheDictionary: PointerTypeChacheDictionary.
+    referenceTypeChacheDictionary: ReferenceTypeChacheDictionary.
+    mutableBoxTypeCache: MutableBoxTypeCacheDictionary.
+    listTypeCache: ListTypeCacheDictionary.
 
     globalNamespace: Namespace.
     
@@ -72,7 +80,11 @@ initialize :: Void.
     pointerSize := 8.
     
     currentEntitiesWithPendingAnalysis := OrderedCollection new.
-    listTypeCache := TypeCacheDictionary new.
+
+    pointerTypeChacheDictionary := PointerTypeChacheDictionary new.
+    referenceTypeChacheDictionary := ReferenceTypeChacheDictionary new.
+    mutableBoxTypeCache := MutableBoxTypeCacheDictionary new.
+    listTypeCache := ListTypeCacheDictionary new.
 
     BooleanType := NominalType new name: #Boolean; yourself.
     CharacterType := NominalType new name: #Character; yourself.
@@ -371,6 +383,40 @@ Int32Type :: IntegerType.
 CompilationContext !{
 Int64Type :: IntegerType.
     Int64Type
+}.
+
+CompilationContext !{
+getOrCreatePointerType: (SysmelType)baseType :: PointerType.
+    if: (pointerTypeChacheDictionary includesKey: baseType) then: {
+        return: (pointerTypeChacheDictionary at: baseType).
+    }.
+    
+    let pointerType := PointerType new baseType: baseType; yourself.
+    pointerTypeChacheDictionary at: baseType put: pointerType.
+    pointerType
+}.
+
+CompilationContext !{
+getOrCreateReferenceType: (SysmelType)baseType :: ReferenceType.
+    if: (referenceTypeChacheDictionary includesKey: baseType) then: {
+        return: (referenceTypeChacheDictionary at: baseType).
+    }.
+    
+    let refType := ReferenceType new baseType: baseType; yourself.
+    referenceTypeChacheDictionary at: baseType put: refType.
+    refType
+}.
+
+
+CompilationContext !{
+getOrCreateMutableBoxOfType: (SysmelType)baseType :: MutableBoxType.
+    if: (mutableBoxTypeCache includesKey: baseType) then: {
+        return: (mutableBoxTypeCache at: baseType).
+    }.
+    
+    let boxType := MutableBoxType new baseType: baseType; yourself.
+    mutableBoxTypeCache at: baseType put: boxType.
+    boxType
 }.
 
 CompilationContext !{

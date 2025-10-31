@@ -23,6 +23,15 @@ class ListValue withSuperclass: Value fields:#{
     type: SysmelType
 }.
 
+class MutableBoxType withSuperclass: DerivedType fields:#{
+}.
+
+class MutableValueBox withSuperclass: Value fields: #{
+    currentValue: Value.
+    type: SysmelType
+}.
+
+
 class PointerLikeType withSuperclass: DerivedType fields:#{
 }.
 
@@ -30,6 +39,18 @@ class PointerType withSuperclass: PointerLikeType fields:#{
 }.
 
 class ReferenceType withSuperclass: PointerLikeType fields:#{
+}.
+
+class PointerLikeValue withSuperclass: Value fields:#{
+    storage: Value.
+    fieldIndex: Integer.
+    type: SysmelType.
+}.
+
+class PointerValue withSuperclass: PointerLikeValue fields:#{
+}.
+
+class ReferenceValue withSuperclass: PointerLikeValue fields:#{
 }.
 
 class SimpleType withSuperclass: SysmelType fields:#{
@@ -544,6 +565,134 @@ withSelector: (Symbol)selector makePrimitiveMacroWithPrefix: (String)primitiveNa
         primitiveName: (primitiveNamePrefix -- selector asString) asSymbol;
         implementation: implementation;
         yourself
+}.
+
+## PointerLikeType
+Value !{
+isPointerLikeType :: Boolean.
+    false
+}.
+
+PointerLikeType !{
+isPointerLikeType :: Boolean.
+    true
+}.
+
+## PointerType
+Value !{
+isPointerType :: Boolean.
+    false
+}.
+
+PointerType !{
+isPointerType :: Boolean.
+    true
+}.
+
+## ReferenceType
+Value !{
+isReferenceType :: Boolean.
+    false
+}.
+
+ReferenceType !{
+isReferenceType :: Boolean.
+    true
+}.
+
+## MutableBoxType
+SysmelType !{
+isMutableBoxType :: Boolean.
+    false
+}.
+
+MutableBoxType !{
+isMutableBoxType :: Boolean.
+    true
+}.
+
+## MutableValueBox
+MutableValueBox !{
+currentValue :: Value.
+    currentValue
+}.
+
+MutableValueBox !{
+currentValue: (Value) aNewValue :: Void.
+    currentValue := aNewValue
+}.
+
+MutableValueBox !{
+type :: SysmelType.
+    type
+}.
+
+MutableValueBox !{
+type: (SysmelType) aType :: Void.
+    type := aType
+}.
+
+## Pointer like value.
+Value !{
+isPointerLikeValue :: Boolean.
+    false
+}.
+
+PointerLikeValue !{
+isPointerLikeValue :: Boolean.
+    true
+}.
+
+PointerLikeValue !{
+storage :: Value.
+    storage
+}.
+
+PointerLikeValue !{
+storage: (Value)newStorage :: Void.
+    storage := newStorage
+}.
+
+PointerLikeValue !{
+fieldIndex :: Integer.
+    fieldIndex
+}.
+
+PointerLikeValue !{
+fieldIndex: (Integer)newFieldIndex :: Void.
+    fieldIndex := newFieldIndex
+}.
+
+PointerLikeValue !{
+type :: SysmelType.
+    type
+}.
+
+PointerLikeValue !{
+type: (SysmelType)newType :: Void.
+    type := newType
+}.
+
+## PointerValue
+Value !{
+isPointerValue :: Boolean.
+    false
+}.
+
+PointerValue !{
+isPointerValue :: Boolean.
+    true
+}.
+
+## ReferenceValue
+Value !{
+isReferenceValue :: Boolean.
+    false
+}.
+
+ReferenceValue !{
+isReferenceValue :: Boolean.
+    true
 }.
 
 }

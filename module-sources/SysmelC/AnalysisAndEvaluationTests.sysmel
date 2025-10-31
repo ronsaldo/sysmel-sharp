@@ -106,7 +106,7 @@ function evaluateSourceString(sourceString: String) => Value := {
 ## testLetMutableMacro
 {
     let value := evaluateSourceString("let: #var mutableWith: 42").
-    assert: value storage value value = 42.
+    assert: value storage currentValue value = 42.
 }.
 
 #*

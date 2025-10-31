@@ -218,19 +218,20 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     }.
 
     if: isMutable then: {
-        error: "TODO: ParseTreeVariableDefinitionNode mutable"
-        #*let boxValue := MutableBoxValue new
-            value: initialValue;
-            type: (MutableBoxValueType withBaseType: initialValue type);
+        let valueType := initialValue type.
+        let boxType := CompilationContext current getOrCreateMutableBoxOfType: valueType.
+        let boxValue := MutableValueBox new
+            currentValue: initialValue;
+            type: boxType;
             yourself.
-
+        let referenceType := CompilationContext current getOrCreateReferenceType: valueType.
         let referenceValue := ReferenceValue new
             storage: boxValue;
-            type: (ReferenceType withBaseType: initialValue type);
+            fieldIndex: 0;
+            type: referenceType;
             yourself.
-
         environment setSymbol: name asSymbolValue binding: referenceValue.
-        return: referenceValue*#
+        return: referenceValue
     }.
 
     environment setSymbol: name asSymbolValue binding: initialValue.
