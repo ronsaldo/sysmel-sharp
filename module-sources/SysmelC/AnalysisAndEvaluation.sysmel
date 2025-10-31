@@ -47,7 +47,7 @@ castAnalyzedAndEvaluatedValue: (Value)valueToCast toExpectedType: (SysmelType)an
 Value !{
 analyzeAndEvaluateInEnvironmentWithDecayedType: (LexicalEnvironment)anEnvironment :: Value.
     let evaluationResult := self analyzeAndEvaluateInEnvironment: anEnvironment.
-    if: evaluationResult type isReferenceLikeType then: {
+    if: evaluationResult type isReferenceType then: {
         error: "ToDo: decay reference"
     }.
 
@@ -202,6 +202,18 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
         yourself
 }.
 
+ParseTreeSequenceNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let result mutable type: Value := VoidValue uniqueInstance.
+    let elementsCount := elements size. 
+    let i mutable := 0.
+    while: (i < elementsCount) do: {
+        result := (elements at: i) analyzeAndEvaluateInEnvironment: environment
+    } continueWith: (i := i + 1).
+
+    result
+}.
+
 ## ParseTreeVariableDefinitionNode
 ParseTreeVariableDefinitionNode !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
@@ -236,6 +248,24 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
 
     environment setSymbol: name asSymbolValue binding: initialValue.
     initialValue
+}.
+
+Value !{
+analyzeAndEvaluateAssignment: (ParseTreeAssignmentNode)assignment inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    let storageValue := self.
+    if: storageValue type isReferenceType then: {
+        let valueToStore := assignment value analyzeAndEvaluateInEnvironment: anEnvironment withExpectedType: storageValue type baseType.
+        storageValue storeValue: valueToStore.
+        return: storageValue
+    }.
+
+    error: "Not assignable value"
+}.
+
+ParseTreeAssignmentNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let storageValue := storage analyzeAndEvaluateInEnvironment: environment.
+    storageValue analyzeAndEvaluateAssignment: self inEnvironment: environment
 }.
 
 

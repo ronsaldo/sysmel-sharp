@@ -106,22 +106,22 @@ function evaluateSourceString(sourceString: String) => Value := {
 ## testLetMutableMacro
 {
     let value := evaluateSourceString("let: #var mutableWith: 42").
-    assert: value storage currentValue value = 42.
+    assert: value loadValue value = 42.
 }.
 
-#*
+
 ## testLetMutableMacro2
 {
     let value := evaluateSourceString("let: #var mutableWith: 42. var").
-    assert: value storage value value = 42.
+    assert: value loadValue value = 42.
 }.
 
 ## testLetMutableMacro3
 {
     let value := evaluateSourceString("let: #var mutableWith: 42. var := 5").
-    assert: value storage value value = 5.
+    assert: value loadValue value = 5.
 }.
-
+#*
 ## testLetMutableMacro4
 {
     let value := evaluateSourceString("let: #var mutableWith: 42. var + 5").

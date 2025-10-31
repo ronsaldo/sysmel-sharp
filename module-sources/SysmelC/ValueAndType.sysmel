@@ -134,16 +134,16 @@ asType :: SysmelType.
 }.
 
 SysmelType !{
-isReferenceLikeType :: Boolean.
-    false
-}.
-
-SysmelType !{
 isTupleType :: Boolean.
     false
 }.
 
 ## DerivedType
+SysmelType !{
+baseType :: SysmelType.
+    error: "Not a type with a base type."
+}.
+
 DerivedType !{
 baseType :: SysmelType.
     baseType
@@ -632,7 +632,47 @@ type: (SysmelType) aType :: Void.
     type := aType
 }.
 
+MutableValueBox !{
+loadValueWithFieldIndex: (Integer)fieldIndex :: Value.
+    currentValue
+}.
+
+MutableValueBox !{
+storeValue: (Value)valueToStore withFieldIndex: (Integer)fieldIndex :: Void.
+    currentValue := valueToStore
+}.
+
 ## Pointer like value.
+Value !{
+loadValue :: Value
+    error: "Not a pointer like value"
+}.
+
+Value !{
+loadValueWithFieldIndex: (Integer)fieldIndex :: Value.
+    error: "Not a storage value"
+}.
+
+PointerLikeValue !{
+loadValue :: Value.
+    storage loadValueWithFieldIndex: fieldIndex
+}.
+
+Value !{
+storeValue: (Value)valueToStore :: Void.
+    error: "Not a pointer like value"
+}.
+
+Value !{
+storeValue: (Value)valueToStore withFieldIndex: (Integer)fieldIndex :: Void.
+    error: "Not a storage value"
+}.
+
+PointerLikeValue !{
+storeValue: (Value)valueToStore :: Void.
+    storage storeValue: valueToStore withFieldIndex: fieldIndex
+}.
+
 Value !{
 isPointerLikeValue :: Boolean.
     false
