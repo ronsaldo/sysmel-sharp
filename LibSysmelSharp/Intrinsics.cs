@@ -524,6 +524,11 @@ namespace LibSysmelSharp
                 (Value[] arguments) => {
                     return new IntegerValue(arguments[0].sourcePosition, -arguments[0].AsInteger(), integerType);
                 }));
+            integerType.AddMethod(new PrimitiveFunction("bitInvert", false, true,
+                new SimpleFunctionType(null, [integerType], integerType),
+                (Value[] arguments) => {
+                    return new IntegerValue(arguments[0].sourcePosition, ~arguments[0].AsInteger(), integerType);
+                }));
 
             integerType.AddMethod(new PrimitiveFunction("+", false, true,
                 new SimpleFunctionType(null, [ integerType, integerType ], integerType),

@@ -641,6 +641,18 @@ withSelector: (Symbol)selector makePrimitiveWithPrefix: (String)primitiveNamePre
 }.
 
 FunctionType !{
+withSelector: (Symbol)selector makeCompileTimePrimitiveWithPrefix: (String)primitiveNamePrefix doing: ((Value list) => Value)implementation :: PrimitiveFunctionValue.
+    PrimitiveFunctionValue new
+        type: self;
+        name: selector;
+        isMacro: false;
+        isCompileTimeFunction: true;
+        primitiveName: (primitiveNamePrefix -- selector asString) asSymbol;
+        implementation: implementation;
+        yourself
+}.
+
+FunctionType !{
 withSelector: (Symbol)selector makePrimitiveMacroWithPrefix: (String)primitiveNamePrefix doing: ((Value list) => Value)implementation :: PrimitiveFunctionValue.
     PrimitiveFunctionValue new
         type: self;

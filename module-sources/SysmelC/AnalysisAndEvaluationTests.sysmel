@@ -96,12 +96,11 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: value value = 42
 }.
 
-#*## testLetMacro2
+## testLetMacro2
 {
     let value := evaluateSourceString("let: #x with: 42. x + 3").
     assert: value value = 45
 }.
-*#
 
 ## testLetMutableMacro
 {
@@ -121,18 +120,23 @@ function evaluateSourceString(sourceString: String) => Value := {
     let value := evaluateSourceString("let: #var mutableWith: 42. var := 5").
     assert: value loadValue value = 5.
 }.
-#*
+
 ## testLetMutableMacro4
 {
     let value := evaluateSourceString("let: #var mutableWith: 42. var + 5").
     assert: value value = 47.
 }.
-*#
 
 ## testMessageSend
 {
     let value := evaluateSourceString("5 negated").
-    assert: value value = -5.
+    assert: value asInteger = -5.
+}.
+
+## testBinaryExpression
+{
+    let value := evaluateSourceString("1 + 2").
+    assert: value asInteger = 3.
 }.
 
 }

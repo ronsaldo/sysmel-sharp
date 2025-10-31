@@ -112,6 +112,36 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     functionalValue analyzeAndEvaluateApplication: self inEnvironment: environment
 }.
 
+## Binary expression sequence
+ParseTreeBinaryExpressionSequenceNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    self expandAsMessageSendSequence analyzeAndEvaluateInEnvironment: environment
+}.
+
+ParseTreeBinaryExpressionSequenceNode !{
+expandAsMessageSendSequence :: ParseTreeNode.
+    let result mutable := operands at: 0.
+    let operandCount := operands size.
+    let index mutable := 1.
+    while: (index < operandCount) do: {
+        let operator := operands at: index.
+        let operand := operands at: index + 1.
+
+        let messageSend := ParseTreeMessageSendNode new
+            sourcePosition: operator sourcePosition;
+            receiver: result;
+            selector: operator;
+            arguments: ((ParseTreeNode list new: 1)
+                at: 0 put: operand;
+                yourself);
+            yourself.
+
+        result := messageSend
+    } continueWith: (index := index + 2).
+
+    result
+}.
+
 ## Identifiers
 Value !{
 analyzeAndEvaluateIdentifierReference: (ParseTreeIdentifierReferenceNode)identifierReference inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
@@ -286,6 +316,10 @@ sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
     foundMethod evaluateWithArguments: evaluationArguments
 }.
 
+ReferenceValue !{
+sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
+    self loadValue sysmelPerform: selector withArguments: arguments
+}.
 
 Value !{
 analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.

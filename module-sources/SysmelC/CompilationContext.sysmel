@@ -242,12 +242,51 @@ registerDefinitionMacros :: Void.
 CompilationContext !{
 registerIntegerPrimitives: (NominalType)integerType :: Void.
     let unaryOperationType := integerType => integerType.
+    let binaryOperationType := (integerType -- integerType) => integerType.
+    let comparisonOperationType := (integerType -- integerType) => BooleanType.
     let namePrefix := integerType name asString -- "::".
 
-    integerType addMethod: (unaryOperationType withSelector: #negated makePrimitiveWithPrefix: namePrefix doing: {
+    integerType addMethod: (unaryOperationType withSelector: #negated makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
         :(Value list)arguments :: Value |
         let numberValue := (arguments at: 0) asInteger.
-        IntegerValue new value: numberValue asInteger negated; type: integerType; yourself
+        IntegerValue new value: numberValue negated; type: integerType; yourself
+    }).
+    integerType addMethod: (unaryOperationType withSelector: #bitInvert makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue bitInvert; type: integerType; yourself
+    }).
+
+    ## Arithmetic.
+    integerType addMethod: (binaryOperationType withSelector: #+ makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := (arguments at: 0) asInteger.
+        let rightOperand := (arguments at: 1) asInteger.
+        IntegerValue new value: leftOperand + rightOperand; type: integerType; yourself
+    }).
+    integerType addMethod: (binaryOperationType withSelector: #- makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := (arguments at: 0) asInteger.
+        let rightOperand := (arguments at: 1) asInteger.
+        IntegerValue new value: leftOperand - rightOperand; type: integerType; yourself
+    }).
+    integerType addMethod: (binaryOperationType withSelector: #"*" makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := (arguments at: 0) asInteger.
+        let rightOperand := (arguments at: 1) asInteger.
+        IntegerValue new value: leftOperand * rightOperand; type: integerType; yourself
+    }).
+    integerType addMethod: (binaryOperationType withSelector: #// makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := (arguments at: 0) asInteger.
+        let rightOperand := (arguments at: 1) asInteger.
+        IntegerValue new value: leftOperand // rightOperand; type: integerType; yourself
+    }).
+    integerType addMethod: (binaryOperationType withSelector: #% makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := (arguments at: 0) asInteger.
+        let rightOperand := (arguments at: 1) asInteger.
+        IntegerValue new value: leftOperand % rightOperand; type: integerType; yourself
     }).
 }.
 
