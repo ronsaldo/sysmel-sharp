@@ -76,9 +76,9 @@ analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvir
     error: "Not a functional value"
 }.
 
-FunctionalValue !{
-analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)environment :: Value.
-    if: isMacro then: {
+FunctionType !{
+analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)environment withFunctional: (Value)functional  :: Value.
+    if: functional isMacro then: {
         let macroContext := MacroContext new
             sourcePosition: applicationNode sourcePosition;
             environment: environment;
@@ -92,22 +92,11 @@ analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvir
             macroArguments at: i + 1 put: (applicationNode arguments at: i)
         } continueWith: (i :=  i + 1).
 
-        let macroResult := self evaluateWithArguments: macroArguments.
+        let macroResult := functional evaluateWithArguments: macroArguments.
         return: (macroResult analyzeAndEvaluateInEnvironment: environment)
     }.
 
-    #*
-    let functionType := type.
-    let argumentValues := applicationNode arguments collectWithIndex: {:each :(Integer)index |
-        let eachArgumentValue type: Value := each.
-        let argumentDefinition type: ArgumentValue := functionType argumentDefinitions at: index.
-        let argumentType := argumentDefinition type.
-        eachArgumentValue analyzeAndEvaluateInEnvironment: environment withExpectedType: argumentType
-    }.
-
-    self evaluateWithArguments: argumentValues*#
-    error: "Todo: FunctionalValue >> #analyzeAndEvaluateApplication"
-
+    error: "TODO: FunctionType analyzeAndEvaluateApplication:"
 }.
 
 RecordType !{
