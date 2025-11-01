@@ -12,36 +12,20 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment withExpectedTyp
 
 Value !{
 castAnalyzedAndEvaluatedValue: (Value)valueToCast toExpectedType: (SysmelType)anExpectedType :: Value.
-    #*if: (nil = anExpectedType) || (anExpectedType isSatisfiedByValue: valueToCast) then: {
+    if: (nil == anExpectedType) || (anExpectedType isSatisfiedByValue: valueToCast) then: {
         return: valueToCast
     }.
 
-    if: valueToCast type isReferenceLikeType then: {
+    if: valueToCast type isReferenceType then: {
         error: "ToDo: loadRef".
         return: (self castAnalyzedAndEvaluatedValue: valueToCast loadValue toExpectedType: anExpectedType).
     }.
 
-    if: anExpectedType = CompilationContext current DynamicType then: {
-        if: valueToCast type = CompilationContext current DynamicType then: {
-            return: valueToCast
-        }.
-
-        return: (DynamicValue new
-            sourcePosition: valueToCast sourcePosition;
-            value: valueToCast;
-            yourself).
+    if: anExpectedType isDynamicType then: {
+        return: valueToCast
     }.
 
-    if: valueToCast type = CompilationContext current DynamicType then: {
-        return: (self castAnalyzedAndEvaluatedValue: valueToCast unboxFromDynamicValue toExpectedType: anExpectedType)
-    }.
-
-    ## TODO: implement this part.
-    Stdio stderr printLine: valueToCast.
-    Stdio stderr printLine: anExpectedType.
     error: "Failed to perform cast."
-    *#
-    valueToCast
 }.
 
 Value !{
@@ -348,7 +332,7 @@ sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
             error: "Message not understood: " -- selector printString -- " in " -- self printString
         }
     }.
-    
+
     let evaluationArguments := Value list new: 1 + arguments size.
     evaluationArguments at: 0 put: self.
 

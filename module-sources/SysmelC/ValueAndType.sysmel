@@ -270,6 +270,16 @@ isTupleType :: Boolean.
 }.
 
 SysmelType !{
+isSatisfiedByType: (SysmelType) aType :: Boolean.
+    self == aType
+}.
+
+SysmelType !{
+isSatisfiedByValue: (Value) aValue :: Boolean.
+    self isSatisfiedByType: aValue type
+}.
+
+SysmelType !{
 type :: SysmelType.
     CompilationContext current Type0Type
 }.
@@ -282,6 +292,11 @@ lookupSelector: (Symbol)selector :: Value.
 SysmelType !{
 lookupValueSelector: (Symbol)selector :: Value.
     nil
+}.
+
+SysmelType !{
+isDynamicType :: Boolean.
+    self == CompilationContext current DynamicType
 }.
 
 SysmelType !{
@@ -357,6 +372,16 @@ asBehaviorType :: BehaviorType.
     self
 }.
 
+Value !{
+isBehaviorType :: Boolean.
+    false
+}.
+
+BehaviorType !{
+isBehaviorType :: Boolean.
+    true
+}.
+
 BehaviorType !{
 superclass :: BehaviorType.
     superclass
@@ -422,6 +447,16 @@ lookupSelector: (Symbol)selector :: Value.
     }.
 
     nil
+}.
+
+BehaviorType !{
+isSatisfiedByType: (SysmelType) aType :: Boolean.
+    if: self == aType then: { return: true }.
+    if: aType = CompilationContext current UndefinedObjectType then: { return: true }.
+    if: aType isBehaviorType not then: {return: false}.
+    let otherBehavior := aType asBehaviorType.
+    if: nil == otherBehavior superclass then: {return: false}.
+    self isSatisfiedByType: otherBehavior superclass
 }.
 
 BehaviorType !{
