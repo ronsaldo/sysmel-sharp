@@ -313,6 +313,21 @@ registerDefinitionMacros :: Void.
                     yourself
             }
     ).
+    globalNamespace setSymbol: #Record:withFields: binding: (
+        ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
+            withSelector: #Record:withFields: makePrimitiveMacroWithPrefix: "Definition::" doing: {
+                :(Value list)arguments :: Value |
+                let context type: MacroContext := (arguments at: 0) asMacroContext.
+                
+                let nameExpression type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+                let fields type: ParseTreeNode := (arguments at: 2) asParseTreeNode.
+                ParseTreeRecordDefinitionNode new
+                    sourcePosition: context sourcePosition;
+                    nameExpression: nameExpression;
+                    fields: fields;
+                    yourself
+            }
+    ).
 
     globalNamespace setSymbol: #enum binding: (MetaBuilderFactory withFactoryMethod: { :(ParseTreeIdentifierReferenceNode)node :: Value |
         EnumMetaBuilder new sourcePosition: node sourcePosition; yourself

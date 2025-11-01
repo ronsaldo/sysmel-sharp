@@ -406,6 +406,51 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     childNamespace
 }.
 
+## Namespace
+ParseTreeRecordDefinitionNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let nameSymbol mutable type: Symbol := nil.
+    if: nil ~~ nameExpression then:
+    {
+        let name := nameExpression analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current SymbolType.
+        nameSymbol := name asSymbolValue
+    }.
+
+    let recordType := RecordType new name: nameSymbol; yourself.
+    if: nil ~~ nameSymbol then: {
+        environment setSymbol: nameSymbol binding: recordType.
+    }.
+
+    let fieldsValue := fields analyzeAndEvaluateInEnvironment: environment.
+    if: fieldsValue isImmutableDictionaryValue not then: {
+        error: "Expected a dictionary with the record fields"
+    }.
+
+    let fieldsDictionary := fieldsValue asImmutableDictionaryValue.
+    let fieldCount := fieldsDictionary elements size.
+    let fields := (FieldDefinition list new: fieldCount) yourself.
+    let i mutable := 0.
+    while: i < fieldCount do: {
+        let eachAssociation := fieldsDictionary elements at: i.
+        let fieldName := eachAssociation key asSymbolValue.
+        let fieldType := eachAssociation value asType.
+
+        let field := FieldDefinition new
+            name: fieldName;
+            index: i;
+            type: fieldType;
+            yourself.
+        
+        fields at: i put: field
+    } continueWith: (i := i + 1).
+
+    recordType
+        fields: fields;
+        buildFieldsByNameTable;
+        yourself
+}.
+
+
 ## Association node
 ParseTreeAssociationNode !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.

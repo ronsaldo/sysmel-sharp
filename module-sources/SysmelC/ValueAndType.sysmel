@@ -86,6 +86,23 @@ class NominalType withSuperclass: SimpleType fields:#{
     name: Symbol.
 }.
 
+class FieldDefinition withSuperclass: Value fields:#{
+    name: Symbol.
+    index: Integer.
+    type: SysmelType.
+}.
+
+class RecordType withSuperclass: SimpleType fields:#{
+    name: Symbol.
+    fields: FieldDefinition list.
+    fieldsByName: SymbolHashtable.
+}.
+
+class RecordValue withSuperclass: SimpleType fields:#{
+    elements: Value list.
+    type: RecordType
+}.
+
 class TupleType withSuperclass: SimpleType fields:#{
     elements: SysmelType list.
 }.
@@ -476,6 +493,89 @@ TypeUniverse !{
 index: (Integer)newIndex :: Void.
     newIndex
 }.
+
+## FieldDefinition
+FieldDefinition!{
+name :: Symbol.
+    name
+}.
+FieldDefinition!{
+name: (Symbol)newName :: Void.
+    name := newName
+}.
+
+FieldDefinition!{
+index :: Integer.
+    index
+}.
+
+FieldDefinition!{
+index: (Integer)newIndex :: Void.
+    index := newIndex
+}.
+
+FieldDefinition!{
+type :: SysmelType.
+    type
+}.
+
+FieldDefinition!{
+type: (SysmelType)newType :: Void.
+    type := newType
+}.
+
+## RecordType
+Value !{
+isRecordType :: Boolean.
+    true
+}.
+
+RecordType!{
+isRecordType :: Boolean.
+    true
+}.
+
+RecordType!{
+name :: Symbol.
+    name
+}.
+RecordType!{
+name: (Symbol)newName :: Void.
+    name := newName
+}.
+  
+RecordType!{
+fields :: FieldDefinition list.
+    fields
+}.
+
+RecordType!{
+fields: (FieldDefinition list)newFields :: Void.
+    fields := newFields
+}.  
+
+RecordType!{
+buildFieldsByNameTable :: Void.
+    fieldsByName := SymbolHashtable new.
+    let fieldCount := fields size.
+    let i mutable := 0.
+    while: (i < fieldCount) do: {
+        let field := fields at: i.
+        let fieldName := field name.
+        if: nil ~~ fieldName then: {
+            fieldsByName at: fieldName put: field
+        }
+    } continueWith:(i := i + 1).
+}.  
+
+## RecordValue
+
+#*
+class RecordValue withSuperclass: SimpleType fields:#{
+    elements: Value list.
+    type: RecordType
+}.
+*#
 
 ## Tuple type
 TupleType !{
