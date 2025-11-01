@@ -587,7 +587,8 @@ lookupFieldName: (Symbol)aFieldName :: Value.
 
 RecordType !{
 lookupSelector: (Symbol)selector :: Value.
-    let foundField := self lookupFieldName: selector.
+    let selectorToCheck := selector withoutSuffix: ":".
+    let foundField := self lookupFieldName: selectorToCheck.
     if: nil ~~ foundField then: {
         return: foundField 
     }.

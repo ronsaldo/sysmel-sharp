@@ -991,6 +991,17 @@ namespace LibSysmelSharp
                     string str = arguments[0].AsSymbol();
                     return new StringValue(null, "#" + str, StringType);
                 }));
+            SymbolType.AddMethod(new PrimitiveFunction("withoutSuffix:", false, true,
+                new SimpleFunctionType(null, [SymbolType, StringType], SymbolType),
+                (Value[] arguments) => {
+                    string symbolString = arguments[0].AsSymbol();
+                    string suffixToRemove = arguments[1].AsString();
+                    string symbolStringWithoutSuffix = symbolString;
+                    if (symbolString.EndsWith(suffixToRemove))
+                        symbolStringWithoutSuffix = symbolString.Substring(0, symbolString.Length - suffixToRemove.Length);
+
+                    return new SymbolValue(null, symbolStringWithoutSuffix, SymbolType);
+                }));
         }
 
         void RegisterTypePrimitives()

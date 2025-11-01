@@ -374,6 +374,31 @@ analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (
     error: "Field access has a wrong number of parameters."
 }.
 
+FunctionType !{
+analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)environment receiver: (Value)receiver method: (Value)method :: Value.
+    if: method isMacro then: {
+        error: "Todo: expand macro."
+    }.
+
+    let messageArgumentCount := messageSend arguments size.
+    if: messageArgumentCount + 1 ~= argumentDefinitions size then: {
+        error: "Expected " -- argumentDefinitions size asString -- " arguments instead of " -- (messageArgumentCount + 1) asString
+    }.
+
+    let argumentCount := argumentDefinitions size.
+    let callArguments := Value list new: argumentCount.
+
+    callArguments at: 0 put: (receiver analyzeAndEvaluateInEnvironment: environment withExpectedType: (argumentDefinitions at: 0) type).
+
+    let i mutable := 0.
+    while: (i < messageArgumentCount) do: {
+        let messageArgument := messageSend arguments at: i.
+        let analyzedArgument := (messageArgument analyzeAndEvaluateInEnvironment: environment withExpectedType: (argumentDefinitions at: i + 1) type).
+        callArguments at: i + 1 put: analyzedArgument.
+    } continueWith: (i := i + 1).
+
+    method evaluateWithArguments: callArguments
+}.
 
 Value !{
 analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
@@ -385,9 +410,7 @@ analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (
         }.
 
         let functionType := foundMethod type.
-        if: foundMethod isMacro then: {
-            error: "ToDo: perform macro expansion."
-        }.
+        return: (functionType analyzeAndEvaluateMessageSend: messageSend selector: selectorValue inEnvironment: anEnvironment receiver: self method: foundMethod)
     }.
 
     let argumentCount := messageSend arguments size.
