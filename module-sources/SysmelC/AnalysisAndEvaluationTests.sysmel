@@ -384,4 +384,14 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: (value elements at: 1) asInteger = 4.
 }.
 
+## testRecord field access
+{
+    let value := evaluateSourceString("
+		Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}.
+		
+		MyDynamicPair#{first: 5. second: 4} first
+    ").
+    assert: value asInteger = 5.
+}.
+
 }

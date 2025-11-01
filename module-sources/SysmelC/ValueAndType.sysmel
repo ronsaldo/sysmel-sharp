@@ -100,7 +100,7 @@ class RecordType withSuperclass: SimpleType fields:#{
     fieldsByName: SymbolFieldHashtable.
 }.
 
-class RecordValue withSuperclass: SimpleType fields:#{
+class RecordValue withSuperclass: Value fields:#{
     elements: Value list.
     type: RecordType
 }.
@@ -497,6 +497,16 @@ index: (Integer)newIndex :: Void.
 }.
 
 ## FieldDefinition
+Value !{
+isFieldDefinition :: Boolean.
+    false
+}.
+
+FieldDefinition !{
+isFieldDefinition :: Boolean.
+    true
+}.
+
 FieldDefinition!{
 name :: Symbol.
     name
@@ -568,7 +578,22 @@ buildFieldsByNameTable :: Void.
             fieldsByName at: fieldName put: field
         }
     } continueWith:(i := i + 1).
-}.  
+}. 
+
+RecordType !{
+lookupFieldName: (Symbol)aFieldName :: Value.
+    fieldsByName atOrNil: aFieldName
+}.
+
+RecordType !{
+lookupSelector: (Symbol)selector :: Value.
+    let foundField := self lookupFieldName: selector.
+    if: nil ~~ foundField then: {
+        return: foundField 
+    }.
+
+    super lookupSelector: selector
+}.
 
 ## RecordValue
 Value !{
@@ -599,6 +624,16 @@ type :: RecordType.
 RecordValue !{
 type: (RecordType)newType :: Void.
     type := newType
+}.
+
+RecordValue !{
+loadValueWithFieldIndex: (Integer)fieldIndex :: Value.
+    elements at: fieldIndex
+}.
+
+RecordValue !{
+storeValue: (Value)valueToStore withFieldIndex: (Integer)fieldIndex :: Void.
+    elements at: fieldIndex put: valueToStore
 }.
 
 ## Tuple type

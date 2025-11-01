@@ -355,11 +355,39 @@ sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
 }.
 
 Value !{
+analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment receiver: (Value)receiver method: (Value)method :: Value.
+    error: "Found method does not have a functional type."
+}.
+
+FieldDefinition !{
+analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)environment receiver: (Value)receiver method: (Value)method :: Value.
+    let argumentCount := messageSend arguments size.
+    if: argumentCount = 0 then: {
+        return: (receiver loadValueWithFieldIndex: index)
+    }.
+    if: argumentCount = 1 then: {
+        let valueToStore := (messageSend arguments at: 0) analyzeAndEvaluateInEnvironment: environment withExpectedType: type.
+        receiver storeValue: valueToStore withFieldIndex: index.
+        return: receiver
+    }.
+
+    error: "Field access has a wrong number of parameters."
+}.
+
+
+Value !{
 analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
     let selectorSymbol := selectorValue asSymbolValue.
     let foundMethod := self lookupSelector: selectorSymbol.
-    if: (nil ~~ foundMethod) && (foundMethod isMacro) then: {
-        error: "ToDo: perform macro expansion."
+    if: nil ~~ foundMethod then: {
+        if: foundMethod isFieldDefinition then: {
+            return: (foundMethod analyzeAndEvaluateMessageSend: messageSend selector: selectorValue inEnvironment: anEnvironment receiver: self method: foundMethod)
+        }.
+
+        let functionType := foundMethod type.
+        if: foundMethod isMacro then: {
+            error: "ToDo: perform macro expansion."
+        }.
     }.
 
     let argumentCount := messageSend arguments size.
@@ -367,7 +395,7 @@ analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (
     let i mutable := 0.
     while: i < argumentCount do: {
         let eachArg := messageSend arguments at: i.
-        argumentValues at: i put: (eachArg analyzeAndEvaluateInEnvironment: anEnvironment)
+        argumentValues at: i put: (eachArg analyzeAndEvaluateInEnvironmentWithDecayedType: anEnvironment)
     } continueWith: (i := i + 1).
 
     self sysmelPerform: selectorSymbol withArguments: argumentValues
