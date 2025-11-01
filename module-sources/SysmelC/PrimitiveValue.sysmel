@@ -257,6 +257,15 @@ asSymbolValue :: Symbol.
     value
 }.
 
+Value !{
+isSymbolValue :: Boolean.
+    false
+}.
+
+SymbolValue !{
+isSymbolValue :: Boolean.
+    true
+}.
 
 SymbolValue !{
 value :: Symbol.

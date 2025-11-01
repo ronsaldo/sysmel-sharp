@@ -79,7 +79,7 @@ class BehaviorType withSuperclass: SysmelType fields:#{
     fields: FieldDefinition list.
 
     allFields: FieldDefinition list.
-    nameFieldDictionary: SymbolFieldHashtable.
+    fieldsByValue: SymbolFieldHashtable.
     methodDictionary: SymbolHashtable.
     methodList: ValueArrayList.
 
@@ -331,24 +331,15 @@ type: (SysmelType) newType :: Void.
     type := newType.
 }.
 
-
-#*class BehaviorType withSuperclass: SysmelType fields:#{
-    superclass: BehaviorType.
-    fields: FieldDefinition list.
-
-    allFields: FieldDefinition list.
-    nameFieldDictionary: SymbolFieldHashtable.
-    methodDictionary: SymbolHashtable.
-    methodList: ValueArrayList.
-
-    isFinal: Boolean.
-}.
-*#
-
 ## Behavior type
 BehaviorType !{
 initialize :: Void.
     super initialize.
+    fields := FieldDefinition list new.
+    allFields := fields.
+    methodDictionary := SymbolHashtable new.
+    methodList := ValueArrayList new.
+    isFinal := false.
 }.
 
 Value !{
@@ -381,7 +372,55 @@ fields: (FieldDefinition list)newFields :: Void.
     fields := newFields
 }.
 
+BehaviorType !{
+setFields: (FieldDefinition list)newFields :: Void.
+    fields := newFields.
+    allFields := fields.
+    if: nil ~~ superclass then: {
+        allFields := superclass allFields -- fields.
+    }.
+
+    self buildFieldsByValue.
+}.
+
+BehaviorType !{
+buildFieldsByValue :: Void.
+    fieldsByValue := SymbolFieldHashtable new.
+    let fieldCount := allFields size.
+    let i mutable := 0.
+    while: i < fieldCount do: {
+        let field := allFields at: i.
+        field index: i.
+        fieldsByValue at: field name put: field.
+    } continueWith: (i := i + 1).
+}.
+
+BehaviorType !{
+allFields :: FieldDefinition list.
+    allFields
+}.
+
 ## ClassType
+Value !{
+isClassType :: Boolean.
+    false
+}.
+
+ClassType !{
+isClassType :: Boolean.
+    true
+}.
+
+Value !{
+asClassType :: ClassType.
+    error: "Not a class type"
+}.
+
+ClassType !{
+asClassType :: ClassType.
+    self
+}.
+
 ClassType !{
 name :: Symbol.
     name

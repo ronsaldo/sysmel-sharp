@@ -644,6 +644,96 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
         yourself
 }.
 
+## Class
+ImmutableDictionaryValue !{
+evaluateAsFieldListInEnviroment: (LexicalEnvironment)environment :: FieldDefinition list.
+    let fieldCount := elements size.
+    let fieldDefinitions := FieldDefinition list new: fieldCount.
+
+    let i mutable := 0.
+    while: (i < fieldCount) do: {
+        let assoc := elements at: i.
+        if: assoc key isSymbolValue not then: {
+            error: "Expected a symbol with the field name."
+        }.
+        let fieldName := assoc key asSymbolValue.
+
+        let fieldType mutable type: SysmelType := CompilationContext current DynamicType.
+        if: nil ~~ assoc value then: {
+            if: assoc value isType not then: {
+                error: "Expected a type for the field definition."
+            }.
+            fieldType := assoc value asType
+        }.
+
+        fieldDefinitions at: i put: (FieldDefinition new
+            sourcePosition: assoc sourcePosition;
+            name: fieldName;
+            type: fieldType;
+            yourself).
+    } continueWith: (i := i + 1).
+
+    fieldDefinitions
+}.
+
+ParseTreeClassDefinitionNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let name mutable type: Symbol := nil.
+    if: nil ~~ nameExpression then: {
+        name := (nameExpression analyzeAndEvaluateInEnvironment: environment withExpectedType: CompilationContext current SymbolType) asSymbolValue.
+    }.
+
+    let validSuperclass mutable type: ClassType := CompilationContext current ProtoObjectClassType.
+    if: nil ~~ superclass then: {
+        let superclassValue := superclass analyzeAndEvaluateInEnvironmentWithDecayedType: environment.
+        if: superclassValue isClassType not then: {
+            error: "Expected a superclass value"
+        }.
+        
+        validSuperclass := superclassValue asClassType
+    }.
+
+    let metaclass := MetaclassType new
+        sourcePosition: sourcePosition;
+        superclass: validSuperclass type;
+        fields: FieldDefinition list new;
+        yourself.
+    let clazz := ClassType new
+        sourcePosition: sourcePosition;
+        superclass: validSuperclass;
+        name: name;
+        type: metaclass;
+        fields: FieldDefinition list new;
+        yourself.
+    if: nil ~~ name then: {
+        environment setSymbol: name binding: clazz
+    }.
+
+    ## Meta fields
+    if: nil ~~ metaFields then: {
+        let fieldValues := metaFields analyzeAndEvaluateInEnvironmentWithDecayedType: environment.
+        if: fieldValues isImmutableDictionaryValue not then: {
+            error: "Expected a dictionary with the class fields."
+        }.
+
+        let fields := fieldValues asImmutableDictionaryValue evaluateAsFieldListInEnviroment: environment.
+        metaclass setFields: fields.
+    }.
+
+    ## Fields
+    if: nil ~~ fields then: {
+        let fieldValues := fields analyzeAndEvaluateInEnvironmentWithDecayedType: environment.
+        if: fieldValues isImmutableDictionaryValue not then: {
+            error: "Expected a dictionary with the class fields."
+        }.
+
+        let fields := fieldValues asImmutableDictionaryValue evaluateAsFieldListInEnviroment: environment.
+        clazz setFields: fields.
+    }.
+
+    clazz
+}.
+
 ## Enum
 Value !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)anEnvironment withEnumBaseType: (SysmelType)enumBaseType :: Value.
