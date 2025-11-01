@@ -132,7 +132,7 @@ initialize :: Void.
     ObjectClassType := self createClassType: #Object withSuperclass: ProtoObjectClassType.
     BehaviorClassType := self createClassType: #Behavior withSuperclass: ObjectClassType.
     ClassClassType := self createClassType: #Class withSuperclass: BehaviorClassType.
-    MetaclassClassType := self createClassType: #metaclass withSuperclass: BehaviorClassType.
+    MetaclassClassType := self createClassType: #Metaclass withSuperclass: BehaviorClassType.
     ProtoObjectClassType type superclass: ClassClassType.
     
     self registerGlobalsInSystemNamespace.
@@ -439,6 +439,27 @@ registerDefinitionMacros :: Void.
 }.
 
 CompilationContext !{
+registerObjectTypePrimitives :: Void.
+    ProtoObjectClassType addMethod: (ProtoObjectClassType => VoidType withSelector: #initialize makeCompileTimePrimitiveWithPrefix: "Object::" doing: {
+        :(Value list)arguments :: Value |
+        VoidValue uniqueInstance
+    }).
+
+    ## TODO: make the result a dependent type.
+    BehaviorClassType addMethod: (BehaviorClassType => ProtoObjectClassType withSelector: #basicNew makeCompileTimePrimitiveWithPrefix: "Object::" doing: {
+        :(Value list)arguments :: Value |
+        let behavior := (arguments at: 0) asBehaviorType.
+        behavior basicNewObject.
+    }).
+    BehaviorClassType addMethod: (BehaviorClassType => ProtoObjectClassType withSelector: #new makeCompileTimePrimitiveWithPrefix: "Object::" doing: {
+        :(Value list)arguments :: Value |
+        let behavior := (arguments at: 0) asBehaviorType.
+        behavior newObject.
+    }).
+    
+}.
+
+CompilationContext !{
 registerIntegerPrimitives: (NominalType)integerType :: Void.
     let unaryOperationType := integerType => integerType.
     let binaryOperationType := (integerType -- integerType) => integerType.
@@ -542,6 +563,7 @@ CompilationContext !{
 registerPrimitives :: Void.
     self registerControlFlowMacros.
     self registerDefinitionMacros.
+    self registerObjectTypePrimitives.
 
     self registerIntegerPrimitives: CharacterType.
     self registerIntegerPrimitives: LargeIntegerType.

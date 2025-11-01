@@ -339,6 +339,28 @@ sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
     foundMethod evaluateWithArguments: evaluationArguments
 }.
 
+SysmelType !{
+sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
+    let foundMethod mutable := self lookupSelector: selector.
+    if: nil == foundMethod then: {
+        foundMethod := self type lookupSelector: selector.
+        if: nil == foundMethod then: {
+            error: "Message not understood: " -- selector printString -- " in " -- self printString
+        }
+    }.
+    
+    let evaluationArguments := Value list new: 1 + arguments size.
+    evaluationArguments at: 0 put: self.
+
+    let i mutable := 0.
+    while: (i < arguments size) do: {
+        evaluationArguments at: i + 1 put: (arguments at: i)
+    } continueWith: (i := i + 1).
+
+    foundMethod evaluateWithArguments: evaluationArguments
+}.
+
+
 ReferenceValue !{
 sysmelPerform: (Symbol)selector withArguments: (Value list)arguments :: Value.
     self loadValue sysmelPerform: selector withArguments: arguments

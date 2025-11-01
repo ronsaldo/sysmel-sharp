@@ -456,4 +456,58 @@ public: [
     assert: (value allFields at: 1) name = #second.
 }.
 
+## testClassInstance
+{
+    let clazz := evaluateSourceString("
+		Class: #MyClass withSuperclass: Object fields: #{first: Int32. second: Int32}
+    ").
+    assert: clazz isClassType.
+
+    let value := clazz basicNewObject.
+
+    assert: value elements size = 2.
+    assert: (value elements at: 0) asInteger = 0.
+    assert: (value elements at: 1) asInteger = 0.
+}.
+
+## testClassInstance2
+{
+    let clazz := evaluateSourceString("
+		Class: #MyClass withSuperclass: Object fields: #{first: Int32. second: Int32}
+    ").
+    assert: clazz isClassType.
+
+    let value := clazz newObject.
+
+    assert: value elements size = 2.
+    assert: (value elements at: 0) asInteger = 0.
+    assert: (value elements at: 1) asInteger = 0.
+}.
+
+## testClassInstance3
+{
+    let value := evaluateSourceString("
+		Class: #MyClass withSuperclass: Object fields: #{first: Int32. second: Int32}.
+        MyClass basicNew
+    ").
+    assert: value isClassInstanceValue.
+
+    assert: value elements size = 2.
+    assert: (value elements at: 0) asInteger = 0.
+    assert: (value elements at: 1) asInteger = 0.
+}.
+
+## testClassInstance4
+{
+    let value := evaluateSourceString("
+		Class: #MyClass withSuperclass: Object fields: #{first: Int32. second: Int32}.
+        MyClass new
+    ").
+    assert: value isClassInstanceValue.
+
+    assert: value elements size = 2.
+    assert: (value elements at: 0) asInteger = 0.
+    assert: (value elements at: 1) asInteger = 0.
+}.
+
 }

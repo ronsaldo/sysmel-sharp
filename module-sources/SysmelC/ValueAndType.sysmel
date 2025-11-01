@@ -94,6 +94,11 @@ class MetaclassType withSuperclass: BehaviorType fields:#{
     thisClass: ClassType
 }.
 
+class ClassInstanceValue withSuperclass: Value fields:#{
+    elements: Value list.
+    type: BehaviorType.
+}.
+
 class EnumType withSuperclass: SysmelType fields:#{
     name: Symbol.
     baseType: SysmelType.
@@ -400,6 +405,47 @@ allFields :: FieldDefinition list.
     allFields
 }.
 
+BehaviorType !{
+withSelector: (Symbol)selector addMethod: (FunctionalValue)method :: Void.
+    methodDictionary at: selector put: method.
+    methodList add: method.
+}.
+
+BehaviorType !{
+lookupSelector: (Symbol)selector :: Value.
+    if: (methodDictionary includesKey: selector) then: {
+        return: (methodDictionary at: selector)
+    }.
+
+    if: nil ~~ superclass then: {
+        return: (superclass lookupSelector: selector)
+    }.
+
+    nil
+}.
+
+BehaviorType !{
+basicNewObject :: ClassInstanceValue.
+    let fieldCount := allFields size.
+    let instanceFields := Value list new: fieldCount.
+    let i mutable := 0.
+    while: (i < fieldCount) do: {
+        instanceFields at: i put: (allFields at: i) type defaultValue
+    } continueWith: (i := i + 1).
+    
+    ClassInstanceValue new
+        elements: instanceFields;
+        type: self;
+        yourself
+}.
+
+BehaviorType !{
+newObject :: ClassInstanceValue.
+    let object := self basicNewObject.
+    object sysmelPerform: #initialize withArguments: Value list new.
+    object
+}.
+
 ## ClassType
 Value !{
 isClassType :: Boolean.
@@ -441,6 +487,10 @@ type: (BehaviorType)newType.
     type := newType
 }.
 
+ClassType !{
+exportedName :: Symbol.
+    name
+}.
 
 ## MetaclassType
 MetaclassType !{
@@ -452,6 +502,38 @@ MetaclassType !{
 thisClass: (ClassType)newClass.
     thisClass := newClass
 }.
+
+## ClassInstanceValue
+Value !{
+isClassInstanceValue :: Boolean.
+    false
+}.
+
+ClassInstanceValue !{
+isClassInstanceValue :: Boolean.
+    true
+}.
+
+ClassInstanceValue !{
+elements :: Value list.
+    elements
+}.
+
+ClassInstanceValue !{
+elements: (Value list)newElements :: Void.
+    elements := newElements
+}.
+
+ClassInstanceValue !{
+type :: BehaviorType.
+    type
+}.
+
+ClassInstanceValue !{
+type: (BehaviorType)newType :: Void.
+    type := newType
+}.
+
 
 ## EnumType
 Value !{
