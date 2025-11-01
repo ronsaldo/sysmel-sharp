@@ -313,6 +313,18 @@ registerDefinitionMacros :: Void.
                     yourself
             }
     ).
+    globalNamespace setSymbol: #public: binding: (
+        ((MacroContextType -- ParseTreeNodeType) => ParseTreeNodeType)
+            withSelector: #public: makePrimitiveMacroWithPrefix: "Definition::" doing: {
+                :(Value list)arguments :: Value |
+                let context type: MacroContext := (arguments at: 0) asMacroContext.
+                let exportList type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+                ParseTreePublicNode new
+                    sourcePosition: context sourcePosition;
+                    exportList: exportList;
+                    yourself
+            }
+    ).
     globalNamespace setSymbol: #Record:withFields: binding: (
         ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
             withSelector: #Record:withFields: makePrimitiveMacroWithPrefix: "Definition::" doing: {

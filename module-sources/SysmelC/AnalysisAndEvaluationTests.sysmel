@@ -394,4 +394,21 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: value asInteger = 5.
 }.
 
+## testRecordExport
+{
+    let value := evaluateSourceString("
+namespace: #TestNamespace definition: {
+public: [
+    Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}
+]}").
+    assert: value isNamespace.
+    assert: value name = #TestNamespace.
+
+    let exportedSymbol := value lookSymbol: #MyDynamicPair.
+    assert: exportedSymbol isRecordType.
+
+    let namespaceAccess := evaluateSourceString("TestNamespace MyDynamicPair").
+    assert: namespaceAccess isRecordType.
+}.
+
 }

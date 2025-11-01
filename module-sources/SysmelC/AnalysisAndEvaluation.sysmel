@@ -424,6 +424,17 @@ analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (
     self sysmelPerform: selectorSymbol withArguments: argumentValues
 }.
 
+Namespace !{
+analyzeAndEvaluateMessageSend: (ParseTreeMessageSendNode)messageSend selector: (Value)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    if: messageSend arguments size = 0 then: {
+        let foundEntity := self lookSymbol: selectorValue asSymbolValue.
+        if: nil ~~ foundEntity then: {
+            return: foundEntity
+        }
+    }.
+    super analyzeAndEvaluateMessageSend: messageSend selector: selectorValue inEnvironment: anEnvironment
+}.
+
 ParseTreeMessageSendNode !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     let receiverValue := receiver analyzeAndEvaluateInEnvironment: environment.
@@ -723,6 +734,23 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     } continueWith: (i := i +1 ).
 
     enumType
+}.
+
+ParseTreePublicNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let ownerNamespace := environment lookupNamespace.
+    let evaluatedExportList := (exportList analyzeAndEvaluateInEnvironment: environment) asListValue.
+    
+    let i mutable := 0.
+    while: (i < evaluatedExportList elements size) do: {
+        let exportedElement := evaluatedExportList elements at: i.
+        let exportedName := exportedElement exportedName.
+        if: nil ~~ exportedName then: {
+            ownerNamespace setSymbol: exportedName binding: exportedElement
+        }
+    } continueWith: (i := i + 1).
+
+    VoidValue uniqueInstance
 }.
 
 }

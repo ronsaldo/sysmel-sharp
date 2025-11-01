@@ -280,6 +280,16 @@ baseType: (SysmelType)newBaseType :: Void.
 }.
 
 ## ListValue
+Value !{
+asListValue :: ListValue.
+    error: "Not a list value"
+}.
+
+ListValue !{
+asListValue :: ListValue.
+    self
+}.
+
 ListValue !{
 elements :: Value list.
     elements
@@ -405,6 +415,11 @@ name :: Symbol.
 EnumValue !{
 name: (Symbol)newName :: Void.
     name := newName
+}.
+
+EnumType !{
+exportedName :: Symbol.
+    name
 }.
 
 EnumValue !{
@@ -551,6 +566,7 @@ RecordType!{
 name :: Symbol.
     name
 }.
+
 RecordType!{
 name: (Symbol)newName :: Void.
     name := newName
@@ -565,6 +581,11 @@ RecordType!{
 fields: (FieldDefinition list)newFields :: Void.
     fields := newFields
 }.  
+
+RecordType !{
+exportedName :: Symbol.
+    name
+}.
 
 RecordType!{
 buildFieldsByNameTable :: Void.
