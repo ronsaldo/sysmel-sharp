@@ -23,6 +23,8 @@ class EnumMetaBuilder withSuperclass: NamedMetaBuilder fields: #{
 class NamespaceMetaBuilder withSuperclass: NamedMetaBuilder fields: #{
 }.
 
+class RecordMetaBuilder withSuperclass: NamedMetaBuilder fields: #{
+}.
 
 ].
 
@@ -153,6 +155,25 @@ expandMessageSend: (ParseTreeMessageSendNode)messageSend withSelectorSymbol: (Sy
             nameExpression: name;
             baseType: messageSend arguments first;
             values: messageSend arguments second;
+            analyzeAndEvaluateInEnvironment: anEnvironment)
+    }.
+
+    error: "Unimplemented method"
+}.
+
+## RecordMetaBuilder
+RecordMetaBuilder !{
+hasMethodWithSelector: (Symbol)selectorSymbol :: Boolean.
+    selectorSymbol = #withFields:
+}.
+
+RecordMetaBuilder !{
+expandMessageSend: (ParseTreeMessageSendNode)messageSend withSelectorSymbol: (Symbol)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    if: selectorValue = #withFields: then: {
+        return: (ParseTreeRecordDefinitionNode new
+            sourcePosition: messageSend sourcePosition;
+            nameExpression: name;
+            fields: messageSend arguments first;
             analyzeAndEvaluateInEnvironment: anEnvironment)
     }.
 

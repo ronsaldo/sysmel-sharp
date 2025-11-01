@@ -338,6 +338,9 @@ registerDefinitionMacros :: Void.
     globalNamespace setSymbol: #namespace binding: (MetaBuilderFactory withFactoryMethod: { :(ParseTreeIdentifierReferenceNode)node :: Value |
         NamespaceMetaBuilder new sourcePosition: node sourcePosition; yourself
     }).
+    globalNamespace setSymbol: #record binding: (MetaBuilderFactory withFactoryMethod: { :(ParseTreeIdentifierReferenceNode)node :: Value |
+        RecordMetaBuilder new sourcePosition: node sourcePosition; yourself
+    }).
 }.
 
 CompilationContext !{
