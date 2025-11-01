@@ -363,6 +363,19 @@ function evaluateSourceString(sourceString: String) => Value := {
     let value := evaluateSourceString("
 		Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}.
 		
+		MyDynamicPair(1. 2)
+    ").
+    assert: value isRecordValue.
+    assert: value elements size = 2.
+    assert: (value elements at: 0) asInteger = 1.
+    assert: (value elements at: 1) asInteger = 2.
+}.
+
+## testRecord
+{
+    let value := evaluateSourceString("
+		Record: #MyDynamicPair withFields: #{first: Dynamic. second: Dynamic}.
+		
 		MyDynamicPair#{first: 5. second: 4}
     ").
     assert: value isRecordValue.

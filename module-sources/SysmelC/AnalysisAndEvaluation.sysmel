@@ -68,6 +68,11 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
 
 Value !{
 analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    self type analyzeAndEvaluateApplication: applicationNode inEnvironment: anEnvironment withFunctional: self
+}.
+
+Value !{
+analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)anEnvironment withFunctional: (Value)functional  :: Value.
     error: "Not a functional value"
 }.
 
@@ -104,6 +109,35 @@ analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvir
     error: "Todo: FunctionalValue >> #analyzeAndEvaluateApplication"
 
 }.
+
+RecordType !{
+analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+
+    let fieldCount := fields size.
+    let argumentCount := applicationNode arguments size.
+    if: argumentCount > fieldCount then: {
+        error: "Record expects at most " -- fieldCount asString -- " arguments"
+    }.
+
+    let recordElements := Value list new: fieldCount.
+    let i mutable := 0.
+    while: (i < fieldCount) do: {
+        let field := fields at: i.
+        if: i < argumentCount then: {
+            let argumentNode := applicationNode arguments at: i.
+            recordElements at: i put: (argumentNode analyzeAndEvaluateInEnvironment: anEnvironment withExpectedType: field type)
+        } else: {
+            recordElements at: i put: field type defaultValue
+        }
+    } continueWith: (i := i + 1).
+
+    RecordValue new
+        sourcePosition: applicationNode sourcePosition;
+        elements: recordElements;
+        type: self;
+        yourself
+}.
+
 
 ParseTreeApplicationNode !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
@@ -527,6 +561,7 @@ analyzeAndEvaluateDictionaryInstance: (ParseTreeImmutableDictionaryNode)dictiona
     }.
 
     RecordValue new
+        sourcePosition: dictionary sourcePosition;
         elements: fieldValues;
         type: self;
         yourself
