@@ -3,13 +3,21 @@ public: [
 class Value withSuperclass: Object fields:#{
     sourcePosition: SourcePosition
 }.
+
+class SysmelType withSuperclass: Value fields:#{
+}.
+
+class FieldDefinition withSuperclass: Value fields:#{
+    name: Symbol.
+    index: Integer.
+    type: SysmelType.
+}.
 ].
 
 let SymbolHashtable := System Collections Dictionary(Symbol . Value).
+let SymbolFieldHashtable := System Collections Dictionary(Symbol . FieldDefinition).
 
 public: [
-class SysmelType withSuperclass: Value fields:#{
-}.
 
 class AssociationType withSuperclass: SysmelType fields:#{
     key: SysmelType.
@@ -86,16 +94,10 @@ class NominalType withSuperclass: SimpleType fields:#{
     name: Symbol.
 }.
 
-class FieldDefinition withSuperclass: Value fields:#{
-    name: Symbol.
-    index: Integer.
-    type: SysmelType.
-}.
-
 class RecordType withSuperclass: SimpleType fields:#{
     name: Symbol.
     fields: FieldDefinition list.
-    fieldsByName: SymbolHashtable.
+    fieldsByName: SymbolFieldHashtable.
 }.
 
 class RecordValue withSuperclass: SimpleType fields:#{
@@ -556,7 +558,7 @@ fields: (FieldDefinition list)newFields :: Void.
 
 RecordType!{
 buildFieldsByNameTable :: Void.
-    fieldsByName := SymbolHashtable new.
+    fieldsByName := SymbolFieldHashtable new.
     let fieldCount := fields size.
     let i mutable := 0.
     while: (i < fieldCount) do: {
@@ -569,13 +571,35 @@ buildFieldsByNameTable :: Void.
 }.  
 
 ## RecordValue
-
-#*
-class RecordValue withSuperclass: SimpleType fields:#{
-    elements: Value list.
-    type: RecordType
+Value !{
+isRecordValue
+    false
 }.
-*#
+
+RecordValue !{
+isRecordValue
+    true
+}.
+
+RecordValue !{
+elements :: Value list.
+    elements
+}.
+
+RecordValue !{
+elements: (Value list)newElements :: Void.
+    elements := newElements
+}.
+
+RecordValue !{
+type :: RecordType.
+    type
+}.
+
+RecordValue !{
+type: (RecordType)newType :: Void.
+    type := newType
+}.
 
 ## Tuple type
 TupleType !{

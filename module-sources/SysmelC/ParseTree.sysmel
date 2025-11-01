@@ -216,6 +216,18 @@ isAssociationNode :: Boolean.
     true.
 }.
 
+ParseTreeNode !{
+asParseTreeAssociationNode :: ParseTreeAssociationNode.
+    error: "Not a parse tree association node."
+}.
+
+ParseTreeAssociationNode !{
+asParseTreeAssociationNode :: ParseTreeAssociationNode.
+    self
+}.
+
+
+
 ParseTreeAssociationNode !{
 key :: ParseTreeNode.
     key

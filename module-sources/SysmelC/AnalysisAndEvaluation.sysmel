@@ -476,14 +476,67 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
 }.
 
 ## Immutable dictionary.
+Value !{
+analyzeAndEvaluateDictionaryInstance: (ParseTreeImmutableDictionaryNode)dictionary inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    error: "No dictionary type expression."
+}.
+
+RecordType !{
+analyzeAndEvaluateDictionaryInstance: (ParseTreeImmutableDictionaryNode)dictionary inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    let fieldCount := fields size.
+    let fieldValues := Value list new: fieldCount.
+    let initializedFields := Boolean list new: fieldCount.
+    {
+        let i mutable := 0.
+        while: (i < fieldCount) do: {
+            initializedFields at: i put: false
+        } continueWith:(i := i + 1)
+    }.
+
+    {
+        let dictionaryElementCount := dictionary elements size.
+        let i mutable := 0.
+        while: (i < dictionaryElementCount) do: {
+            let associationParseTreeNode := (dictionary elements at: i) asParseTreeAssociationNode.
+            let fieldNameValue := associationParseTreeNode key analyzeAndEvaluateInEnvironment: anEnvironment withExpectedType: CompilationContext current SymbolType.
+            let fieldNameSymbol := fieldNameValue asSymbolValue.
+
+            let fieldDefinitionOrNil := fieldsByName atOrNil: fieldNameSymbol.
+            if: nil == fieldDefinitionOrNil then: {
+                error: "Record does not have a field named " -- fieldNameSymbol printString
+            }.
+
+
+            let fieldValue := associationParseTreeNode value analyzeAndEvaluateInEnvironment: anEnvironment withExpectedType: fieldDefinitionOrNil type.
+            fieldValues at: fieldDefinitionOrNil index put: fieldValue.
+            initializedFields at: fieldDefinitionOrNil index put: true.
+        } continueWith: (i := i + 1).
+    }.
+
+    {
+        let i mutable := 0.
+        while: (i < fieldCount) do: {
+            let isInitialized type: Boolean := initializedFields at: i.
+            if: isInitialized not then: {
+                let field := fields at: i.
+                let fieldType := field type.
+                fieldValues at: i put: fieldType defaultValue
+            }
+
+        } continueWith: (i := i + 1).        
+    }.
+
+    RecordValue new
+        elements: fieldValues;
+        type: self;
+        yourself
+}.
+
 ParseTreeImmutableDictionaryNode !{
 analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     if: nil ~~ dictionaryType then: {
-        error: "TODO: dictionary make instance".
-        #*
         let dictionaryTypeValue := dictionaryType analyzeAndEvaluateInEnvironment: environment.
         return: (dictionaryTypeValue analyzeAndEvaluateDictionaryInstance: self inEnvironment: environment)
-        *#
     }.
 
     let elementCount := elements size.
