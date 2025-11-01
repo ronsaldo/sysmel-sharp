@@ -14,6 +14,7 @@ class FieldDefinition withSuperclass: Value fields:#{
 }.
 ].
 
+let ValueArrayList := System Collections ArrayList(Value).
 let SymbolHashtable := System Collections Dictionary(Symbol . Value).
 let SymbolFieldHashtable := System Collections Dictionary(Symbol . FieldDefinition).
 
@@ -71,6 +72,26 @@ class PointerValue withSuperclass: PointerLikeValue fields:#{
 }.
 
 class ReferenceValue withSuperclass: PointerLikeValue fields:#{
+}.
+
+class BehaviorType withSuperclass: SysmelType fields:#{
+    superclass: BehaviorType.
+    fields: FieldDefinition list.
+
+    allFields: FieldDefinition list.
+    nameFieldDictionary: SymbolFieldHashtable.
+    methodDictionary: SymbolHashtable.
+    methodList: ValueArrayList.
+
+    isFinal: Boolean.
+}.
+
+class ClassType withSuperclass: BehaviorType fields:#{
+    name: Symbol.
+    type: BehaviorType.
+}.
+class MetaclassType withSuperclass: BehaviorType fields:#{
+    thisClass: ClassType
 }.
 
 class EnumType withSuperclass: SysmelType fields:#{
@@ -310,6 +331,89 @@ type: (SysmelType) newType :: Void.
     type := newType.
 }.
 
+
+#*class BehaviorType withSuperclass: SysmelType fields:#{
+    superclass: BehaviorType.
+    fields: FieldDefinition list.
+
+    allFields: FieldDefinition list.
+    nameFieldDictionary: SymbolFieldHashtable.
+    methodDictionary: SymbolHashtable.
+    methodList: ValueArrayList.
+
+    isFinal: Boolean.
+}.
+*#
+
+## Behavior type
+BehaviorType !{
+initialize :: Void.
+    super initialize.
+}.
+
+Value !{
+asBehaviorType :: BehaviorType.
+    error: "Not a behavior type"
+}.
+
+BehaviorType !{
+asBehaviorType :: BehaviorType.
+    self
+}.
+
+BehaviorType !{
+superclass :: BehaviorType.
+    superclass
+}.
+
+BehaviorType !{
+superclass: (BehaviorType)newSuperclass :: Void.
+    superclass := newSuperclass
+}.
+
+BehaviorType !{
+fields :: FieldDefinition list.
+    fields
+}.
+
+BehaviorType !{
+fields: (FieldDefinition list)newFields :: Void.
+    fields := newFields
+}.
+
+## ClassType
+ClassType !{
+name :: Symbol.
+    name
+}.
+
+ClassType !{
+name: (Symbol)newName.
+    name := newName
+}.
+
+ClassType !{
+type :: BehaviorType.
+    type
+}.
+
+ClassType !{
+type: (BehaviorType)newType.
+    type := newType
+}.
+
+
+## MetaclassType
+MetaclassType !{
+thisClass :: ClassType.
+    thisClass
+}.
+
+MetaclassType !{
+thisClass: (ClassType)newClass.
+    thisClass := newClass
+}.
+
 ## EnumType
 Value !{
 isEnumType :: Boolean.
@@ -323,6 +427,7 @@ isEnumType :: Boolean.
 
 EnumType !{
 initialize :: Void.
+    super initialize.
     namesAndValues := SymbolHashtable new.
 }.
 
@@ -435,6 +540,7 @@ type: (EnumType)newType :: Void.
 ## SimpleType
 SimpleType !{
 initialize :: Void.
+    super initialize.
     methodDictionary := SymbolHashtable new.
 }.
 

@@ -54,6 +54,12 @@ class CompilationContext withSuperclass: Object fields: #{
     ByteArrayType: ListType.
 
     Type0Type: TypeUniverse.
+
+    ProtoObjectClassType: ClassType.
+    ObjectClassType: ClassType.
+    BehaviorClassType: ClassType.
+    ClassClassType: ClassType.
+    MetaclassClassType: ClassType.
 }.
 
 ].
@@ -122,13 +128,48 @@ initialize :: Void.
     DynamicListType := self getOrCreateListOfType: DynamicType.
     ByteArrayType := self getOrCreateListOfType: UInt8Type.
 
+    ProtoObjectClassType := self createClassType: #ProtoObject withSuperclass: nil.
+    ObjectClassType := self createClassType: #Object withSuperclass: ProtoObjectClassType.
+    BehaviorClassType := self createClassType: #Behavior withSuperclass: ObjectClassType.
+    ClassClassType := self createClassType: #Class withSuperclass: BehaviorClassType.
+    MetaclassClassType := self createClassType: #metaclass withSuperclass: BehaviorClassType.
+    ProtoObjectClassType type superclass: ClassClassType.
+    
     self registerGlobalsInSystemNamespace.
     self registerPrimitives.
 }.
 
 CompilationContext !{
+createClassType: (Symbol)className withSuperclass: (BehaviorType)superclass :: ClassType.
+    let metaSuperClass mutable type: BehaviorType := nil.
+    if: nil ~~ superclass then: {
+        metaSuperClass := superclass type asBehaviorType.
+    }.
+
+    let metaclass := MetaclassType new
+        superclass: metaSuperClass;
+        fields: FieldDefinition list new;
+        yourself.
+
+    let clazz := ClassType new
+        name: className;
+        superclass: superclass;
+        type: metaclass;
+        fields: FieldDefinition list new;
+        yourself.
+    metaclass thisClass: clazz.
+
+    clazz
+}.
+
+CompilationContext !{
 registerNominalType: (NominalType)aNominalType.
     globalNamespace setSymbol: aNominalType name binding: aNominalType.
+}.
+
+CompilationContext !{
+registerClassType: (ClassType)aClassType.
+    globalNamespace setSymbol: aClassType name binding: aClassType.
 }.
 
 CompilationContext !{
@@ -164,6 +205,13 @@ registerGlobalsInSystemNamespace :: Void.
     self registerNominalType: Int16Type.
     self registerNominalType: Int32Type.
     self registerNominalType: Int64Type.
+
+    self registerClassType: ProtoObjectClassType.
+    self registerClassType: ObjectClassType.
+    self registerClassType: BehaviorClassType.
+    self registerClassType: ClassClassType.
+    self registerClassType: MetaclassClassType.
+    self registerClassType: ProtoObjectClassType.
 
     globalNamespace setSymbol: #false binding: (BooleanValue new value: false; yourself).
     globalNamespace setSymbol: #true binding: (BooleanValue new value: true; yourself).
@@ -616,6 +664,31 @@ Int32Type :: IntegerType.
 CompilationContext !{
 Int64Type :: IntegerType.
     Int64Type
+}.
+
+CompilationContext !{
+ProtoObjectClassType :: ClassType.
+    ProtoObjectClassType
+}.
+
+CompilationContext !{
+ObjectClassType :: ClassType.
+    ObjectClassType
+}.
+
+CompilationContext !{
+BehaviorClassType :: ClassType.
+    BehaviorClassType
+}.
+
+CompilationContext !{
+ClassClassType :: ClassType.
+    ClassClassType
+}.
+
+CompilationContext !{
+MetaclassClassType :: ClassType.
+    MetaclassClassType
 }.
 
 CompilationContext !{
