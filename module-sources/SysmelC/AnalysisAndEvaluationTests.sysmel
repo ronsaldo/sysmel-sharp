@@ -434,4 +434,26 @@ public: [
     assert: (value allFields at: 1) name = #second.
 }.
 
+## testClassDefinitionMetaBuilder
+{
+    let value := evaluateSourceString("class MyClass withFields: #{first: Dynamic. second: Dynamic}").
+    assert: value isClassType.
+    assert: value superclass == CompilationContext current ProtoObjectClassType.
+
+    assert: value allFields size = 2.
+    assert: (value allFields at: 0) name = #first.
+    assert: (value allFields at: 1) name = #second.
+}.
+
+## testClassDefinitionMetaBuilder2
+{
+    let value := evaluateSourceString("class MyClass withSuperclass: Object fields: #{first: Dynamic. second: Dynamic}").
+    assert: value isClassType.
+    assert: value superclass == CompilationContext current ObjectClassType.
+
+    assert: value allFields size = 2.
+    assert: (value allFields at: 0) name = #first.
+    assert: (value allFields at: 1) name = #second.
+}.
+
 }

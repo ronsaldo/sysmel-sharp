@@ -421,6 +421,9 @@ registerDefinitionMacros :: Void.
             }
     ).
 
+    globalNamespace setSymbol: #class binding: (MetaBuilderFactory withFactoryMethod: { :(ParseTreeIdentifierReferenceNode)node :: Value |
+        ClassMetaBuilder new sourcePosition: node sourcePosition; yourself
+    }).
     globalNamespace setSymbol: #enum binding: (MetaBuilderFactory withFactoryMethod: { :(ParseTreeIdentifierReferenceNode)node :: Value |
         EnumMetaBuilder new sourcePosition: node sourcePosition; yourself
     }).

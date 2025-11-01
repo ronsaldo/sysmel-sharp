@@ -16,6 +16,9 @@ class LetMetaBuilder withSuperclass: NamedMetaBuilder fields: #{
     isMutable: Boolean.
 }.
 
+class ClassMetaBuilder withSuperclass: NamedMetaBuilder fields: #{
+}.
+
 class EnumMetaBuilder withSuperclass: NamedMetaBuilder fields: #{
     baseType: ParseTreeNode
 }.
@@ -135,6 +138,33 @@ expandMessageSend: (ParseTreeMessageSendNode)messageSend withSelectorSymbol: (Sy
             sourcePosition: messageSend sourcePosition;
             nameExpression: name;
             definitionBody: messageSend arguments first;
+            analyzeAndEvaluateInEnvironment: anEnvironment)
+    }.
+
+    error: "Unimplemented method"
+}.
+
+## ClassMetaBuilder
+ClassMetaBuilder !{
+hasMethodWithSelector: (Symbol)selectorSymbol :: Boolean.
+    selectorSymbol = #withFields: || (selectorSymbol = #withSuperclass:fields:)
+}.
+
+ClassMetaBuilder !{
+expandMessageSend: (ParseTreeMessageSendNode)messageSend withSelectorSymbol: (Symbol)selectorValue inEnvironment: (LexicalEnvironment)anEnvironment :: Value.
+    if: selectorValue = #withFields: then: {
+        return: (ParseTreeClassDefinitionNode new
+            sourcePosition: messageSend sourcePosition;
+            nameExpression: name;
+            fields: messageSend arguments first;
+            analyzeAndEvaluateInEnvironment: anEnvironment)
+    }.
+    if: selectorValue = #withSuperclass:fields: then: {
+        return: (ParseTreeClassDefinitionNode new
+            sourcePosition: messageSend sourcePosition;
+            nameExpression: name;
+            superclass: messageSend arguments first;
+            fields: messageSend arguments second;
             analyzeAndEvaluateInEnvironment: anEnvironment)
     }.
 
