@@ -1,0 +1,180 @@
+namespace SysmelC definition: {
+public: [
+class HIRValue withSuperclass: Value fields:#{
+    type: SysmelType
+}.
+
+class HIRConstant withSuperclass: HIRValue fields:#{
+}.
+
+class HIRConstantLiteralValue withSuperclass: HIRConstant fields:#{
+    literal: Value
+}.
+
+class HIRFunctionLocalValue withSuperclass: HIRConstant fields:#{
+    name: Symbol.
+    index: Integer.
+}.
+
+class HIRArgument withSuperclass: HIRFunctionLocalValue fields: #{
+
+}.
+
+class HIRCapture withSuperclass: HIRFunctionLocalValue fields: #{
+
+}.
+
+class HIRInstruction withSuperclass: HIRFunctionLocalValue fields: #{
+    previousInstruction: HIRInstruction.
+    nextInstruction: HIRInstruction.
+}.
+
+class HIRBasicBlock withSuperclass: HIRFunctionLocalValue fields: #{
+    previousBlock: HIRBasicBlock.
+    nextBlock: HIRBasicBlock.
+
+    firstInstruction: HIRInstruction.
+    lastInstruction: HIRInstruction.
+}.
+
+class HIRFunction withSuperclass: HIRConstant fields: #{
+    arguments: HIRArgument list.
+    captures: HIRArgument list.
+    firstBlock: HIRBasicBlock.
+    lastBlock: HIRBasicBlock.
+}.
+
+class HIRBuilder withSuperclass: Object fields:#{
+    environment: Environment.
+    function: HIRFunction.
+    basicBlock: HIRBasicBlock.
+    allocaBuilder: HIRBuilder.
+}.
+
+].
+
+## HIR Value
+HIRValue !{
+type :: SysmelType.
+    type
+}.
+
+HIRValue !{
+type: (SysmelType)aType :: Void.
+    type := aType
+}.
+
+## HIRConstantLiteralValue
+HIRConstantLiteralValue !{
+literal :: Value.
+    literal
+}.
+
+HIRConstantLiteralValue !{
+literal: (Value)newLiteral :: Void.
+    literal := newLiteral
+}.
+
+## HIRFunctionLocalValue
+HIRFunctionLocalValue !{
+name :: Symbol.
+    name
+}.
+
+HIRFunctionLocalValue !{
+name: (Symbol)aSymbol :: Void.
+    name := aSymbol
+}.
+
+HIRFunctionLocalValue !{
+index :: Integer.
+    index
+}.
+
+HIRFunctionLocalValue !{
+index: (Integer)anInteger :: Void.
+    index := anInteger
+}.
+
+## HIRInstruction
+HIRInstruction !{
+previousInstruction :: HIRInstruction.
+    previousInstruction
+}.
+
+HIRInstruction !{
+previousInstruction: (HIRInstruction)newPrevious :: Void.
+    previousInstruction := newPrevious
+}.
+
+HIRInstruction !{
+nextInstruction :: HIRInstruction.
+    nextInstruction
+}.
+
+HIRInstruction !{
+nextInstruction: (HIRInstruction)newNext :: Void.
+    nextInstruction := newNext
+}.
+
+## HIRBasicBlock
+HIRBasicBlock !{
+previousBlock :: HIRBasicBlock.
+    previousBlock
+}.
+
+HIRBasicBlock !{
+previousBlock: (HIRBasicBlock)newBlock :: Void.
+    previousBlock := newBlock
+}.
+
+HIRBasicBlock !{
+nextBlock :: HIRBasicBlock.
+    nextBlock
+}.
+
+HIRBasicBlock !{
+nextBlock: (HIRBasicBlock)newBlock :: Void.
+    nextBlock := newBlock
+}.
+
+HIRBasicBlock !{
+firstInstruction :: HIRInstruction.
+    firstInstruction
+}.
+
+HIRBasicBlock !{
+firstInstruction: (HIRInstruction)newInstruction :: Void.
+    firstInstruction := newInstruction
+}.
+
+HIRBasicBlock !{
+lastInstruction :: HIRInstruction.
+    lastInstruction
+}.
+
+HIRBasicBlock !{
+lastInstruction: (HIRInstruction)newInstruction :: Void.
+    lastInstruction := newInstruction
+}.
+
+HIRBasicBlock !{
+addInstruction: (HIRInstruction)newInstruction :: Void.
+    if: nil == lastInstruction then: {
+        firstInstruction := lastInstruction := newInstruction
+    } else: {
+        lastInstruction nextInstruction: newInstruction.
+        newInstruction previousInstruction: lastInstruction.
+        lastInstruction := newInstruction
+    }
+}.
+
+## HIRFunction
+#*
+arguments: HIRArgument list.
+captures: HIRArgument list.
+firstBlock: HIRBasicBlock.
+lastBlock: HIRBasicBlock.
+*#
+
+}
