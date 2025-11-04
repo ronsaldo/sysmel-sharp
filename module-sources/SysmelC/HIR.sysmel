@@ -39,7 +39,7 @@ class HIRBasicBlock withSuperclass: HIRFunctionLocalValue fields: #{
 
 class HIRFunction withSuperclass: HIRConstant fields: #{
     arguments: HIRArgument list.
-    captures: HIRArgument list.
+    captures: HIRCapture list.
     firstBlock: HIRBasicBlock.
     lastBlock: HIRBasicBlock.
 }.
@@ -170,11 +170,57 @@ addInstruction: (HIRInstruction)newInstruction :: Void.
 }.
 
 ## HIRFunction
-#*
-arguments: HIRArgument list.
-captures: HIRArgument list.
-firstBlock: HIRBasicBlock.
-lastBlock: HIRBasicBlock.
-*#
+HIRFunction !{
+arguments :: HIRArgument list.
+    arguments
+}.
+
+HIRFunction !{
+arguments: (HIRArgument list)newArguments :: Void.
+    arguments := newArguments
+}.
+
+HIRFunction !{
+captures :: HIRCapture list.
+    captures
+}.
+
+HIRFunction !{
+captures: (HIRCapture list)newCaptures :: Void.
+    captures := newCaptures
+}.
+
+HIRFunction !{
+firstBlock :: HIRBasicBlock.
+    firstBlock
+}.
+
+HIRFunction !{
+firstBlock: (HIRBasicBlock)newFirstBlock :: Void.
+    firstBlock := newFirstBlock
+}.
+
+HIRFunction !{
+lastBlock :: HIRBasicBlock.
+    lastBlock
+}.
+
+HIRFunction !{
+lastBlock: (HIRBasicBlock)newLastBlock :: Void.
+    lastBlock := newLastBlock
+}.
+
+HIRFunction !{
+addBasicBlock: (HIRBasicBlock)newBasicBlock :: Void.
+    if: nil == firstBlock then: {
+        firstBlock := lastBlock := newBasicBlock
+    } else: {
+        lastBlock nextBlock: newBasicBlock.
+        newBasicBlock previousBlock: lastBlock.
+        lastBlock := newBasicBlock
+    }
+}.
+
+## HIRBuilder
 
 }
