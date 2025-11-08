@@ -25,4 +25,19 @@ parent: (Environment)newParent :: Void.
     parent := newParent.
 }.
 
+FunctionAnalysisEnvironment !{
+setSymbol: (Symbol)symbol binding: (Value)binding :: Void.
+    localSymbols at: symbol put: binding
+}.
+
+FunctionAnalysisEnvironment !{
+lookupRecursively: (Symbol)aSymbol :: Value.
+    let localSymbol := localSymbols atOrNil: aSymbol.
+    if: nil ~~ localSymbol then: {
+        return: localSymbol
+    }.
+
+    parent lookupRecursively: aSymbol
+}.
+
 }

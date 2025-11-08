@@ -93,6 +93,26 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     functionValue
 }.
 
+Value !{
+analyzeAndBuildIdentifierReference: (ParseTreeIdentifierReferenceNode)identifierReference with: (HIRBuilder)aBuilder :: HIRValue.
+    aBuilder addLiteral: self at: identifierReference sourcePosition
+}.
+
+HIRValue !{
+analyzeAndBuildIdentifierReference: (ParseTreeIdentifierReferenceNode)identifierReference with: (HIRBuilder)aBuilder :: HIRValue.
+    self
+}.
+
+ParseTreeIdentifierReferenceNode !{
+analyzeAndBuildWith: (HIRBuilder)aBuilder :: HIRValue.
+    let foundValue := aBuilder environment lookupRecursively: value.
+    if: nil == foundValue then: {
+        error: "Failed to find identifier for " -- value printString
+    }.
+
+    foundValue analyzeAndBuildIdentifierReference: self with: aBuilder
+}.
+
 ## Literals
 #*
 ParseTreeLiteralBooleanNode !{

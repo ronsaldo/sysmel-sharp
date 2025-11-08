@@ -10,15 +10,19 @@ function evaluateSourceString(sourceString: String) => Value := {
 ## testLiteral
 {
     let blockClosure := evaluateSourceString("{:: Integer | 42}").
-    blockClosure dumpToConsole.
-    ##let evalResult := blockClosure evaluateWithArguments: [IntegerValue withInteger: 42].
-    ##assert: evalResult value = 42.
+    ##blockClosure dumpToConsole.
+    let evalResult := blockClosure evaluateWithArguments: Value list new.
+    assert: evalResult value = 42.
 }.
-#*{
+
+## testIdentity
+{
     let blockClosure := evaluateSourceString("{:x | x}").
-    printLine(blockClosure).
-    ##let evalResult := blockClosure evaluateWithArguments: [IntegerValue withInteger: 42].
-    ##assert: evalResult value = 42.
-}.*#
+    ##blockClosure dumpToConsole.
+    let evalResult := blockClosure evaluateWithArguments: ((Value list new: 1)
+                                                        at: 0 put: (IntegerValue new value: 42; type: CompilationContext current LargeIntegerType; yourself);
+                                                        yourself).
+    assert: evalResult value = 42.
+}.
 
 }

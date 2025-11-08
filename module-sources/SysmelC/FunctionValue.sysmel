@@ -32,6 +32,9 @@ ensureAnalysis :: Void.
     isAnalyzed := true.
 
     ## Function analysis environment.
+    let analysisEnvironment := FunctionAnalysisEnvironment new
+        parent: definitionEnvironment;
+        yourself.
 
     ## Create the arguments
     let argumentValueList := HIRArgumentArrayList new.
@@ -45,6 +48,10 @@ ensureAnalysis :: Void.
             type: argumentDefinition type;
             index: argumentIndex;
             yourself.
+
+        if: nil ~~ argumentDefinition name then: {
+            analysisEnvironment setSymbol: argumentDefinition name binding: hirArgument
+        }.
 
         argumentValueList add: hirArgument.
 
@@ -70,6 +77,7 @@ ensureAnalysis :: Void.
 
     let builder := HIRBuilder new
         allocaBuilder: allocaBuilder;
+        environment: analysisEnvironment;
         function: self validHIRFunction;
         basicBlock: entryBlock;
         yourself.
@@ -84,6 +92,12 @@ ensureAnalysis :: Void.
     }.
 
     allocaBuilder branch: entryBlock at: sourcePosition.
+}.
+
+FunctionValue !{
+evaluateWithArguments: (Value list)arguments :: Value.
+    self ensureAnalysis.
+    hirFunction evaluateWithArguments: arguments
 }.
 
 FunctionValue !{

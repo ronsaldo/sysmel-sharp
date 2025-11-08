@@ -665,6 +665,11 @@ isTerminator :: Boolean.
 }.
 
 HIRBranchInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    activationContext pc: destination index
+}.
+
+HIRBranchInstruction !{
 dumpToConsole :: Void.
     write("  branch "). writeLine(destination toString)
 }.
