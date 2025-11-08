@@ -43,6 +43,8 @@ class HIRFunction withSuperclass: HIRConstant fields: #{
     captures: HIRCapture list.
     firstBlock: HIRBasicBlock.
     lastBlock: HIRBasicBlock.
+
+    enumeratedInstructions: HIRValue list.
 }.
 
 class HIRAllocaInstruction withSuperclass: HIRInstruction fields: #{
@@ -330,8 +332,59 @@ addBasicBlock: (HIRBasicBlock)newBasicBlock :: Void.
     }
 }.
 
+let InstructionArrayList := System Collections ArrayList(HIRValue).
+
 HIRFunction !{
-dumpToConsole :: Void
+enumerateInstructions :: HIRValue list.
+    if: nil ~~ enumeratedInstructions then: {
+        return: enumeratedInstructions
+    }.
+
+    let instructionList := InstructionArrayList new.
+
+    ## Arguments
+    {
+        let i mutable := 0.
+        while: i < arguments size do: {
+            let argument := arguments at: i.
+            argument index: instructionList size.
+            instructionList add: argument.
+        } continueWith:(i := i + 1)
+    }.
+
+    ## Captures
+    {
+        let i mutable := 0.
+        while: i < captures size do: {
+            let capture := captures at: i.
+            capture index: instructionList size.
+            instructionList add: capture.
+        } continueWith:(i := i + 1)
+    }.
+
+    ## Basic blocks.
+    {
+        let blockPosition mutable := firstBlock.
+        while: (nil ~~ blockPosition) do: {
+            blockPosition index: instructionList size.
+            instructionList add: blockPosition.
+
+            ## Instructions
+            let instructionPosition mutable := blockPosition firstInstruction.
+            while: (nil ~~ instructionPosition) do: {
+                instructionPosition index: instructionList size.
+                instructionList add: instructionPosition.
+            } continueWith: (instructionPosition := instructionPosition nextInstruction).
+        } continueWith: (blockPosition := blockPosition nextBlock).
+    }.
+
+    enumeratedInstructions := instructionList asList.
+}.
+
+HIRFunction !{
+dumpToConsole :: Void.
+    self enumerateInstructions.
+
     if: nil ~~ name then: {
         printLine(name)
     }.
