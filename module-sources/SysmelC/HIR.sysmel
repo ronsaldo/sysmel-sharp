@@ -44,6 +44,32 @@ class HIRFunction withSuperclass: HIRConstant fields: #{
     lastBlock: HIRBasicBlock.
 }.
 
+class HIRAllocaInstruction withSuperclass: HIRInstruction fields: #{
+    valueType: SysmelType
+}.
+
+class HIRBranchInstruction withSuperclass: HIRInstruction fields: #{
+    destination: HIRBasicBlock
+}.
+
+class HIRCallFunctionInstruction withSuperclass: HIRInstruction fields: #{
+    function: HIRValue.
+    callArguments: HIRValue list.
+}.
+
+class HIRConditionalBranchInstruction withSuperclass: HIRInstruction fields: #{
+    condition: HIRValue.
+    trueDestination: HIRBasicBlock.
+    falseDestination: HIRBasicBlock
+}.
+
+class HIRReturnValueInstruction withSuperclass: HIRInstruction fields: #{
+    valueToReturn: HIRValue
+}.
+
+class HIRReturnVoidInstruction withSuperclass: HIRInstruction fields: #{
+}.
+
 class HIRBuilder withSuperclass: Object fields:#{
     environment: Environment.
     function: HIRFunction.
@@ -115,6 +141,11 @@ nextInstruction :: HIRInstruction.
 HIRInstruction !{
 nextInstruction: (HIRInstruction)newNext :: Void.
     nextInstruction := newNext
+}.
+
+HIRInstruction !{
+isTerminator :: Boolean.
+    false
 }.
 
 ## HIRBasicBlock
@@ -222,5 +253,232 @@ addBasicBlock: (HIRBasicBlock)newBasicBlock :: Void.
 }.
 
 ## HIRBuilder
+HIRBuilder !{
+environment :: Environment.
+    environment
+}.
+
+HIRBuilder !{
+environment: (Environment)newEnvironment :: Void.
+    environment := newEnvironment
+}.
+
+HIRBuilder !{
+function :: HIRFunction.
+    function
+}.
+
+HIRBuilder !{
+function: (HIRFunction)newFunction :: Void.
+    function := newFunction
+}.
+
+HIRBuilder !{
+basicBlock :: HIRBasicBlock.
+    basicBlock
+}.
+
+HIRBuilder !{
+basicBlock: (HIRBasicBlock)newBasicBlock :: Void.
+    basicBlock := newBasicBlock
+}.
+
+HIRBuilder !{
+allocaBuilder :: HIRBuilder.
+    allocaBuilder
+}.
+
+HIRBuilder !{
+allocaBuilder: (HIRBuilder)newAllocaBuilder :: Void.
+    allocaBuilder := newAllocaBuilder
+}.
+
+HIRBuilder !{
+addInstruction: (HIRInstruction)newInstruction :: Void.
+    basicBlock addInstruction: newInstruction
+}.
+
+## Alloca instruction
+HIRAllocaInstruction !{
+valueType :: SysmelType.
+    valueType
+}.
+
+HIRAllocaInstruction !{
+valueType: (SysmelType)newValueType.
+    valueType := newValueType
+}.
+
+HIRBuilder !{
+alloca: (SysmelType)valueType type: (SysmelType) type at: (SourcePosition)sourcePosition :: HIRAllocaInstruction.
+    let alloca := HIRAllocaInstruction new
+        sourcePosition: sourcePosition;
+        valueType: valueType;
+        type: type;
+        yourself.
+
+    self addInstruction: alloca.
+
+    alloca
+}.
+
+## Branch instruction
+HIRBranchInstruction !{
+destination :: HIRBasicBlock.
+    destination
+}.
+
+HIRBranchInstruction !{
+destination: (HIRBasicBlock)newDestination :: Void.
+    destination := newDestination
+}.
+
+HIRBranchInstruction !{
+isTerminator :: Boolean.
+    true
+}.
+
+HIRBuilder !{
+branch: (HIRBasicBlock)newDestination at: (SourcePosition)sourcePosition :: HIRBranchInstruction.
+    let branch := HIRBranchInstruction new
+        sourcePosition: sourcePosition;
+        destination: newDestination;
+        yourself.
+
+    self addInstruction: branch.
+
+    branch
+}.
+
+## Call function instruction
+HIRCallFunctionInstruction !{
+function :: HIRValue.
+    function
+}.
+
+HIRCallFunctionInstruction !{
+function: (HIRValue)newFunction :: Void.
+    function := newFunction
+}.
+
+HIRCallFunctionInstruction !{
+callArguments :: HIRValue list.
+    callArguments
+}.
+
+HIRCallFunctionInstruction !{
+callArguments: (HIRValue list)newArguments :: Void.
+    callArguments := newArguments
+}.
+
+HIRBuilder !{
+call: (HIRFunction)function withArguments: (HIRValue list)callArguments at: (SourcePosition)sourcePosition :: HIRInstruction.
+    let call := HIRCallFunctionInstruction new
+        sourcePosition: sourcePosition;
+        function: function;
+        callArguments: callArguments;
+        yourself.
+
+    ## TODO: Evaluate compile time expression.
+    self addInstruction: call.
+
+    call
+}.
+
+## HIRConditionalBranchInstruction
+HIRConditionalBranchInstruction!{
+condition :: HIRValue.
+    condition
+}.
+
+HIRConditionalBranchInstruction!{
+condition: (HIRValue)newCondition.
+    condition := newCondition
+}.
+
+HIRConditionalBranchInstruction!{
+trueDestination :: HIRBasicBlock.
+    trueDestination
+}.
+
+HIRConditionalBranchInstruction!{
+trueDestination: (HIRBasicBlock)newDestination.
+    trueDestination := newDestination
+}.
+
+HIRConditionalBranchInstruction!{
+falseDestination :: HIRBasicBlock.
+    falseDestination
+}.
+
+HIRConditionalBranchInstruction!{
+falseDestination: (HIRBasicBlock)newDestination.
+    falseDestination := newDestination
+}.
+
+HIRConditionalBranchInstruction !{
+isTerminator :: Boolean.
+    true
+}.
+
+HIRBuilder !{
+conditionalBranch: (HIRValue)condition trueDestination: (HIRBasicBlock)trueDestination falseDestination: (HIRBasicBlock)falseDestination at: (SourcePosition)sourcePosition :: HIRConditionalBranchInstruction.
+    let branch := HIRConditionalBranchInstruction new
+        sourcePosition: sourcePosition;
+        condition: condition;
+        trueDestination: trueDestination;
+        falseDestination: falseDestination;
+        yourself.
+
+    self addInstruction: branch.
+
+    branch
+}.
+
+## HIRReturnValueInstruction
+HIRReturnValueInstruction !{
+valueToReturn :: HIRValue.
+    valueToReturn
+}.
+
+HIRReturnValueInstruction !{
+valueToReturn: (HIRValue)newReturnValue :: Void.
+    valueToReturn := newReturnValue
+}.
+
+HIRReturnValueInstruction !{
+isTerminator :: Boolean.
+    true
+}.
+
+HIRBuilder !{
+returnValue: (HIRValue)valueToReturn at: (SourcePosition)sourcePosition :: HIRReturnValueInstruction.
+    let return := HIRReturnValueInstruction new
+        sourcePosition: sourcePosition;
+        valueToReturn: valueToReturn;
+        yourself.
+
+    self addInstruction: return.
+
+    return
+}.
+
+## HIRReturnVoidInstruction
+HIRReturnVoidInstruction !{
+isTerminator :: Boolean.
+    true
+}.
+
+HIRBuilder !{
+returnVoidAt: (SourcePosition)sourcePosition :: HIRReturnVoidInstruction.
+    let return := HIRReturnVoidInstruction new
+        sourcePosition: sourcePosition;
+        yourself.
+
+    self addInstruction: return.
+
+    return
+}.
+
 
 }
