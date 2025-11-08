@@ -799,6 +799,11 @@ dumpToConsole :: Void.
     write("  returnVoid")
 }.
 
+HIRReturnValueInstruction !{
+HIRReturnVoidInstruction: (HIRFunctionActivationContext)activationContext :: Void.
+    activationContext returnValue: VoidValue uniqueInstance.
+}.
+
 HIRBuilder !{
 returnVoidAt: (SourcePosition)sourcePosition :: HIRReturnVoidInstruction.
     let return := HIRReturnVoidInstruction new
