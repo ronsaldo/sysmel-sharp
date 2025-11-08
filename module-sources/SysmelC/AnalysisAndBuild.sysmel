@@ -1,0 +1,131 @@
+namespace SysmelC definition: {
+Value !{
+analyzeAndBuildWith: (HIRBuilder)aHIRBuilder :: HIRValue.
+    aHIRBuilder addLiteral: self at: sourcePosition
+}.
+
+Value !{
+analyzeAndBuildWith: (HIRBuilder)aHIRBuilder expectedType: (SysmelType)expectedType :: HIRValue.
+    let value := self analyzeAndBuildWith: aHIRBuilder.
+    self castHIRValue: value toExpectedType: expectedType with: aHIRBuilder
+}.
+
+Value !{
+castHIRValue: (HIRValue)value toExpectedType: (SysmelType)expectedType with: (HIRBuilder)aHIRBuilder :: HIRValue.
+    if: nil == expectedType then: {
+        value
+    }.
+
+    value 
+}.
+
+ParseTreeNode !{
+analyzeAndBuildWith: (HIRBuilder)aHIRBuilder :: Value.
+    printLine(self).
+    error: self sourcePosition printString -- ": Subclass responsibility"
+}.
+
+Value !{
+asArgumentValue :: ArgumentValue.
+    error: "Not an argument value"
+}.
+
+ArgumentValue !{
+asArgumentValue :: ArgumentValue.
+    self
+}.
+
+ParseTreeArgumentDefinitionNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: ArgumentValue.
+    let type mutable type: SysmelType := CompilationContext current DynamicType.
+    if: nil ~~ typeExpression then: {
+        type := (typeExpression analyzeAndEvaluateInEnvironment: environment) asType
+    }.
+
+    let argumentValue := ArgumentValue new
+        sourcePosition: sourcePosition;
+        name: name;
+        type: type;
+        yourself.
+    if: nil ~~ name then: {
+        environment setSymbol: name binding: argumentValue
+    }.
+    argumentValue
+}.
+
+ParseTreeFunctionalDependentTypeNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: FunctionType.
+    let argumentEnvironment := LexicalEnvironment withParent: environment.
+    let argumentCount := argumentDefinitions size.
+    let argumentValues := ArgumentValue list new: argumentCount.
+    let argumentIndex mutable := 0.
+    while: (argumentIndex < argumentCount) do: {
+        let argumentDefinition := argumentDefinitions at: argumentIndex.
+        let argumentValue := (argumentDefinition analyzeAndEvaluateInEnvironment: argumentEnvironment) asArgumentValue.
+
+        argumentValue index: argumentIndex.
+        argumentValues at: argumentIndex put: argumentValue
+    } continueWith: (argumentIndex := argumentIndex + 1).
+
+    let hasMacroContextAsFirstArgument := false. ##(argumentValues size >= 1) && (argumentValues first isMacroContextArgument).
+    let resultType mutable type: SysmelType := CompilationContext current DynamicType.
+    if: nil ~~ resultTypeExpression then: {
+        resultType := (resultTypeExpression analyzeAndEvaluateInEnvironment: argumentEnvironment) asType
+    }.
+
+    FunctionType new
+        argumentDefinitions: argumentValues;
+        resultTypeExpression: resultType;
+        yourself
+}.
+
+ParseTreeBlockClosureNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    let functionTypeValue := functionType analyzeAndEvaluateInEnvironment: environment.
+    let functionValue := FunctionValue new
+        sourcePosition: sourcePosition;
+        type: functionTypeValue;
+        functionType: functionTypeValue;
+        definitionEnvironment: environment;
+        definitionBody: body;
+        yourself.
+    functionValue ensureAnalysis.
+    functionValue
+}.
+
+## Literals
+#*
+ParseTreeLiteralBooleanNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    BooleanValue new value: value; yourself
+}.
+
+ParseTreeLiteralCharacterNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    IntegerValue new value: value asInteger; type: CompilationContext current CharacterType; yourself
+}.
+
+ParseTreeLiteralFloatNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    FloatValue new value: value; type: CompilationContext current FloatType; yourself
+}.
+
+*#
+ParseTreeLiteralIntegerNode !{
+analyzeAndBuildWith: (HIRBuilder)builder :: HIRValue.
+    builder addLiteral: (IntegerValue new value: value; type: CompilationContext current LargeIntegerType; yourself) at: sourcePosition
+}.
+
+#*
+ParseTreeLiteralStringNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    StringValue new value: value; type: CompilationContext current StringType; yourself
+}.
+
+ParseTreeLiteralSymbolNode !{
+analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
+    SymbolValue new value: value; type: CompilationContext current SymbolType; yourself
+}.
+
+*#
+}.

@@ -1,0 +1,28 @@
+namespace SysmelC definition: {
+
+let SymbolHashtable := System Collections Dictionary(Symbol. Value).
+
+public: [
+
+class FunctionAnalysisEnvironment withSuperclass: Environment fields: #{
+    parent: Environment.
+    localSymbols: SymbolHashtable.
+}.
+].
+
+FunctionAnalysisEnvironment !{
+initialize :: Void.
+    localSymbols := SymbolHashtable new.
+}.
+
+FunctionAnalysisEnvironment !{
+parent :: Environment.
+    parent
+}.
+
+FunctionAnalysisEnvironment !{
+parent: (Environment)newParent :: Void.
+    parent := newParent.
+}.
+
+}

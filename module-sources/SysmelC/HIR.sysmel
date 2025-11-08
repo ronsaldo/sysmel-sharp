@@ -45,7 +45,7 @@ class HIRFunction withSuperclass: HIRConstant fields: #{
     lastBlock: HIRBasicBlock.
 
     enumeratedInstructions: HIRValue list.
-    sourceFunction: FunctionValue.
+    sourceFunction: Value.
 }.
 
 class HIRFunctionActivationContext withSuperclass: Object fields: #{
@@ -259,6 +259,11 @@ toString :: String.
     else: {
         "%" -- index asString
     }
+}.
+
+HIRBasicBlock !{
+isLastTerminator :: Boolean.
+    (lastInstruction ~~ nil) && (lastInstruction isTerminator)
 }.
 
 HIRBasicBlock !{
@@ -599,6 +604,19 @@ allocaBuilder: (HIRBuilder)newAllocaBuilder :: Void.
 HIRBuilder !{
 addInstruction: (HIRInstruction)newInstruction :: Void.
     basicBlock addInstruction: newInstruction
+}.
+
+HIRBuilder !{
+addLiteral: (Value)value at: (SourcePosition)sourcePosition :: HIRValue.
+    HIRConstantLiteralValue new
+        sourcePosition: sourcePosition;
+        literal: value;
+        yourself
+}.
+
+HIRBuilder !{
+isLastTerminator :: Boolean.
+    basicBlock isLastTerminator
 }.
 
 ## Alloca instruction

@@ -5,3 +5,5 @@ loadFileOnce: "TypeTests.sysmel".
 loadFileOnce: "AnalysisAndEvaluationTests.sysmel".
 
 loadFileOnce: "HIRTests.sysmel".
+
+loadFileOnce: "AnalysisAndBuildTests.sysmel".

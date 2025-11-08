@@ -170,9 +170,6 @@ class FunctionalValue withSuperclass: Value fields:#{
     isMacro: Boolean.
 }.
 
-class FunctionValue withSuperclass: FunctionalValue fields: #{
-}.
-
 class PrimitiveFunctionValue withSuperclass: FunctionalValue fields: #{
     primitiveName: Symbol.
     implementation: (Value list) => Value.
@@ -305,6 +302,11 @@ isDynamicType :: Boolean.
 SysmelType !{
 defaultValue :: Value.
     UndefinedValue uniqueInstance
+}.
+
+SysmelType !{
+supertype :: SysmelType.
+    nil
 }.
 
 ## DerivedType
@@ -1087,6 +1089,11 @@ computeDependentResultTypeWithCallArguments: (Value list)callArguments :: Sysmel
 FunctionType !{
 computeResultTypeWithArguments: (Value list)callArguments :: SysmelType.
     resultTypeExpression computeDependentResultTypeWithCallArguments: callArguments
+}.
+
+SysmelType !{
+isVoidType :: Boolean.
+    self == CompilationContext current VoidType
 }.
 
 SysmelType !{

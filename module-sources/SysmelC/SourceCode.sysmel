@@ -149,6 +149,20 @@ until: (SourcePosition)target :: SourcePosition.
         yourself
 }.
 
+SourceCode !{
+printString :: String.
+    if: nil ~~ directory  then: {
+        directory -- "/" -- name
+    } else: {
+        name
+    }
+}.
+
+SourcePosition !{
+printString :: String.
+    sourceCode printString
+}.
+
 public: [
 function makeSourceCodeForString(text: String) => SourceCode
     := SourceCode new

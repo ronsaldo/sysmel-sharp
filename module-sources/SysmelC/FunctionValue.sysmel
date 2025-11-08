@@ -1,0 +1,125 @@
+namespace SysmelC definition: {
+public: [
+class FunctionValue withSuperclass: FunctionalValue fields: #{
+    functionType: FunctionType.
+
+    definitionEnvironment: Environment.
+    definitionBody: Value.
+
+    hirFunction: HIRFunction.
+    isAnalyzed: Boolean.
+}.
+].
+
+FunctionValue !{
+validHIRFunction :: HIRFunction.
+    if: nil == hirFunction then: {
+        hirFunction := HIRFunction new
+            type: type;
+            yourself
+    }.
+
+    hirFunction
+}.
+
+let HIRArgumentArrayList := System Collections ArrayList(HIRArgument).
+
+FunctionValue !{
+ensureAnalysis :: Void.
+    if: isAnalyzed then: {
+        return: void
+    }.
+    isAnalyzed := true.
+
+    ## Function analysis environment.
+
+    ## Create the arguments
+    let argumentValueList := HIRArgumentArrayList new.
+    let argumentCount := functionType argumentDefinitions size.
+    let argumentIndex mutable := 0.
+    while: (argumentIndex < argumentCount) do: {
+        let argumentDefinition := functionType argumentDefinitions at: argumentIndex.
+        let hirArgument := HIRArgument new
+            sourcePosition: argumentDefinition sourcePosition;
+            name: argumentDefinition name;
+            type: argumentDefinition type;
+            index: argumentIndex;
+            yourself.
+
+        argumentValueList add: hirArgument.
+
+    } continueWith: (argumentIndex := argumentIndex + 1).
+
+    self validHIRFunction arguments: argumentValueList asList.
+    self validHIRFunction captures: HIRCapture list new.
+
+    ## Return type.
+    let returnTypeValue := functionType resultTypeReturnValue.
+
+    ## Alloca block
+    let allocaBlock := HIRBasicBlock new name: #alloca; yourself.
+    let allocaBuilder := HIRBuilder new
+        function: self validHIRFunction;
+        basicBlock: allocaBlock;
+        yourself.
+    hirFunction addBasicBlock: allocaBlock.
+
+    ## Entry basic block
+    let entryBlock := HIRBasicBlock new name: #entry; yourself.
+    hirFunction addBasicBlock: entryBlock.
+
+    let builder := HIRBuilder new
+        allocaBuilder: allocaBuilder;
+        function: self validHIRFunction;
+        basicBlock: entryBlock;
+        yourself.
+
+    let result := definitionBody analyzeAndBuildWith: builder expectedType: returnTypeValue.
+    if: builder isLastTerminator not then: {
+        if: returnTypeValue isVoidType then: {
+            builder returnVoidAt: sourcePosition
+        } else: {
+            builder returnValue: result at: sourcePosition
+        }.
+    }.
+
+    allocaBuilder branch: entryBlock at: sourcePosition.
+}.
+
+FunctionValue !{
+dumpToConsole :: Void.
+    self ensureAnalysis.
+    hirFunction dumpToConsole.
+}.
+
+FunctionValue !{
+functionType :: FunctionType.
+    functionType
+}.
+
+FunctionValue !{
+functionType: (FunctionType)aFunctionType.
+    functionType := aFunctionType
+}.
+
+FunctionValue !{
+definitionEnvironment :: Environment.
+    definitionEnvironment
+}.
+
+FunctionValue !{
+definitionEnvironment: (Environment)anEnvironment.
+    definitionEnvironment := anEnvironment
+}.
+
+FunctionValue !{
+definitionBody :: Value.
+    definitionBody
+}.
+
+FunctionValue !{
+definitionBody: (Value)aBody.
+    definitionBody := aBody
+}.
+
+}.

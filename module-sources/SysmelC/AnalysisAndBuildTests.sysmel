@@ -1,0 +1,24 @@
+namespace SysmelC definition: {
+function evaluateSourceString(sourceString: String) => Value := {
+    let sourceCode := makeSourceCodeForString(sourceString).
+    let parseTree := Parser new parseSourceCode: sourceCode.
+    let systemEnvironment := NamespaceEnvironment withParent: EmptyEnvironment new namespace: CompilationContext current globalNamespace.
+    let environment := LexicalEnvironment withParent: systemEnvironment.
+    parseTree analyzeAndEvaluateInEnvironment: environment
+}.
+
+## testLiteral
+{
+    let blockClosure := evaluateSourceString("{:: Integer | 42}").
+    blockClosure dumpToConsole.
+    ##let evalResult := blockClosure evaluateWithArguments: [IntegerValue withInteger: 42].
+    ##assert: evalResult value = 42.
+}.
+#*{
+    let blockClosure := evaluateSourceString("{:x | x}").
+    printLine(blockClosure).
+    ##let evalResult := blockClosure evaluateWithArguments: [IntegerValue withInteger: 42].
+    ##assert: evalResult value = 42.
+}.*#
+
+}

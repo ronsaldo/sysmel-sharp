@@ -15,3 +15,6 @@ loadFileOnce: "MetaBuilder.sysmel".
 loadFileOnce: "AnalysisAndEvaluation.sysmel".
 
 loadFileOnce: "HIR.sysmel".
+loadFileOnce: "FunctionValue.sysmel".
+loadFileOnce: "FunctionEnvironment.sysmel".
+loadFileOnce: "AnalysisAndBuild.sysmel".
