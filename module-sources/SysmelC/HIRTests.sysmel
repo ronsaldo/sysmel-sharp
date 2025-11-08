@@ -1,0 +1,32 @@
+namespace SysmelC definition: {
+
+## testFunction
+{
+    let argument := HIRArgument new
+        name: #arg;
+        type: CompilationContext current LargeIntegerType;
+        yourself.
+
+    let function := HIRFunction new name: #testFunction;
+        arguments: ((HIRArgument list new: 1)
+            at: 0 put: argument;
+            yourself);
+        captures: HIRCapture list new;
+        yourself.
+
+    let basicBlock := HIRBasicBlock new name: #entry; yourself.
+    function addBasicBlock: basicBlock.
+
+
+    let builder := HIRBuilder new
+        function: function;
+        basicBlock: basicBlock;
+        yourself.
+
+    builder returnValue: argument at: nil.
+
+    function dumpToConsole.
+
+}.
+
+}

@@ -38,6 +38,7 @@ class HIRBasicBlock withSuperclass: HIRFunctionLocalValue fields: #{
 }.
 
 class HIRFunction withSuperclass: HIRConstant fields: #{
+    name: Symbol.
     arguments: HIRArgument list.
     captures: HIRCapture list.
     firstBlock: HIRBasicBlock.
@@ -88,6 +89,11 @@ type :: SysmelType.
 HIRValue !{
 type: (SysmelType)aType :: Void.
     type := aType
+}.
+
+HIRValue !{
+toString :: String.
+    "an HIR Value"
 }.
 
 ## HIRConstantLiteralValue
@@ -148,6 +154,16 @@ isTerminator :: Boolean.
     false
 }.
 
+HIRInstruction !{
+toString :: String.
+    "%" -- index asString
+}.
+
+HIRInstruction !{
+dumpToConsole :: Void.
+    write("  "). writeLine(self toString) 
+}.
+
 ## HIRBasicBlock
 HIRBasicBlock !{
 previousBlock :: HIRBasicBlock.
@@ -200,7 +216,69 @@ addInstruction: (HIRInstruction)newInstruction :: Void.
     }
 }.
 
+HIRBasicBlock !{
+toString :: String.
+    if: nil ~~ name then: {
+        "%" -- name asString -- "." -- index asString
+    }
+    else: {
+        "%" -- index asString
+    }
+}.
+
+HIRBasicBlock !{
+dumpToConsole :: Void.
+    write(self toString). writeLine(":").
+
+    let currentPosition mutable := firstInstruction.
+    while: nil ~~ currentPosition do: {
+        currentPosition dumpToConsole
+    } continueWith: (currentPosition := currentPosition nextInstruction).
+}.
+
+## HIRArgument
+HIRArgument !{
+toString :: String.
+    if: nil ~~ name then: {
+        "%" -- name asString -- "." -- index asString
+    }
+    else: {
+        "%" -- index asString
+    }
+}.
+
+HIRArgument !{
+dumpToConsole :: Void.
+    write("  "). write(self toString). writeLine(" := argument")
+}.
+
+## HIRCapture
+HIRCapture !{
+toString :: String.
+    if: nil ~~ name then: {
+        "%" -- name asString -- "." -- index asString
+    }
+    else: {
+        "%" -- index asString
+    }
+}.
+
+HIRCapture !{
+dumpToConsole :: Void.
+    write("  "). write(self toString). writeLine(" := capture")
+}.
+
 ## HIRFunction
+HIRFunction !{
+name :: Symbol.
+    name
+}.
+
+HIRFunction !{
+name: (Symbol)newName :: Void.
+    name := newName
+}.
+
 HIRFunction !{
 arguments :: HIRArgument list.
     arguments
@@ -250,6 +328,39 @@ addBasicBlock: (HIRBasicBlock)newBasicBlock :: Void.
         newBasicBlock previousBlock: lastBlock.
         lastBlock := newBasicBlock
     }
+}.
+
+HIRFunction !{
+dumpToConsole :: Void
+    if: nil ~~ name then: {
+        printLine(name)
+    }.
+    writeLine("{").
+
+    ## Arguments
+    {
+        let i mutable := 0.
+        while: i < arguments size do: {
+            let argument := arguments at: i.
+            argument dumpToConsole.
+        } continueWith:(i := i + 1)
+    }.
+
+    ## Captures
+    {
+        let i mutable := 0.
+        while: i < captures size do: {
+            let capture := captures at: i.
+            capture dumpToConsole.
+        } continueWith:(i := i + 1)
+    }.
+
+    ## Basic blocks
+    let position mutable := firstBlock.
+    while: nil ~~ position do: {
+        position dumpToConsole
+    } continueWith: (position := position nextBlock).
+    writeLine("}").
 }.
 
 ## HIRBuilder
@@ -309,6 +420,11 @@ valueType: (SysmelType)newValueType.
     valueType := newValueType
 }.
 
+HIRAllocaInstruction !{
+dumpToConsole :: Void.
+    write("  "). write(self toString). writeLine(" := alloca")
+}.
+
 HIRBuilder !{
 alloca: (SysmelType)valueType type: (SysmelType) type at: (SourcePosition)sourcePosition :: HIRAllocaInstruction.
     let alloca := HIRAllocaInstruction new
@@ -337,6 +453,12 @@ HIRBranchInstruction !{
 isTerminator :: Boolean.
     true
 }.
+
+HIRBranchInstruction !{
+dumpToConsole :: Void.
+    write("  branch "). writeLine(destination toString)
+}.
+
 
 HIRBuilder !{
 branch: (HIRBasicBlock)newDestination at: (SourcePosition)sourcePosition :: HIRBranchInstruction.
@@ -451,6 +573,11 @@ isTerminator :: Boolean.
     true
 }.
 
+HIRReturnValueInstruction !{
+dumpToConsole :: Void.
+    write("  returnValue: "). writeLine(valueToReturn toString)
+}.
+
 HIRBuilder !{
 returnValue: (HIRValue)valueToReturn at: (SourcePosition)sourcePosition :: HIRReturnValueInstruction.
     let return := HIRReturnValueInstruction new
@@ -467,6 +594,11 @@ returnValue: (HIRValue)valueToReturn at: (SourcePosition)sourcePosition :: HIRRe
 HIRReturnVoidInstruction !{
 isTerminator :: Boolean.
     true
+}.
+
+HIRReturnVoidInstruction !{
+dumpToConsole :: Void.
+    write("  returnVoid")
 }.
 
 HIRBuilder !{
