@@ -117,6 +117,7 @@ getValueInEvaluationContext: (HIRFunctionActivationContext)activationContext :: 
 
 HIRValue !{
 evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    printLine(self).
     error: "evaluateInActivationContext subclassResponsibility"
 }.
 
@@ -129,6 +130,11 @@ literal :: Value.
 HIRConstantLiteralValue !{
 literal: (Value)newLiteral :: Void.
     literal := newLiteral
+}.
+
+HIRConstantLiteralValue !{
+getValueInEvaluationContext: (HIRFunctionActivationContext)activationContext :: Value.
+    literal
 }.
 
 ## HIRFunctionLocalValue
@@ -150,6 +156,11 @@ index :: Integer.
 HIRFunctionLocalValue !{
 index: (Integer)anInteger :: Void.
     index := anInteger
+}.
+
+HIRFunctionLocalValue !{
+getValueInEvaluationContext: (HIRFunctionActivationContext)activationContext :: Value.
+    activationContext instructionValues at: index
 }.
 
 ## HIRInstruction
@@ -258,6 +269,11 @@ dumpToConsole :: Void.
     while: nil ~~ currentPosition do: {
         currentPosition dumpToConsole
     } continueWith: (currentPosition := currentPosition nextInstruction).
+}.
+
+HIRBasicBlock !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    ## Nothing is required here
 }.
 
 ## HIRArgument
@@ -471,6 +487,11 @@ initializeWithInstructions: (HIRValue list) newList andSourcePositions: (SourceP
 
     let instructionCount := instructions size.
     instructionValues := Value list new: instructionCount.
+    let voidValue := VoidValue uniqueInstance.
+    let i mutable := 0.
+    while: (i < instructionCount) do: {
+        instructionValues at: i put: voidValue
+    } continueWith:( i := i + 1)
 }.
 
 ## HIRFunctionActivationContext
@@ -504,6 +525,11 @@ pc: (Integer)newPC.
 }.
 
 HIRFunctionActivationContext !{
+instructionValues :: Value list.
+    instructionValues
+}.
+
+HIRFunctionActivationContext !{
 evaluateInstructions :: Value.
     let instructionCount := instructions size.
     while: (pc < instructionCount) do: {
@@ -522,6 +548,11 @@ evaluateInstructions :: Value.
     }.
 
     error: "Reached beyond the end of a function instructions."
+}.
+
+HIRFunctionActivationContext !{
+returnValue: (Value)valueToReturn :: Void.
+    returnValue := valueToReturn
 }.
 
 ## HIRBuilder
@@ -737,6 +768,12 @@ isTerminator :: Boolean.
 HIRReturnValueInstruction !{
 dumpToConsole :: Void.
     write("  returnValue: "). writeLine(valueToReturn toString)
+}.
+
+HIRReturnValueInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let returnValue := valueToReturn getValueInEvaluationContext: activationContext.
+    activationContext returnValue: returnValue.
 }.
 
 HIRBuilder !{
