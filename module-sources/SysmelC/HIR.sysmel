@@ -45,6 +45,18 @@ class HIRFunction withSuperclass: HIRConstant fields: #{
     lastBlock: HIRBasicBlock.
 
     enumeratedInstructions: HIRValue list.
+    sourceFunction: FunctionValue.
+}.
+
+class HIRFunctionActivationContext withSuperclass: Object fields: #{
+    sourcePosition: SourcePosition.
+    instructionPC: Integer.
+    pc: Integer.
+
+    instructions: HIRValue list.
+    instructionValues: Value list.
+
+    returnValue: Value.
 }.
 
 class HIRAllocaInstruction withSuperclass: HIRInstruction fields: #{
@@ -96,6 +108,16 @@ type: (SysmelType)aType :: Void.
 HIRValue !{
 toString :: String.
     "an HIR Value"
+}.
+
+HIRValue !{
+getValueInEvaluationContext: (HIRFunctionActivationContext)activationContext :: Value.
+    error: "getValueInEvaluationContext subclassResponsibility"
+}.
+
+HIRValue !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    error: "evaluateInActivationContext subclassResponsibility"
 }.
 
 ## HIRConstantLiteralValue
@@ -414,6 +436,92 @@ dumpToConsole :: Void.
         position dumpToConsole
     } continueWith: (position := position nextBlock).
     writeLine("}").
+}.
+
+HIRFunction !{
+evaluateWithArguments: (Value list)argumentValues andCaptures: (Value list)captureValues :: Value.
+    if: nil ~~ sourceFunction then: {
+        sourceFunction ensureAnalysis
+    }.
+
+    let instructions := self enumerateInstructions.
+
+    assert: arguments size = argumentValues size.
+    assert: captures size = captureValues size.
+
+    let activationContext := HIRFunctionActivationContext new
+        initializeWithInstructions: instructions andSourcePositions: sourcePosition;
+        setCallArguments: argumentValues andCaptures: captureValues;
+        yourself.
+
+    activationContext pc: firstBlock index.
+    activationContext evaluateInstructions
+}.
+
+HIRFunction !{
+evaluateWithArguments: (Value list)argumentValues :: Value.
+    self evaluateWithArguments: argumentValues andCaptures: (Value list new: 0)
+}.
+
+## HIRFunctionActivationContext
+HIRFunctionActivationContext !{
+initializeWithInstructions: (HIRValue list) newList andSourcePositions: (SourcePosition) newSourcePosition :: Void.
+    sourcePosition := newSourcePosition.
+    instructions := newList.
+
+    let instructionCount := instructions size.
+    instructionValues := Value list new: instructionCount.
+}.
+
+## HIRFunctionActivationContext
+HIRFunctionActivationContext !{
+setCallArguments: (Value list)callArguments andCaptures: (Value list)callCaptures :: Void.
+    ## Arguments
+    {
+        let i mutable := 0.
+        while: i < callArguments size do: {
+            instructionValues at: i put: (callArguments at: i)
+        } continueWith: (i := i + 1).
+    }.
+
+    ## Captures
+    {
+        let i mutable := 0.
+        while: i < callCaptures size do: {
+            instructionValues at: callArguments size + i put: (callCaptures at: i)
+        } continueWith: (i := i + 1).
+    }
+}.
+
+HIRFunctionActivationContext !{
+pc :: Integer.
+    pc
+}.
+
+HIRFunctionActivationContext !{
+pc: (Integer)newPC.
+    pc := newPC
+}.
+
+HIRFunctionActivationContext !{
+evaluateInstructions :: Value.
+    let instructionCount := instructions size.
+    while: (pc < instructionCount) do: {
+        ## Fetch the instruction
+        instructionPC := pc.
+        pc := pc + 1.
+        let instruction := instructions at: instructionPC.
+
+        ## Evaluate the instruction
+        instruction evaluateInActivationContext: self.
+
+        ## Return
+        if: nil ~~ returnValue then: {
+            return: returnValue
+        }.
+    }.
+
+    error: "Reached beyond the end of a function instructions."
 }.
 
 ## HIRBuilder

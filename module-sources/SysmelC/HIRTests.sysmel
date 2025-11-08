@@ -25,6 +25,11 @@ namespace SysmelC definition: {
 
     builder returnValue: argument at: nil.
 
+    let argumentValue := IntegerValue new value: 42; type: CompilationContext current LargeIntegerType; yourself.
+    let resultValue := function evaluateWithArguments: ((Value list new: 1) at: 0 put: argumentValue; yourself).
+    assert: resultValue isIntegerValue.
+    assert: resultValue asInteger = 42.
+
     function dumpToConsole.
 
 }.

@@ -170,6 +170,9 @@ class FunctionalValue withSuperclass: Value fields:#{
     isMacro: Boolean.
 }.
 
+class FunctionValue withSuperclass: FunctionalValue fields: #{
+}.
+
 class PrimitiveFunctionValue withSuperclass: FunctionalValue fields: #{
     primitiveName: Symbol.
     implementation: (Value list) => Value.
