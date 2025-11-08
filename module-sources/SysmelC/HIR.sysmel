@@ -799,8 +799,8 @@ dumpToConsole :: Void.
     write("  returnVoid")
 }.
 
-HIRReturnValueInstruction !{
-HIRReturnVoidInstruction: (HIRFunctionActivationContext)activationContext :: Void.
+HIRReturnVoidInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
     activationContext returnValue: VoidValue uniqueInstance.
 }.
 
