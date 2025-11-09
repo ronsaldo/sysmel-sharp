@@ -94,6 +94,14 @@ class HIRConditionalBranchInstruction withSuperclass: HIRInstruction fields: #{
     falseDestination: HIRBasicBlock
 }.
 
+class HIRPhiInstruction withSuperclass: HIRInstruction fields: #{
+}.
+
+class HIRPhiSourceInstruction withSuperclass: HIRInstruction fields: #{
+    sourceValue: HIRValue.
+    phiDestination: HIRPhiInstruction
+}.
+
 class HIRReturnValueInstruction withSuperclass: HIRInstruction fields: #{
     valueToReturn: HIRValue
 }.
@@ -269,6 +277,7 @@ evaluateWithArguments: (Value list)arguments :: Value.
 FunctionalValue !{
 analyzeAndBuildWith: (HIRBuilder)aHIRBuilder :: HIRValue.
     HIRImportedFunction new
+        type: type;
         sourcePosition: sourcePosition;
         functional: self;
         yourself
@@ -678,6 +687,11 @@ setCurrentInstructionValue: (Value)valueToSet :: Void.
 }.
 
 HIRFunctionActivationContext !{
+atPC: (Integer)destinationPC setValue: (Value)valueToSet.
+    instructionValues at: destinationPC put: valueToSet
+}.
+
+HIRFunctionActivationContext !{
 evaluateInstructions :: Value.
     let instructionCount := instructions size.
     while: (pc < instructionCount) do: {
@@ -759,6 +773,21 @@ addLiteral: (Value)value at: (SourcePosition)sourcePosition :: HIRValue.
         sourcePosition: sourcePosition;
         literal: value;
         type: value type;
+        yourself
+}.
+
+HIRBuilder !{
+getVoidLiteralAt: (SourcePosition)sourcePosition :: HIRValue.
+    self addLiteral: VoidValue uniqueInstance at: sourcePosition
+}.
+
+HIRBuilder !{
+copyWithBasicBlock: (HIRBasicBlock)newBasicBlock :: HIRBuilder.
+    HIRBuilder new
+        environment: environment;
+        function: function;
+        basicBlock: newBasicBlock;
+        allocaBuilder: allocaBuilder;
         yourself
 }.
 
@@ -1024,6 +1053,21 @@ isTerminator :: Boolean.
     true
 }.
 
+HIRConditionalBranchInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let conditionValue := (condition getValueInEvaluationContext: activationContext) asBoolean.
+    if: conditionValue then: {
+        activationContext pc: trueDestination index
+    } else: {
+        activationContext pc: falseDestination index
+    }
+}.
+
+HIRConditionalBranchInstruction !{
+dumpToConsole :: Void.
+    writeLine("  condBranch " -- condition toString -- " ifTrue " -- trueDestination toString -- " ifFalse " -- falseDestination toString)
+}.
+
 HIRBuilder !{
 conditionalBranch: (HIRValue)condition trueDestination: (HIRBasicBlock)trueDestination falseDestination: (HIRBasicBlock)falseDestination at: (SourcePosition)sourcePosition :: HIRConditionalBranchInstruction.
     let branch := HIRConditionalBranchInstruction new
@@ -1037,6 +1081,77 @@ conditionalBranch: (HIRValue)condition trueDestination: (HIRBasicBlock)trueDesti
 
     branch
 }.
+
+## HIRPhiInstruction
+HIRBuilder !{
+phi: (SysmelType)valueType name: (Symbol)name at: (SourcePosition)sourcePosition :: HIRPhiInstruction.
+    let phi := HIRPhiInstruction new
+        sourcePosition: sourcePosition;
+        name: name;
+        type: valueType;
+        yourself.
+
+    self addInstruction: phi.
+
+    phi
+}.
+
+HIRPhiInstruction !{
+dumpToConsole :: Void.
+    writeLine("  " -- self toString -- " := phi " -- type printString)
+}.
+
+HIRPhiInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    ## Nothing is required here
+}.
+
+## HIRPhiSourceInstruction
+HIRPhiSourceInstruction !{
+sourceValue :: HIRValue.
+    sourceValue
+}.
+
+HIRPhiSourceInstruction !{
+sourceValue: (HIRValue)newSourceValue :: Void.
+    sourceValue := newSourceValue
+}.
+
+HIRPhiSourceInstruction !{
+phiDestination :: HIRPhiInstruction.
+    phiDestination
+}.
+
+HIRPhiSourceInstruction !{
+phiDestination: (HIRPhiInstruction)newPhi :: Void.
+    phiDestination := newPhi
+}.
+
+HIRBuilder !{
+phi: (HIRPhiInstruction)phi source: (HIRValue)sourceValue at: (SourcePosition)sourcePosition :: HIRPhiSourceInstruction.
+    let phiSource := HIRPhiSourceInstruction new
+        sourcePosition: sourcePosition;
+        sourceValue: sourceValue;
+        phiDestination: phi;
+        type: CompilationContext current VoidType;
+        yourself.
+
+    self addInstruction: phiSource.
+
+    phiSource
+}.
+
+HIRPhiSourceInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let sourceEvaluatedValue := sourceValue getValueInEvaluationContext: activationContext.
+    activationContext atPC: phiDestination index setValue: sourceEvaluatedValue
+}.
+
+HIRPhiSourceInstruction !{
+dumpToConsole :: Void.
+    writeLine("  phi " -- phiDestination toString -- " source " -- sourceValue toString)
+}.
+
 
 ## HIRReturnValueInstruction
 HIRReturnValueInstruction !{

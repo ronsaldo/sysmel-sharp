@@ -112,9 +112,70 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
     functionValue
 }.
 
+ParseTreeIfSelectionNode !{
+analyzeAndBuildWith: (HIRBuilder)builder :: HIRValue.
+    let trueDestination := HIRBasicBlock new sourcePosition: sourcePosition; name: #ifTrue; yourself.
+    let falseDestination := HIRBasicBlock new sourcePosition: sourcePosition; name: #ifFalse; yourself.
+    let mergeDestination := HIRBasicBlock new sourcePosition: sourcePosition; name: #ifMerge; yourself.
+
+    let conditionValue := condition analyzeAndBuildWith: builder expectedType: CompilationContext current BooleanType.
+    builder conditionalBranch: conditionValue trueDestination: trueDestination falseDestination: falseDestination at: sourcePosition.
+
+    ## True destination
+    let trueBuilder := builder copyWithBasicBlock: trueDestination.
+    trueBuilder function addBasicBlock: trueDestination.
+
+    let trueResult mutable type: HIRValue := nil.
+    if: nil ~~ trueExpression then: {
+        trueResult := trueExpression analyzeAndBuildWithDecayedType: builder
+    }.
+
+    ## False destination
+    let falseBuilder := builder copyWithBasicBlock: falseDestination.
+    falseBuilder function addBasicBlock: falseDestination.
+
+    let falseResult mutable type: HIRValue := nil.
+    if: nil ~~ falseExpression then: {
+        falseResult := falseExpression analyzeAndBuildWithDecayedType: builder
+    }.
+
+    ## Merge destination.
+    builder function addBasicBlock: mergeDestination.
+    builder basicBlock: mergeDestination.
+
+    let mergedResult mutable := builder getVoidLiteralAt: sourcePosition.
+
+    if: (nil ~~ trueResult) && (nil ~~ falseResult) then: {
+        let trueType := trueResult type.
+        let falseType := falseResult type.
+        if: trueType isVoidType not && (trueType = falseType) then: {
+            let phiNode := builder phi: trueType name: #ifMergePhi at: sourcePosition.
+            
+            trueBuilder phi: phiNode source: trueResult at: sourcePosition.
+            falseBuilder phi: phiNode source: falseResult at: sourcePosition.
+
+            mergedResult := phiNode.            
+        }.
+    }.
+
+    trueBuilder branch: mergeDestination at: sourcePosition.
+    falseBuilder branch: mergeDestination at: sourcePosition.
+
+    mergedResult
+}.
+
 Value !{
 analyzeAndBuildIdentifierReference: (ParseTreeIdentifierReferenceNode)identifierReference with: (HIRBuilder)aBuilder :: HIRValue.
     aBuilder addLiteral: self at: identifierReference sourcePosition
+}.
+
+FunctionalValue !{
+analyzeAndBuildIdentifierReference: (ParseTreeIdentifierReferenceNode)identifierReference with: (HIRBuilder)aBuilder :: HIRValue.
+    HIRImportedFunction new
+        sourcePosition: sourcePosition;
+        functional: self;
+        type: self type;
+        yourself
 }.
 
 HIRValue !{
@@ -130,6 +191,63 @@ analyzeAndBuildWith: (HIRBuilder)aBuilder :: HIRValue.
     }.
 
     foundValue analyzeAndBuildIdentifierReference: self with: aBuilder
+}.
+
+SysmelType !{
+analyzeAndBuildApplication: (Value)functional withNode: (ParseTreeApplicationNode)applicationNode andBuilder: (HIRBuilder)aBuilder :: HIRValue.
+    #*if: self = CompilationContext current DynamicType then: {
+        let dynamicArgumentValues := applicationNode arguments collect: {:each |
+            let argumentValue type: Value := each.
+            aBuilder castValue: (argumentValue analyzeAndBuildWith: aBuilder) toExpectedType: CompilationContext current DynamicType
+        }.
+
+        return: (aBuilder makeFunction: functional applicationWithArguments: dynamicArgumentValues resultType: CompilationContext current DynamicType)
+    }.
+
+    error: applicationNode sourcePosition printString --": Error: not an applicable functional type."*#
+    error: "SysmelType TODO"
+}.
+
+Value !{
+analyzeAndBuildApplication: (ParseTreeApplicationNode)applicationNode with: (HIRBuilder)aBuilder :: HIRValue.
+    self type analyzeAndBuildApplication: self withNode: applicationNode andBuilder: aBuilder
+}.
+
+FunctionalValue !{
+analyzeAndBuildApplication: (ParseTreeApplicationNode)applicationNode with: (HIRBuilder)aBuilder :: HIRValue.
+    if: self isMacro then: {
+        let macroContext := MacroContext new
+                sourcePosition: applicationNode sourcePosition;
+                environment: aBuilder environment;
+                yourself.
+
+        let macroArguments := Value list new: 1 + applicationNode arguments size.
+        macroArguments at: 0 put: macroContext.
+        let i mutable := 0.
+        while: (i < applicationNode arguments size) do: {
+            macroArguments at: i + 1 put: (applicationNode arguments at: i)
+        } continueWith: (i := i + 1).
+
+        let macroResult := self evaluateWithArguments: macroArguments.
+        return: (macroResult analyzeAndBuildWith: aBuilder)
+    }.
+
+    super analyzeAndBuildApplication: applicationNode with: aBuilder
+}.
+
+HIRImportedFunction !{
+analyzeAndBuildApplication: (ParseTreeApplicationNode)applicationNode with: (HIRBuilder)aBuilder :: HIRValue.
+    functional analyzeAndBuildApplication: applicationNode with: aBuilder
+}.
+
+ParseTreeApplicationNode !{
+analyzeAndBuildWith: (HIRBuilder)aBuilder :: HIRValue.
+    let functionalValue mutable := self functional analyzeAndBuildWith: aBuilder.
+    if: functionalValue type isReferenceType then: {
+        error: "TODO".
+        ##functionalValue := aBuilder makeLoadFrom: functionalValue type: functionalValue type baseType.
+    }.
+    functionalValue analyzeAndBuildApplication: self with: aBuilder
 }.
 
 ## Literals

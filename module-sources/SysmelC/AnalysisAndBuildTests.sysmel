@@ -94,4 +94,16 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: evalResult asInteger = 2
 }.
 
+## testIfSelection
+{
+    ##let value := evaluateSourceString("{:(Boolean)cond :(Integer)x :(Integer)y :: Integer | if: cond then: x else: y }").
+    ##value dumpToConsole.
+
+    let trueValue := evaluateSourceString("{:(Boolean)cond :(Integer)x :(Integer)y :: Integer | if: cond then: x else: y }(true . 1. 2)").
+    assert: trueValue asInteger = 1.
+    
+    let falseValue := evaluateSourceString("{:(Boolean)cond :(Integer)x :(Integer)y :: Integer | if: cond then: x else: y }(false . 1. 2)").
+    assert: falseValue asInteger = 2.
+}.
+
 }

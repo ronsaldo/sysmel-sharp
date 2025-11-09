@@ -37,6 +37,7 @@ increaseCapacity :: Void.
     } continueWith: (i := i + 1).
 
     data := newDataStore.
+    capacity := newCapacity.
 }.
 
 ArrayList !{
