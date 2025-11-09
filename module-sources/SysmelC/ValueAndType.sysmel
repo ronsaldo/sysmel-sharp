@@ -1165,6 +1165,11 @@ exportedName :: Symbol.
     name
 }.
 
+Value !{
+isCompileTimeFunction :: Boolean.
+    false
+}.
+
 FunctionalValue !{
 isCompileTimeFunction :: Boolean.
     isCompileTimeFunction
@@ -1248,16 +1253,6 @@ primitiveName :: Symbol.
 PrimitiveFunctionValue !{
 primitiveName: (Symbol)newPrimitiveName :: Void.
     primitiveName := newPrimitiveName
-}.
-
-PrimitiveFunctionValue !{
-isCompileTimeFunction :: Boolean.
-    isCompileTimeFunction
-}.
-
-PrimitiveFunctionValue !{
-isCompileTimeFunction: (Boolean)newValue :: Void.
-    isCompileTimeFunction := newValue
 }.
 
 PrimitiveFunctionValue !{

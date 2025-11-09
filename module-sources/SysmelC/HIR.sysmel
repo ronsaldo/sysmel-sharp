@@ -11,6 +11,10 @@ class HIRConstantLiteralValue withSuperclass: HIRConstant fields:#{
     literal: Value
 }.
 
+class HIRConstantTypeLiteral withSuperclass: HIRConstant fields:#{
+    typeLiteral: SysmelType
+}.
+
 class HIRImportedFunction withSuperclass: HIRConstant fields:#{
     functional: FunctionalValue
 }.
@@ -159,7 +163,22 @@ evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: 
     error: "evaluateInActivationContext subclassResponsibility"
 }.
 
+HIRValue !{
+asLiteralValue :: Value.
+    error: "Not supported"
+}.
+
 ## HIRConstantLiteralValue
+HIRValue !{
+isConstantLiteralValue :: Boolean.
+    false
+}.
+
+HIRConstantLiteralValue !{
+isConstantLiteralValue :: Boolean.
+    true
+}.
+
 HIRConstantLiteralValue !{
 literal :: Value.
     literal
@@ -180,6 +199,47 @@ toString :: String.
     "literal " -- literal printString
 }.
 
+HIRConstantLiteralValue !{
+asLiteralValue :: Value.
+    literal
+}.
+
+## HIRConstantTypeLiteral
+HIRValue !{
+isConstantTypeLiteral :: Boolean.
+    false
+}.
+
+HIRConstantTypeLiteral !{
+isConstantTypeLiteral :: Boolean.
+    true
+}.
+
+HIRConstantTypeLiteral !{
+typeLiteral :: SysmelType.
+    typeLiteral
+}.
+
+HIRConstantTypeLiteral !{
+typeLiteral: (SysmelType)newLiteral :: Void.
+    typeLiteral := newLiteral
+}.
+
+HIRConstantTypeLiteral !{
+getValueInEvaluationContext: (HIRFunctionActivationContext)activationContext :: Value.
+    typeLiteral
+}.
+
+HIRConstantTypeLiteral !{
+toString :: String.
+    "type " -- typeLiteral printString
+}.
+
+HIRConstantTypeLiteral !{
+asLiteralValue :: Value.
+    typeLiteral
+}.
+
 ## HIRImportedFunction.
 HIRImportedFunction !{
 functional :: FunctionalValue.
@@ -189,6 +249,11 @@ functional :: FunctionalValue.
 HIRImportedFunction !{
 functional: (FunctionalValue)newFunctional :: Void.
     functional := newFunctional
+}.
+
+HIRImportedFunction !{
+isCompileTimeFunction :: Boolean.
+    functional isCompileTimeFunction
 }.
 
 HIRImportedFunction !{
@@ -853,19 +918,49 @@ callArguments: (HIRValue list)newArguments :: Void.
     callArguments := newArguments
 }.
 
+HIRCallFunctionInstruction !{
+hasOnlyConstantLiteralValues :: Boolean.
+    let i mutable := 0.
+    while: (i < callArguments size) do: {
+        let argument := callArguments at: i.
+        if: argument isConstantLiteralValue not && argument isConstantTypeLiteral not then: {
+            return: false
+        }
+    } continueWith: (i := i + 1).
+    true
+}.
+
+HIRCallFunctionInstruction !{
+simplifyWithBuilder: (HIRBuilder)builder :: HIRValue.
+    if: function isCompileTimeFunction not || self hasOnlyConstantLiteralValues not then: {
+        return: self
+    }.
+
+    let argumentCount := callArguments size.
+    let compileTimeArguments := Value list new: argumentCount.
+    let i mutable := 0.
+    while: (i < argumentCount) do: {
+        compileTimeArguments at: i put: (callArguments at: i) asLiteralValue
+    } continueWith:(i := i + 1).
+
+    let simplifyResult := function evaluateWithArguments: compileTimeArguments.
+    simplifyResult analyzeAndBuildWith: builder
+}.
+
 HIRBuilder !{
-call: (HIRValue)function withArguments: (HIRValue list)callArguments resultType: (SysmelType)resultType at: (SourcePosition)sourcePosition :: HIRInstruction.
+call: (HIRValue)function withArguments: (HIRValue list)callArguments resultType: (SysmelType)resultType at: (SourcePosition)sourcePosition :: HIRValue.
     let call := HIRCallFunctionInstruction new
         sourcePosition: sourcePosition;
         type: resultType;
         function: function;
         callArguments: callArguments;
         yourself.
+    let simplified := call simplifyWithBuilder: self.
+    if: simplified == call then: {
+        self addInstruction: call.
+    }.
 
-    ## TODO: Evaluate compile time expression.
-    self addInstruction: call.
-
-    call
+    simplified
 }.
 
 HIRCallFunctionInstruction !{

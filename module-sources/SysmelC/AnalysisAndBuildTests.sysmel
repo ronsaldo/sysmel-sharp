@@ -78,4 +78,10 @@ function evaluateSourceString(sourceString: String) => Value := {
 }.
 
 
+## testCompileConstantEvaluation
+{
+    let value := evaluateSourceString("{:: Boolean | 2 < 3 }").
+    value dumpToConsole
+}.
+
 }

@@ -88,6 +88,11 @@ type :: SysmelType.
     CompilationContext current BooleanType
 }.
 
+BooleanValue !{
+printString :: String.
+    if: value then: "true" else: "false"
+}.
+
 ## VoidValue
 let voidValueSingleton := VoidValue basicNew.
 VoidValue class !{
