@@ -133,43 +133,39 @@ analyzeAndBuildWith: (HIRBuilder)aBuilder :: HIRValue.
 }.
 
 ## Literals
-#*
+
 ParseTreeLiteralBooleanNode !{
-analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
-    BooleanValue new value: value; yourself
+analyzeAndBuildWith: (HIRBuilder)builder :: HIRValue.
+    builder addLiteral: (BooleanValue new value: value; yourself) at: sourcePosition
 }.
 
 ParseTreeLiteralCharacterNode !{
-analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
-    IntegerValue new value: value asInteger; type: CompilationContext current CharacterType; yourself
+analyzeAndBuildWith: (HIRBuilder)builder :: HIRValue.
+    builder addLiteral: (IntegerValue new value: value asInteger; type: CompilationContext current CharacterType; yourself) at: sourcePosition
 }.
 
 ParseTreeLiteralFloatNode !{
-analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
-    FloatValue new value: value; type: CompilationContext current FloatType; yourself
+analyzeAndBuildWith: (HIRBuilder)builder :: HIRValue.
+    builder addLiteral: (FloatValue new value: value; type: CompilationContext current FloatType; yourself) at: sourcePosition
 }.
 
-*#
 ParseTreeLiteralIntegerNode !{
 analyzeAndBuildWith: (HIRBuilder)builder :: HIRValue.
     builder addLiteral: (IntegerValue new value: value; type: CompilationContext current LargeIntegerType; yourself) at: sourcePosition
 }.
 
-#*
 ParseTreeLiteralStringNode !{
-analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
-    StringValue new value: value; type: CompilationContext current StringType; yourself
+analyzeAndBuildWith: (HIRBuilder)builder :: HIRValue.
+    builder addLiteral: (StringValue new value: value; type: CompilationContext current StringType; yourself) at: sourcePosition
 }.
 
 ParseTreeLiteralSymbolNode !{
-analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
-    SymbolValue new value: value; type: CompilationContext current SymbolType; yourself
+analyzeAndBuildWith: (HIRBuilder)builder :: HIRValue.
+    builder addLiteral: (SymbolValue new value: value; type: CompilationContext current SymbolType; yourself) at: sourcePosition
 }.
 
-*#
-
 Value !{
-analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)selectorValue builder: (HIRBuilder)aBuilder :: Value.
+analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)selectorValue builder: (HIRBuilder)aBuilder :: HIRValue.
     let receiverValue mutable := self.
     let receiverValueIsSuper := self isSuperArgumentValue.
     
@@ -293,9 +289,22 @@ analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)
 *#
 
 ParseTreeMessageSendNode !{
-analyzeAndBuildWith: (HIRBuilder)aBuilder :: Value.
+analyzeAndBuildWith: (HIRBuilder)aBuilder :: HIRValue.
     let receiverValue := self receiver analyzeAndBuildWith: aBuilder.
     let selectorValue := self selector analyzeAndEvaluateInEnvironment: aBuilder environment.
     receiverValue analyzeAndBuildMessage: self selector: selectorValue asSymbolValue builder: aBuilder
 }.
+
+ParseTreeSequenceNode !{
+analyzeAndBuildWith: (HIRBuilder)aBuilder :: HIRValue.
+    let result mutable type: HIRValue := aBuilder addLiteral: VoidValue uniqueInstance at: sourcePosition.
+    let elementsCount := elements size. 
+    let i mutable := 0.
+    while: (i < elementsCount) do: {
+        result := (elements at: i) analyzeAndBuildWith: aBuilder
+    } continueWith: (i := i + 1).
+
+    result
+}.
+
 }.

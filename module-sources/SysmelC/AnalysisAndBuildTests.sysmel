@@ -81,7 +81,17 @@ function evaluateSourceString(sourceString: String) => Value := {
 ## testCompileConstantEvaluation
 {
     let value := evaluateSourceString("{:: Boolean | 2 < 3 }").
-    value dumpToConsole
+    ##value dumpToConsole
+    let evalResult := evaluateSourceString("{:: Boolean | 2 < 3 }()").
+    assert: evalResult asBoolean
+}.
+
+## testCompileSequenceEvaluation
+{
+    let value := evaluateSourceString("{:: Integer | 1 . 2 }").
+    ##value dumpToConsole
+    let evalResult := evaluateSourceString("{:: Boolean | 1 . 2 }()").
+    assert: evalResult asInteger = 2
 }.
 
 }
