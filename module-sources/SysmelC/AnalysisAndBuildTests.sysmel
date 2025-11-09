@@ -192,4 +192,26 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: evaluateSourceString("{:: Integer | let: #var mutableWith: 42. var + 5}()") asInteger = 47
 }.
 
+## testLetMetabuilder
+{
+    ##let value := evaluateSourceString("{:: Integer | let test := 42}").
+    ##value dumpToConsole
+    assert: evaluateSourceString("{:: Integer | let test := 42}()") asInteger = 42.
+}.
+
+## testLetMetabuilder2
+{
+    ##let value := evaluateSourceString("{:: Integer | let test type: Integer := 42}").
+    ##value dumpToConsole
+    assert: evaluateSourceString("{:: Integer | let test type: Integer := 42}()") asInteger = 42.
+}.
+
+## testLetMutableMetabuilder
+{
+    ##let value := evaluateSourceString("{:: Integer | let test mutable := 42}").
+    ##value dumpToConsole
+    assert: evaluateSourceString("{:: Integer | let test mutable := 42}()") asInteger = 42
+}.
+
+
 }

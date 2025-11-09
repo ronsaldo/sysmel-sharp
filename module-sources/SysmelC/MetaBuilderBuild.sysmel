@@ -1,0 +1,94 @@
+namespace SysmelC definition: {
+public: [
+class HIRConstantMetaBuilder withSuperclass: HIRConstant fields: #{
+    metabuilder: MetaBuilder
+}.
+].
+
+HIRConstantMetaBuilder !{
+metabuilder :: MetaBuilder.
+    metabuilder
+}.
+
+HIRConstantMetaBuilder !{
+metabuilder: (MetaBuilder)newMetabuilder :: Void.
+    metabuilder := newMetabuilder
+}.
+
+MetaBuilderFactory !{
+analyzeAndBuildIdentifierReference: (ParseTreeIdentifierReferenceNode)identifierReference with: (HIRBuilder)aBuilder :: HIRValue.
+    let metabuilder := factoryMethod(identifierReference) asMetaBuilder.
+    HIRConstantMetaBuilder new
+        sourcePosition: identifierReference sourcePosition;
+        metabuilder: metabuilder;
+        type: CompilationContext current MetaBuilderType;
+        yourself
+}.
+
+HIRConstantMetaBuilder !{
+analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)selectorValue builder: (HIRBuilder)aBuilder :: HIRValue.
+    metabuilder analyzeAndBuildMessage: messageSend selector: selectorValue builder: aBuilder
+}.
+  
+
+HIRConstantMetaBuilder !{
+analyzeAndBuildAssignment: (ParseTreeAssignmentNode)assignment with: (HIRBuilder)builder :: HIRValue.
+    metabuilder analyzeAndBuildAssignment: assignment with: builder
+}.
+
+MetaBuilder !{
+expandMessageSend: (ParseTreeMessageSendNode)messageSend withSelectorSymbol: (Symbol)selectorValue builder: (HIRBuilder)aBuilder :: HIRValue.
+    HIRConstantMetaBuilder new
+        sourcePosition: sourcePosition;
+        metabuilder: self;
+        yourself
+}.
+
+MetaBuilder !{
+analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)selectorValue builder: (HIRBuilder)aBuilder :: HIRValue.
+    if: (self hasMethodWithSelector: selectorValue) then: {
+        return: (self expandMessageSend: messageSend withSelectorSymbol: selectorValue builder: aBuilder)
+    }.
+    super analyzeAndBuildMessage: messageSend selector: selectorValue builder: aBuilder
+}.
+  
+NamedMetaBuilder !{
+analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)selectorValue builder: (HIRBuilder)aBuilder :: HIRValue.
+    if: (nil == name) && (messageSend arguments size = 0) then: {
+        name := messageSend selector.
+        return: (HIRConstantMetaBuilder new
+            sourcePosition: sourcePosition;
+            metabuilder: self;
+            yourself)
+    }.
+
+    super analyzeAndBuildMessage: messageSend selector: selectorValue builder: aBuilder
+}.
+
+LetMetaBuilder !{
+expandMessageSend: (ParseTreeMessageSendNode)messageSend withSelectorSymbol: (Symbol)selectorValue builder: (HIRBuilder)aBuilder :: HIRValue.
+    if: selectorValue = #mutable then: {
+        isMutable := true.
+    }.
+    if: selectorValue = #type: then: {
+        typeExpression := messageSend arguments first.
+    }.
+    return: (HIRConstantMetaBuilder new
+            sourcePosition: sourcePosition;
+            metabuilder: self;
+            yourself)
+}.
+
+LetMetaBuilder !{
+analyzeAndBuildAssignment: (ParseTreeAssignmentNode)assignment with: (HIRBuilder)builder :: HIRValue.
+    ParseTreeVariableDefinitionNode new
+        sourcePosition: assignment sourcePosition;
+        nameExpression: name;
+        optionalTypeExpression: typeExpression;
+        optionalInitialValue: assignment value;
+        isMutable: isMutable;
+        analyzeAndBuildWith: builder
+}.
+
+
+}.
