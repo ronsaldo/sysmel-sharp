@@ -28,7 +28,39 @@ function evaluateSourceString(sourceString: String) => Value := {
 ## testIdentityEval
 {
     let evalResult := evaluateSourceString("{:x | x}(42)").
-    assert: evalResult value = 42.
+    assert: evalResult asInteger = 42.
+}.
+
+## testBlockClosure3
+{
+    let value := evaluateSourceString("{:(Integer)x :: Integer| x}(42)").
+    assert: value asInteger = 42.
+}.
+
+## testBlockClosure4
+{
+    let value := evaluateSourceString("{:x :: Integer| x} (42)").
+    assert: value asInteger = 42.
+}.
+
+## testBlockClosure5
+{   
+    let value := evaluateSourceString("{:(Integer)x | x}(42)").
+    assert: value asInteger = 42.
+}.
+
+## testBlockClosureDynamicAdd
+{
+    let value := evaluateSourceString("{:x | x + 5 }").
+    assert: value isFunctionValue.
+    ## value dumpToConsole
+}.
+
+## testBlockClosureDynamicAdd2
+{
+    let value := evaluateSourceString("{:x | x + 5 }(7)").
+    assert: value asInteger = 12.
+    ## value dumpToConsole
 }.
 
 }

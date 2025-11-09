@@ -1081,16 +1081,6 @@ resultTypeReturnValue :: SysmelType.
     resultTypeExpression asReturnValueType
 }.
 
-Value !{
-computeDependentResultTypeWithCallArguments: (Value list)callArguments :: SysmelType.
-    self asType
-}.
-
-FunctionType !{
-computeResultTypeWithArguments: (Value list)callArguments :: SysmelType.
-    resultTypeExpression computeDependentResultTypeWithCallArguments: callArguments
-}.
-
 SysmelType !{
 isVoidType :: Boolean.
     self == CompilationContext current VoidType

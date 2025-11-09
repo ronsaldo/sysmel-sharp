@@ -63,6 +63,14 @@ class HIRAllocaInstruction withSuperclass: HIRInstruction fields: #{
     valueType: SysmelType
 }.
 
+class HIRBoxDynamicValue withSuperclass: HIRInstruction fields: #{
+    value: HIRValue
+}.
+
+class HIRUnboxDynamicValue withSuperclass: HIRInstruction fields: #{
+    value: HIRValue.
+}.
+
 class HIRBranchInstruction withSuperclass: HIRInstruction fields: #{
     destination: HIRBasicBlock
 }.
@@ -85,8 +93,14 @@ class HIRReturnValueInstruction withSuperclass: HIRInstruction fields: #{
 class HIRReturnVoidInstruction withSuperclass: HIRInstruction fields: #{
 }.
 
+class HIRSendMessageInstruction withSuperclass: HIRInstruction fields: #{
+    receiver: HIRValue.
+    selector: Symbol.
+    arguments: HIRValue list.
+}.
+
 class HIRBuilder withSuperclass: Object fields:#{
-    environment: Environment.
+    environment: LexicalEnvironment.
     function: HIRFunction.
     basicBlock: HIRBasicBlock.
     allocaBuilder: HIRBuilder.
@@ -136,6 +150,12 @@ HIRConstantLiteralValue !{
 getValueInEvaluationContext: (HIRFunctionActivationContext)activationContext :: Value.
     literal
 }.
+
+HIRConstantLiteralValue !{
+toString :: String.
+    "literal " -- literal printString
+}.
+
 
 ## HIRFunctionLocalValue
 HIRFunctionLocalValue !{
@@ -535,6 +555,11 @@ instructionValues :: Value list.
 }.
 
 HIRFunctionActivationContext !{
+setCurrentInstructionValue: (Value)valueToSet :: Void.
+    instructionValues at: instructionPC put: valueToSet
+}.
+
+HIRFunctionActivationContext !{
 evaluateInstructions :: Value.
     let instructionCount := instructions size.
     while: (pc < instructionCount) do: {
@@ -562,12 +587,12 @@ returnValue: (Value)valueToReturn :: Void.
 
 ## HIRBuilder
 HIRBuilder !{
-environment :: Environment.
+environment :: LexicalEnvironment.
     environment
 }.
 
 HIRBuilder !{
-environment: (Environment)newEnvironment :: Void.
+environment: (LexicalEnvironment)newEnvironment :: Void.
     environment := newEnvironment
 }.
 
@@ -611,6 +636,7 @@ addLiteral: (Value)value at: (SourcePosition)sourcePosition :: HIRValue.
     HIRConstantLiteralValue new
         sourcePosition: sourcePosition;
         literal: value;
+        type: value type;
         yourself
 }.
 
@@ -646,6 +672,68 @@ alloca: (SysmelType)valueType type: (SysmelType) type at: (SourcePosition)source
     self addInstruction: alloca.
 
     alloca
+}.
+
+##
+HIRBoxDynamicValue !{
+value :: HIRValue.
+    value
+}.
+
+HIRBoxDynamicValue !{
+value: (HIRValue)newValue :: Void.
+    value := newValue
+}.
+
+HIRBoxDynamicValue !{
+dumpToConsole :: Void.
+    write("  box "). writeLine(value toString)
+}.
+
+HIRBuilder !{
+boxDynamicValue: (HIRValue)boxValue at: (SourcePosition)sourcePosition :: HIRBoxDynamicValue.
+    let box := HIRBoxDynamicValue new
+        value: boxValue;
+        type: CompilationContext current DynamicType;
+        yourself.
+
+    self addInstruction: box.
+
+    box
+}.
+
+HIRBoxDynamicValue !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let valueToBox := value getValueInEvaluationContext: activationContext.
+    activationContext setCurrentInstructionValue: valueToBox
+}.
+
+## HIRUnboxDynamicValue
+HIRUnboxDynamicValue !{
+value :: HIRValue.
+    value
+}.
+
+HIRUnboxDynamicValue !{
+value: (HIRValue)newValue :: Void.
+    value := newValue
+}.
+
+HIRUnboxDynamicValue !{
+dumpToConsole :: Void.
+    write("  unbox "). writeLine(value toString)
+}.
+
+HIRBuilder !{
+unboxDynamicValue: (HIRValue)boxedValue withType: (SysmelType) unboxedType at: (SourcePosition)sourcePosition :: HIRUnboxDynamicValue.
+    let unbox := HIRUnboxDynamicValue new
+        value: boxedValue;
+        type: unboxedType;
+        yourself.
+
+    self addInstruction: unbox.
+
+    unbox
 }.
 
 ## Branch instruction
@@ -709,9 +797,10 @@ callArguments: (HIRValue list)newArguments :: Void.
 }.
 
 HIRBuilder !{
-call: (HIRFunction)function withArguments: (HIRValue list)callArguments at: (SourcePosition)sourcePosition :: HIRInstruction.
+call: (HIRValue)function withArguments: (HIRValue list)callArguments resultType: (SysmelType)resultType at: (SourcePosition)sourcePosition :: HIRInstruction.
     let call := HIRCallFunctionInstruction new
         sourcePosition: sourcePosition;
+        type: resultType;
         function: function;
         callArguments: callArguments;
         yourself.
@@ -720,6 +809,18 @@ call: (HIRFunction)function withArguments: (HIRValue list)callArguments at: (Sou
     self addInstruction: call.
 
     call
+}.
+
+HIRCallFunctionInstruction !{
+dumpToConsole :: Void.
+    write("  ") .write(self toString).
+    write(" := call "). write(function toString).
+    let i mutable := 0.
+    while: (i < callArguments size) do: {
+        let argument := callArguments at: i.
+        write(" "). write (argument toString)
+    } continueWith: (i := i + 1).
+    writeLine("").
 }.
 
 ## HIRConditionalBranchInstruction
@@ -838,5 +939,75 @@ returnVoidAt: (SourcePosition)sourcePosition :: HIRReturnVoidInstruction.
     return
 }.
 
+## HIRSendMessageInstruction
+HIRSendMessageInstruction !{
+receiver :: HIRValue.
+    receiver
+}.
 
+HIRSendMessageInstruction !{
+receiver: (HIRValue)newReceiver :: Void.
+    receiver := newReceiver
+}.
+
+HIRSendMessageInstruction !{
+selector :: Symbol.
+    selector
+}.
+
+HIRSendMessageInstruction !{
+selector: (Symbol)newSelector :: Void.
+    selector := newSelector
+}.
+
+HIRSendMessageInstruction !{
+arguments :: HIRValue list.
+    arguments
+}.
+
+HIRSendMessageInstruction !{
+arguments: (HIRValue list)newArguments :: Void.
+    arguments := newArguments
+}.
+
+HIRSendMessageInstruction !{
+dumpToConsole :: Void.
+    write("  ") .write(self toString).
+    write(" := send "). write(selector).
+    let i mutable := 0.
+    while: (i < arguments size) do: {
+        let argument := arguments at: i.
+        write(" "). write (argument toString)
+    } continueWith: (i := i + 1).
+    writeLine("").
+}.
+
+HIRBuilder !{
+send: (Symbol)selector to: (HIRValue)receiver withArguments: (HIRValue list)messageArguments resultType: (SysmelType)resultType at: (SourcePosition)sourcePosition :: HIRInstruction.
+    let messageSend := HIRSendMessageInstruction new
+        sourcePosition: sourcePosition;
+        receiver: receiver;
+        selector: selector;
+        arguments: messageArguments;
+        type: resultType;
+        yourself.
+
+    self addInstruction: messageSend.
+
+    messageSend
+}.
+
+HIRSendMessageInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let receiverValue := receiver getValueInEvaluationContext: activationContext.
+    let argumentValues := Value list new: arguments size.
+    let i mutable := 0.
+    while: (i < arguments size) do: {
+        let argumentValue := (arguments at: i)  getValueInEvaluationContext: activationContext.
+        argumentValues at: i put: argumentValue
+    } continueWith: (i := i + 1).
+
+    let result := receiverValue sysmelPerform: selector withArguments: argumentValues.
+    activationContext setCurrentInstructionValue: result
+}.
 }

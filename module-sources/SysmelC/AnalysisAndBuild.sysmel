@@ -4,10 +4,24 @@ analyzeAndBuildWith: (HIRBuilder)aHIRBuilder :: HIRValue.
     aHIRBuilder addLiteral: self at: sourcePosition
 }.
 
+HIRValue !{
+analyzeAndBuildWith: (HIRBuilder)aHIRBuilder :: HIRValue.
+    self
+}.
+
 Value !{
 analyzeAndBuildWith: (HIRBuilder)aHIRBuilder expectedType: (SysmelType)expectedType :: HIRValue.
     let value := self analyzeAndBuildWith: aHIRBuilder.
     self castHIRValue: value toExpectedType: expectedType with: aHIRBuilder
+}.
+
+Value !{
+analyzeAndBuildWithDecayedType: (HIRBuilder)aHIRBuilder :: HIRValue.
+    let value := self analyzeAndBuildWith: aHIRBuilder.
+    if: value type isReferenceType then: {
+        error: "TODO"
+    }.
+    value
 }.
 
 Value !{
@@ -20,7 +34,7 @@ castHIRValue: (HIRValue)value toExpectedType: (SysmelType)expectedType with: (HI
 }.
 
 ParseTreeNode !{
-analyzeAndBuildWith: (HIRBuilder)aHIRBuilder :: Value.
+analyzeAndBuildWith: (HIRBuilder)aHIRBuilder :: HIRValue.
     printLine(self).
     error: self sourcePosition printString -- ": Subclass responsibility"
 }.
@@ -51,6 +65,11 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: ArgumentValu
         environment setSymbol: name binding: argumentValue
     }.
     argumentValue
+}.
+
+ParseTreeBinaryExpressionSequenceNode !{
+analyzeAndBuildWith: (HIRBuilder)aBuilder :: HIRValue.
+    self expandAsMessageSendSequence analyzeAndBuildWith: aBuilder
 }.
 
 ParseTreeFunctionalDependentTypeNode !{
@@ -148,4 +167,127 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: Value.
 }.
 
 *#
+
+Value !{
+analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)selectorValue builder: (HIRBuilder)aBuilder :: Value.
+    let receiverValue mutable := self.
+    let receiverValueIsSuper := self isSuperArgumentValue.
+    
+    if: receiverValue type isReferenceType then: {
+        error: "TODO: load reference".
+        ##receiverValue := aBuilder makeLoadFrom: receiverValue type: receiverValue type baseType at: messageSend
+    }.
+
+    if: selectorValue = #yourself then: {
+        return: receiverValue
+    }.
+
+    if: receiverValue type isDynamicType then: {
+        let dynamicCallArguments := HIRValue list new: messageSend arguments size.
+        {
+            let i mutable := 0.
+            while: (i < dynamicCallArguments size) do: {
+                let argumentNode := (messageSend arguments at: i).
+                let argument := argumentNode analyzeAndBuildWithDecayedType: aBuilder.
+                let boxedArgument := aBuilder boxDynamicValue: argument at: argumentNode sourcePosition.
+                dynamicCallArguments at: i put: boxedArgument.
+            } continueWith: (i := i +1).
+        }.
+        
+        let foundMethodOrField := receiverValue type lookupSelector: selectorValue.
+        if: nil ~~ foundMethodOrField then: {
+            let functionType := foundMethodOrField type asFunctionType.
+            let callArguments := HIRValue list new: dynamicCallArguments size + 1.
+            callArguments at: 0 put: (aBuilder addLiteral: receiverValue at: messageSend receiver sourcePosition).
+            let i mutable := 0.
+            while: (i < dynamicCallArguments size) do: {
+                callArguments at: i + 1 put: (dynamicCallArguments at: i)
+            } continueWith: (i < dynamicCallArguments size).
+
+            let calledMethod := foundMethodOrField analyzeAndBuildWith: aBuilder.
+            printLine(calledMethod).
+            error: "TODO".
+            let callResultType := functionType computeResultTypeWithHIRArguments: callArguments.
+            let callResult := aBuilder call:calledMethod withArguments: callArguments resultType: callResultType at: messageSend sourcePosition.
+            return: callResult
+        }.
+
+        let calledReceiver := receiverValue analyzeAndBuildWith: aBuilder.
+        let sendResult := aBuilder send: selectorValue to: calledReceiver withArguments: dynamicCallArguments resultType: CompilationContext current DynamicType at: messageSend sourcePosition.
+        return: sendResult
+    }.
+
+    let foundMethodOrField := receiverValue lookupValueSelector: selectorValue.
+    if: nil == foundMethodOrField then: {
+        error: messageSend sourcePosition printString --  ": Failed to find method with selector " -- selectorValue printString -- " in a value of type " -- receiverValue type printString
+    }.
+
+    #*if: foundMethodOrField isMacroFunction then: {
+        let macroArguments := [
+            MacroContext new
+                sourcePosition: messageSend sourcePosition;
+                environment: aBuilder environment;
+                yourself.
+            messageSend receiver
+        ]  -- messageSend arguments.
+        let macroResult type: Value := foundMethodOrField evaluateWithArguments: macroArguments.
+        return: (macroResult analyzeAndBuildWith: aBuilder)
+    }.
+
+    if: foundMethodOrField isFieldDefinition then: {
+        assert: messageSend arguments size = 0.
+        let extractedValue := aBuilder makeExtractFrom: receiverValue fieldWithDefinition: foundMethodOrField asFieldDefinition.
+        return: extractedValue
+    }.
+
+    let functionType := foundMethodOrField type asFunctionType.
+    let callArguments := OrderedCollection new.
+    let addArgumentValue := {:(Value)argument :: Void |
+        let argumentIndex := callArguments size.
+        let argumentDefinition type: ArgumentValue := functionType argumentDefinitions at: argumentIndex.
+        let expectedType := argumentDefinition type.
+        let analyzedArgument := argument analyzeAndBuildWith: aBuilder.
+        let castedValue := aBuilder castValue: analyzedArgument toExpectedType: expectedType.
+        callArguments add: castedValue
+    }.
+
+    if: receiverValueIsSuper then: {
+        addArgumentValue(receiverValue asSelfArgument).
+    } else: {
+        addArgumentValue(receiverValue).
+    }.
+    messageSend arguments do: {:each :: Void | addArgumentValue(each)}.
+
+    let callArgumentsArray := callArguments asArray.
+    if: receiverValue type isBehaviorType && receiverValueIsSuper not && receiverValue type isFinal not then: {
+        if: (nil == foundMethodOrField) || foundMethodOrField isFinal not then: {
+            let resultType := functionType computeResultTypeWithArguments: callArgumentsArray.
+            return: (aBuilder makeSend: selectorValue
+                messageReceiver: callArgumentsArray first arguments: callArgumentsArray allButFirst
+                resultType: resultType)
+        }
+    }.
+
+    aBuilder makeFunction: foundMethodOrField applicationWithArguments: callArgumentsArray resultType: (functionType computeResultTypeWithArguments: callArgumentsArray).
+    *#
+    error: "TODO"
+}.
+
+#*
+EnumType !{
+analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)selectorValue builder: (Builder)aBuilder :: Value.
+    let enumValue type: EnumValue := namesAndValues atOrNil: selectorValue.
+    if: nil ~~ enumValue then: {
+        return: enumValue
+    }.
+    super analyzeAndBuildMessage: messageSend selector: selectorValue builder: aBuilder
+}.
+*#
+
+ParseTreeMessageSendNode !{
+analyzeAndBuildWith: (HIRBuilder)aBuilder :: Value.
+    let receiverValue := self receiver analyzeAndBuildWith: aBuilder.
+    let selectorValue := self selector analyzeAndEvaluateInEnvironment: aBuilder environment.
+    receiverValue analyzeAndBuildMessage: self selector: selectorValue asSymbolValue builder: aBuilder
+}.
 }.

@@ -11,6 +11,26 @@ class FunctionValue withSuperclass: FunctionalValue fields: #{
 }.
 ].
 
+Value !{
+computeDependentResultTypeWithHIRCallArguments: (HIRValue list)callArguments :: SysmelType.
+    self asType
+}.
+
+FunctionType !{
+computeResultTypeWithHIRArguments: (HIRValue list)callArguments :: SysmelType.
+    resultTypeExpression computeDependentResultTypeWithHIRCallArguments: callArguments
+}.
+
+Value !{
+isFunctionValue :: Boolean.
+    false
+}.
+
+FunctionValue !{
+isFunctionValue :: Boolean.
+    true
+}.
+
 FunctionValue !{
 validHIRFunction :: HIRFunction.
     if: nil == hirFunction then: {
@@ -75,9 +95,10 @@ ensureAnalysis :: Void.
     let entryBlock := HIRBasicBlock new name: #entry; yourself.
     hirFunction addBasicBlock: entryBlock.
 
+    let lexicalBlock := LexicalEnvironment withParent: analysisEnvironment.
     let builder := HIRBuilder new
         allocaBuilder: allocaBuilder;
-        environment: analysisEnvironment;
+        environment: lexicalBlock;
         function: self validHIRFunction;
         basicBlock: entryBlock;
         yourself.
