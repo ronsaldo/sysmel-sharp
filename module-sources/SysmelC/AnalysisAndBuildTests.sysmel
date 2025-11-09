@@ -25,4 +25,10 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: evalResult value = 42.
 }.
 
+## testIdentityEval
+{
+    let evalResult := evaluateSourceString("{:x | x}(42)").
+    assert: evalResult value = 42.
+}.
+
 }

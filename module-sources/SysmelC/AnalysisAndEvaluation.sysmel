@@ -56,12 +56,12 @@ analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvir
 }.
 
 Value !{
-analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)anEnvironment withFunctional: (Value)functional  :: Value.
+analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)anEnvironment withFunctional: (Value)functional :: Value.
     error: "Not a functional value"
 }.
 
 FunctionType !{
-analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)environment withFunctional: (Value)functional  :: Value.
+analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvironment: (LexicalEnvironment)environment withFunctional: (Value)functional :: Value.
     if: functional isMacro then: {
         let macroContext := MacroContext new
             sourcePosition: applicationNode sourcePosition;
@@ -80,7 +80,22 @@ analyzeAndEvaluateApplication: (ParseTreeApplicationNode)applicationNode inEnvir
         return: (macroResult analyzeAndEvaluateInEnvironment: environment)
     }.
 
-    error: "TODO: FunctionType analyzeAndEvaluateApplication:"
+    let argumentCount := applicationNode arguments size.
+    if: argumentCount ~= argumentDefinitions size then: {
+        error: applicationNode sourcePosition printString -- ": expected " -- argumentDefinitions size asString -- " arguments"
+    }.
+
+    let evaluatedArguments := Value list new: argumentCount.
+    let i mutable := 0.
+    while: i < argumentCount do: {
+        let argDefinition := argumentDefinitions at: i.
+        let argValue := applicationNode arguments at: i.
+
+        let evaluatedArgument := argValue analyzeAndEvaluateInEnvironment: environment withExpectedType: argDefinition type.
+        evaluatedArguments at: i put: evaluatedArgument
+    } continueWith: (i := i + 1).
+
+    functional evaluateWithArguments: evaluatedArguments
 }.
 
 RecordType !{
