@@ -133,4 +133,22 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a || b }(true . true)") asBoolean = true.
 }.
 
+## testBooleanEqual
+{
+    ##let value := evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a || b }").
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a = b }(false . false)") asBoolean = true.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a = b }(false . true)") asBoolean = false.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a = b }(true . false)") asBoolean = false.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a = b }(true . true)") asBoolean = true.
+}.
+
+## testBooleanNotEqual
+{
+    ##let value := evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a || b }").
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a ~= b }(false . false)") asBoolean = false.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a ~= b }(false . true)") asBoolean = true.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a ~= b }(true . false)") asBoolean = true.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a ~= b }(true . true)") asBoolean = false.
+}.
+
 }

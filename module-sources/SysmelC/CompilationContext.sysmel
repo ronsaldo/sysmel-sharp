@@ -264,6 +264,28 @@ registerBooleanPrimitives :: Void.
                     yourself
 
     }).
+
+    BooleanType addMethod: ((BooleanType -- BooleanType) => BooleanType withSelector: #= makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := arguments at: 0.
+        let rightOperand := arguments at: 1.
+        if: (nil == leftOperand) || (nil == rightOperand) then: {
+            return: (BooleanValue with: leftOperand == rightOperand)
+        }.
+
+        BooleanValue with: leftOperand asBoolean = rightOperand asBoolean
+    }).
+
+    BooleanType addMethod: ((BooleanType -- BooleanType) => BooleanType withSelector: #~= makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let leftOperand := arguments at: 0.
+        let rightOperand := arguments at: 1.
+        if: (nil == leftOperand) || (nil == rightOperand) then: {
+            return: (BooleanValue with: leftOperand ~~ rightOperand)
+        }.
+
+        BooleanValue with: leftOperand asBoolean ~= rightOperand asBoolean
+    }).
 }.
 
 CompilationContext !{
