@@ -168,6 +168,7 @@ class FunctionalValue withSuperclass: Value fields:#{
     name: Symbol.
     isCompileTimeFunction: Boolean.
     isMacro: Boolean.
+    isFinal: Boolean.
 }.
 
 class PrimitiveFunctionValue withSuperclass: FunctionalValue fields: #{
@@ -375,6 +376,11 @@ asBehaviorType :: BehaviorType.
 BehaviorType !{
 asBehaviorType :: BehaviorType.
     self
+}.
+
+BehaviorType !{
+isFinal :: Boolean.
+    isFinal
 }.
 
 Value !{
@@ -996,6 +1002,16 @@ isMacroContextArgument :: Boolean.
 
 ## SuperArgumentValue
 Value !{
+asSelfArgument :: ArgumentValue.
+    error: "Not a super argument value"
+}.
+
+SuperArgumentValue !{
+asSelfArgument :: ArgumentValue.
+    selfArgument
+}.
+
+Value !{
 isSuperArgumentValue :: Boolean.
     false
 }.
@@ -1174,6 +1190,22 @@ isMacro: (Boolean)newValue :: Void.
     isMacro := newValue
 }.
 
+Value !{
+isFinal :: Boolean.
+    false
+}.
+
+FunctionalValue !{
+isFinal :: Boolean.
+    isFinal
+}.
+
+FunctionalValue !{
+isFinal: (Boolean)newValue :: Void.
+    isFinal := newValue
+}.
+
+
 FunctionalValue !{
 isConstantValue :: Boolean.
     true
@@ -1181,6 +1213,7 @@ isConstantValue :: Boolean.
 
 Value !{
 evaluateWithArguments: (Value list)arguments :: Value.
+    printLine(self).
     error: "Not a functional value."
 }.
 

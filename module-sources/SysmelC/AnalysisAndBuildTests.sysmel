@@ -63,4 +63,19 @@ function evaluateSourceString(sourceString: String) => Value := {
     ## value dumpToConsole
 }.
 
+## testBlockClosureAdd2
+{
+    let value := evaluateSourceString("{:(Integer)x :(Integer)y :: Integer | x + y }").
+    ##assert: value asInteger = 12.
+    ##value dumpToConsole
+}.
+
+## testBlockClosureAdd3
+{
+    let value := evaluateSourceString("{:(Integer)x :(Integer)y :: Integer | x + y }(5. 7)").
+    assert: value asInteger = 12.
+    ##value dumpToConsole
+}.
+
+
 }

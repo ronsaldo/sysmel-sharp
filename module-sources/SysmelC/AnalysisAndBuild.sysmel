@@ -222,8 +222,9 @@ analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)
         error: messageSend sourcePosition printString --  ": Failed to find method with selector " -- selectorValue printString -- " in a value of type " -- receiverValue type printString
     }.
 
-    #*if: foundMethodOrField isMacroFunction then: {
-        let macroArguments := [
+    if: foundMethodOrField isMacro then: {
+        error: "TODO".
+        #*let macroArguments := [
             MacroContext new
                 sourcePosition: messageSend sourcePosition;
                 environment: aBuilder environment;
@@ -232,23 +233,28 @@ analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)
         ]  -- messageSend arguments.
         let macroResult type: Value := foundMethodOrField evaluateWithArguments: macroArguments.
         return: (macroResult analyzeAndBuildWith: aBuilder)
+        *#
     }.
 
     if: foundMethodOrField isFieldDefinition then: {
+        error: "TODO".
+        #*
         assert: messageSend arguments size = 0.
         let extractedValue := aBuilder makeExtractFrom: receiverValue fieldWithDefinition: foundMethodOrField asFieldDefinition.
         return: extractedValue
+        *#
     }.
 
     let functionType := foundMethodOrField type asFunctionType.
-    let callArguments := OrderedCollection new.
+    let callArgumentsArray := HIRValue list new: 1 + messageSend arguments size.
+    let destCallIndex mutable := 0.
     let addArgumentValue := {:(Value)argument :: Void |
-        let argumentIndex := callArguments size.
+        let argumentIndex := destCallIndex.
         let argumentDefinition type: ArgumentValue := functionType argumentDefinitions at: argumentIndex.
         let expectedType := argumentDefinition type.
-        let analyzedArgument := argument analyzeAndBuildWith: aBuilder.
-        let castedValue := aBuilder castValue: analyzedArgument toExpectedType: expectedType.
-        callArguments add: castedValue
+        let castedValue := argument analyzeAndBuildWith: aBuilder expectedType: expectedType.
+        callArgumentsArray at: destCallIndex put: castedValue.
+        destCallIndex := destCallIndex + 1
     }.
 
     if: receiverValueIsSuper then: {
@@ -256,21 +262,23 @@ analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)
     } else: {
         addArgumentValue(receiverValue).
     }.
-    messageSend arguments do: {:each :: Void | addArgumentValue(each)}.
+    ##messageSend arguments do: {:each :: Void | addArgumentValue(each)}.
+    let i mutable := 0.
+    while: (i < messageSend arguments size) do: {
+        addArgumentValue(messageSend arguments at: i)
+    } continueWith: (i := i + 1).
 
-    let callArgumentsArray := callArguments asArray.
+    let resultType := functionType computeResultTypeWithHIRArguments: callArgumentsArray.
     if: receiverValue type isBehaviorType && receiverValueIsSuper not && receiverValue type isFinal not then: {
         if: (nil == foundMethodOrField) || foundMethodOrField isFinal not then: {
-            let resultType := functionType computeResultTypeWithArguments: callArgumentsArray.
-            return: (aBuilder makeSend: selectorValue
-                messageReceiver: callArgumentsArray first arguments: callArgumentsArray allButFirst
-                resultType: resultType)
+            let sendResult := aBuilder send: selectorValue receiverAndArguments: callArgumentsArray resultType: resultType at: messageSend sourcePosition.
+            return: sendResult
         }
     }.
 
-    aBuilder makeFunction: foundMethodOrField applicationWithArguments: callArgumentsArray resultType: (functionType computeResultTypeWithArguments: callArgumentsArray).
-    *#
-    error: "TODO"
+    let foundMethodValue := foundMethodOrField analyzeAndBuildWith: aBuilder.
+    let callResult := aBuilder call: foundMethodValue withArguments: callArgumentsArray resultType: resultType at: messageSend sourcePosition.
+    callResult
 }.
 
 #*

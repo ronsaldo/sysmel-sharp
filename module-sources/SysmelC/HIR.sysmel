@@ -11,6 +11,10 @@ class HIRConstantLiteralValue withSuperclass: HIRConstant fields:#{
     literal: Value
 }.
 
+class HIRImportedFunction withSuperclass: HIRConstant fields:#{
+    functional: FunctionalValue
+}.
+
 class HIRFunctionLocalValue withSuperclass: HIRConstant fields:#{
     name: Symbol.
     index: Integer.
@@ -109,6 +113,26 @@ class HIRBuilder withSuperclass: Object fields:#{
 ].
 
 ## HIR Value
+Value !{
+isHIRValue :: Boolean.
+    false
+}.
+
+HIRValue !{
+isHIRValue :: Boolean.
+    true
+}.
+
+Value !{
+asHIRValue :: HIRValue.
+    error: "Not a hir value"
+}.
+
+HIRValue !{
+asHIRValue :: HIRValue.
+    self
+}.
+
 HIRValue !{
 type :: SysmelType.
     type
@@ -154,6 +178,35 @@ getValueInEvaluationContext: (HIRFunctionActivationContext)activationContext :: 
 HIRConstantLiteralValue !{
 toString :: String.
     "literal " -- literal printString
+}.
+
+## HIRImportedFunction.
+HIRImportedFunction !{
+functional :: FunctionalValue.
+    functional
+}.
+
+HIRImportedFunction !{
+functional: (FunctionalValue)newFunctional :: Void.
+    functional := newFunctional
+}.
+
+HIRImportedFunction !{
+toString :: String.
+    "importedFunction " -- functional name printString
+}.
+
+HIRImportedFunction !{
+evaluateWithArguments: (Value list)arguments :: Value.
+    functional evaluateWithArguments: arguments
+}.
+
+FunctionalValue !{
+analyzeAndBuildWith: (HIRBuilder)aHIRBuilder :: HIRValue.
+    HIRImportedFunction new
+        sourcePosition: sourcePosition;
+        functional: self;
+        yourself
 }.
 
 
@@ -633,6 +686,10 @@ addInstruction: (HIRInstruction)newInstruction :: Void.
 
 HIRBuilder !{
 addLiteral: (Value)value at: (SourcePosition)sourcePosition :: HIRValue.
+    if: value isHIRValue then: {
+        return: value asHIRValue
+    }.
+
     HIRConstantLiteralValue new
         sourcePosition: sourcePosition;
         literal: value;
@@ -809,6 +866,19 @@ call: (HIRValue)function withArguments: (HIRValue list)callArguments resultType:
     self addInstruction: call.
 
     call
+}.
+
+HIRCallFunctionInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let argumentValues := Value list new: callArguments size.
+    let i mutable := 0.
+    while: (i < callArguments size) do: {
+        let argumentValue := (callArguments at: i) getValueInEvaluationContext: activationContext.
+        argumentValues at: i put: argumentValue
+    } continueWith: (i := i + 1).
+
+    let result := function evaluateWithArguments: argumentValues.
+    activationContext setCurrentInstructionValue: result
 }.
 
 HIRCallFunctionInstruction !{
@@ -995,6 +1065,11 @@ send: (Symbol)selector to: (HIRValue)receiver withArguments: (HIRValue list)mess
     self addInstruction: messageSend.
 
     messageSend
+}.
+
+HIRBuilder !{
+send: (Symbol)selectorValue receiverAndArguments: (HIRValue list)receiverAndArguments resultType: (SysmelType) resultType at: (SourcePosition)sourcePosition :: HIRInstruction.
+    error: "TODO"
 }.
 
 HIRSendMessageInstruction !{
