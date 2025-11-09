@@ -737,6 +737,11 @@ name: (Symbol)newName :: Void.
     name := newName
 }.
 
+NominalType !{
+printString :: String.
+    name asString
+}.
+
 ## Integer type
 IntegerType !{
 valueSize :: Integer.

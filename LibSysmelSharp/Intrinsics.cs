@@ -288,7 +288,27 @@ namespace LibSysmelSharp
                     ParseTreeLiteralValueNode booleanLiteral = new ParseTreeLiteralValueNode(context.sourcePosition, BooleanValue.GetWithValue(true));
                     return new ParseTreeIfSelectionNode(context.sourcePosition, firstOperand, booleanLiteral, secondOperand);
                 }));
-
+            
+            BooleanType.AddMethod(new PrimitiveFunction("hash", false, true,
+                new SimpleFunctionType(null, [BooleanType], IntegerType),
+                (Value[] arguments) => {
+                    int value = arguments[0].AsBoolean() ? 1 : 0;
+                    return new IntegerValue(null, value.GetHashCode() & 0x7fffffff, IntegerType);
+                }));
+            BooleanType.AddMethod(new PrimitiveFunction("=", false, true,
+                new SimpleFunctionType(null, [BooleanType, BooleanType], BooleanType),
+                (Value[] arguments) => {
+                    bool leftValue = arguments[0].AsBoolean();
+                    bool rightValue = arguments[1].AsBoolean();
+                    return BooleanValue.GetWithValue(leftValue == rightValue);
+                }));
+            BooleanType.AddMethod(new PrimitiveFunction("~=", false, true,
+                new SimpleFunctionType(null, [BooleanType, BooleanType], BooleanType),
+                (Value[] arguments) => {
+                    bool leftValue = arguments[0].AsBoolean();
+                    bool rightValue = arguments[1].AsBoolean();
+                    return BooleanValue.GetWithValue(leftValue != rightValue);
+                }));
         }
 
         void RegisterControlFlowMacros()

@@ -220,6 +220,53 @@ registerGlobalsInSystemNamespace :: Void.
 }.
 
 CompilationContext !{
+registerBooleanPrimitives :: Void.
+    let namePrefix := "Boolean::".
+
+    BooleanType addMethod: (BooleanType => BooleanType withSelector: #not makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let booleanValue := (arguments at: 0) asBoolean.
+        BooleanValue with: booleanValue not
+    }).
+
+    BooleanType addMethod: ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType withSelector: #&& makePrimitiveMacroWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+            let context type: MacroContext := (arguments at: 0) asMacroContext.
+            let leftOperand type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+            let rightOperand type: ParseTreeNode := (arguments at: 2) asParseTreeNode.
+            let booleanLiteral := ParseTreeLiteralBooleanNode new
+                sourcePosition: context sourcePosition;
+                value: false;
+                yourself.
+            ParseTreeIfSelectionNode new
+                    sourcePosition: context sourcePosition;
+                    condition: leftOperand;
+                    trueExpression: rightOperand;
+                    falseExpression: booleanLiteral;
+                    yourself
+
+    }).
+
+    BooleanType addMethod: ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType withSelector: #|| makePrimitiveMacroWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+            let context type: MacroContext := (arguments at: 0) asMacroContext.
+            let leftOperand type: ParseTreeNode := (arguments at: 1) asParseTreeNode.
+            let rightOperand type: ParseTreeNode := (arguments at: 2) asParseTreeNode.
+            let booleanLiteral := ParseTreeLiteralBooleanNode new
+                sourcePosition: context sourcePosition;
+                value: true;
+                yourself.
+            ParseTreeIfSelectionNode new
+                    sourcePosition: context sourcePosition;
+                    condition: leftOperand;
+                    trueExpression: booleanLiteral;
+                    falseExpression: rightOperand;
+                    yourself
+
+    }).
+}.
+
+CompilationContext !{
 registerControlFlowMacros :: Void.
     globalNamespace setSymbol: #if:then:else: binding: (
         ((MacroContextType -- ParseTreeNodeType -- ParseTreeNodeType -- ParseTreeNodeType) => ParseTreeNodeType)
@@ -560,10 +607,76 @@ registerIntegerPrimitives: (NominalType)integerType :: Void.
 }.
 
 CompilationContext !{
+registerLiteralNumberPrimitives: (NominalType)integerType :: Void.
+    let namePrefix := integerType name asString -- "::".
+    integerType addMethod: (integerType => Int8Type withSelector: #c8 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger asCharacter.
+        CharacterValue new value: numberValue; type: Char8Type; yourself
+    }).
+    integerType addMethod: (integerType => Int8Type withSelector: #c16 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger asCharacter.
+        CharacterValue new value: numberValue; type: Char16Type; yourself
+    }).
+    integerType addMethod: (integerType => Int8Type withSelector: #c32 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger asCharacter.
+        CharacterValue new value: numberValue; type: Char32Type; yourself
+    }).
+    
+    integerType addMethod: (integerType => Int8Type withSelector: #i8 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue; type: Int8Type; yourself
+    }).    
+    integerType addMethod: (integerType => Int16Type withSelector: #i16 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue; type: Int16Type; yourself
+    }).    
+    integerType addMethod: (integerType => Int32Type withSelector: #i32 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue; type: Int8Type; yourself
+    }).    
+    integerType addMethod: (integerType => Int64Type withSelector: #i64 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue; type: Int8Type; yourself
+    }).
+    
+    integerType addMethod: (integerType => UInt8Type withSelector: #u8 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue; type: Int8Type; yourself
+    }).    
+    integerType addMethod: (integerType => UInt16Type withSelector: #u16 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue; type: Int16Type; yourself
+    }).    
+    integerType addMethod: (integerType => UInt32Type withSelector: #u32 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue; type: Int8Type; yourself
+    }).    
+    integerType addMethod: (integerType => UInt64Type withSelector: #u64 makeCompileTimePrimitiveWithPrefix: namePrefix doing: {
+        :(Value list)arguments :: Value |
+        let numberValue := (arguments at: 0) asInteger.
+        IntegerValue new value: numberValue; type: Int8Type; yourself
+    }).
+}.
+
+CompilationContext !{
 registerPrimitives :: Void.
+    self registerBooleanPrimitives.
     self registerControlFlowMacros.
     self registerDefinitionMacros.
     self registerObjectTypePrimitives.
+
+    self registerLiteralNumberPrimitives: CharacterType.
+    self registerLiteralNumberPrimitives: LargeIntegerType.
 
     self registerIntegerPrimitives: CharacterType.
     self registerIntegerPrimitives: LargeIntegerType.

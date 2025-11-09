@@ -337,17 +337,23 @@ analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)
     }.
 
     if: foundMethodOrField isMacro then: {
-        error: "TODO".
-        #*let macroArguments := [
-            MacroContext new
-                sourcePosition: messageSend sourcePosition;
-                environment: aBuilder environment;
-                yourself.
-            messageSend receiver
-        ]  -- messageSend arguments.
-        let macroResult type: Value := foundMethodOrField evaluateWithArguments: macroArguments.
+        let macroContext := MacroContext new
+            sourcePosition: messageSend sourcePosition;
+            environment: aBuilder environment;
+            yourself.
+
+        let argumentCount := messageSend arguments size.
+        let macroArguments := Value list new: 2 + argumentCount.
+        macroArguments at: 0 put: macroContext.
+        macroArguments at: 1 put: messageSend receiver.
+
+        let i mutable := 0.
+        while: (i < argumentCount) do: {
+            macroArguments at: 2 + i put: (messageSend arguments at: i)
+        } continueWith: (i := i + 1).
+
+        let macroResult := foundMethodOrField evaluateWithArguments: macroArguments.
         return: (macroResult analyzeAndBuildWith: aBuilder)
-        *#
     }.
 
     if: foundMethodOrField isFieldDefinition then: {

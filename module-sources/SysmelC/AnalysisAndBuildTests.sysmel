@@ -106,4 +106,31 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: falseValue asInteger = 2.
 }.
 
+## testBooleanNot
+{
+    ##let value := evaluateSourceString("{:(Boolean)value :: Boolean | value not }").
+    ##value dumpToConsole.
+
+    assert: evaluateSourceString("{:(Boolean)value :: Boolean | value not }(false)") asBoolean = true.
+    assert: evaluateSourceString("{:(Boolean)value :: Boolean | value not }(true)") asBoolean = false.
+}.
+
+## testBooleanAnd
+{
+    ##let value := evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a && b }").
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a && b }(false . false)") asBoolean = false.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a && b }(false . true)") asBoolean = false.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a && b }(true . false)") asBoolean = false.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a && b }(true . true)") asBoolean = true.
+}.
+
+## testBooleanOr
+{
+    ##let value := evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a || b }").
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a || b }(false . false)") asBoolean = false.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a || b }(false . true)") asBoolean = true.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a || b }(true . false)") asBoolean = true.
+    assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a || b }(true . true)") asBoolean = true.
+}.
+
 }
