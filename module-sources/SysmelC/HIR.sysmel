@@ -71,6 +71,15 @@ class HIRAllocaInstruction withSuperclass: HIRInstruction fields: #{
     valueType: SysmelType
 }.
 
+class HIRLoadInstruction withSuperclass: HIRInstruction fields: #{
+    storage: HIRValue.
+}.
+
+class HIRStoreInstruction withSuperclass: HIRInstruction fields: #{
+    storage: HIRValue.
+    valueToStore: HIRValue
+}.
+
 class HIRBoxDynamicValue withSuperclass: HIRInstruction fields: #{
     value: HIRValue
 }.
@@ -825,6 +834,106 @@ alloca: (SysmelType)valueType type: (SysmelType) type at: (SourcePosition)source
     alloca
 }.
 
+HIRAllocaInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let boxType := CompilationContext current getOrCreateMutableBoxOfType: valueType.
+    let boxValue := MutableValueBox new
+        currentValue: valueType defaultValue;
+        type: boxType;
+        yourself.
+    
+    let referenceValue := ReferenceValue new
+        storage: boxValue;
+        fieldIndex: 0;
+        type: type;
+        yourself.
+
+    activationContext setCurrentInstructionValue: referenceValue
+}.
+
+## HIRLoadInstruction
+HIRLoadInstruction !{
+storage :: HIRValue.
+    storage
+}.
+
+HIRLoadInstruction !{
+storage: (HIRValue)newStorage.
+    storage := newStorage
+}.
+
+HIRLoadInstruction !{
+dumpToConsole :: Void.
+    writeLine("  " -- self toString -- " := load " -- storage toString).
+}.
+
+HIRBuilder !{
+loadFrom: (HIRValue)storage at: (SourcePosition)sourcePosition :: HIRLoadInstruction.
+    let load := HIRLoadInstruction new
+        sourcePosition: sourcePosition;
+        storage: storage;
+        type: storage type baseType;
+        yourself.
+
+    self addInstruction: load.
+
+    load
+}.
+
+HIRLoadInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let storageValue := storage getValueInEvaluationContext: activationContext.
+    let loadedValue := storageValue loadValue.
+    activationContext setCurrentInstructionValue: loadedValue
+}.
+
+## HIRStoreInstruction
+HIRStoreInstruction !{
+storage :: HIRValue.
+    storage
+}.
+
+HIRStoreInstruction !{
+storage: (HIRValue)newStorage.
+    storage := newStorage
+}.
+
+HIRStoreInstruction !{
+valueToStore :: HIRValue.
+    valueToStore
+}.
+
+HIRStoreInstruction !{
+valueToStore: (HIRValue)newValueToStore.
+    valueToStore := newValueToStore
+}.
+
+HIRStoreInstruction !{
+dumpToConsole :: Void.
+    writeLine("  store " -- valueToStore toString -- " in " -- storage toString).
+}.
+
+HIRBuilder !{
+store: (HIRValue)valueToStore in: (HIRValue)storage at: (SourcePosition)sourcePosition :: HIRStoreInstruction.
+    let store := HIRStoreInstruction new
+        sourcePosition: sourcePosition;
+        storage: storage;
+        valueToStore: valueToStore;
+        type: CompilationContext current VoidType;
+        yourself.
+
+    self addInstruction: store.
+
+    store
+}.
+
+HIRStoreInstruction !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let storageValue := storage getValueInEvaluationContext: activationContext.
+    let valueToStoreValue := valueToStore getValueInEvaluationContext: activationContext.
+    storageValue storeValue: valueToStoreValue.
+}.
+
 ##
 HIRBoxDynamicValue !{
 value :: HIRValue.
@@ -885,6 +994,12 @@ unboxDynamicValue: (HIRValue)boxedValue withType: (SysmelType) unboxedType at: (
     self addInstruction: unbox.
 
     unbox
+}.
+
+HIRUnboxDynamicValue !{
+evaluateInActivationContext: (HIRFunctionActivationContext)activationContext :: Void.
+    let valueToUnbox := value getValueInEvaluationContext: activationContext.
+    activationContext setCurrentInstructionValue: valueToUnbox
 }.
 
 ## Branch instruction

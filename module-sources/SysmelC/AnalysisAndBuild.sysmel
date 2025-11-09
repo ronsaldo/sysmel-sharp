@@ -25,12 +25,35 @@ analyzeAndBuildWithDecayedType: (HIRBuilder)aHIRBuilder :: HIRValue.
 }.
 
 Value !{
-castHIRValue: (HIRValue)value toExpectedType: (SysmelType)expectedType with: (HIRBuilder)aHIRBuilder :: HIRValue.
+castHIRValue: (HIRValue)value toExpectedType: (SysmelType)expectedType with: (HIRBuilder)builder :: HIRValue.
+    let valueType := value type.
+
     if: nil == expectedType then: {
-        value
+        if: valueType isReferenceType then: {
+            error: "TODO: load pointer"
+            ##return: (builder loadPointer: value at: sourcePosition)
+        }.
+
+        return: value
     }.
 
-    value 
+    if: (expectedType isSatisfiedByType: valueType) then: {
+        return: value
+    }.
+
+    if: value type isReferenceType then: {
+        let loadedRef := builder loadFrom: value at: sourcePosition.
+        return: (self castHIRValue: loadedRef toExpectedType: expectedType with: builder).
+    }.
+
+    if: value type isDynamicType then: {
+        return: (builder unboxDynamicValue: value withType: expectedType at: sourcePosition)
+    }.
+    if: expectedType isDynamicType then: {
+        return: (builder boxDynamicValue: value at: sourcePosition)
+    }.
+
+    error: sourcePosition printString -- ": Expected an expression with type " -- expectedType printString -- " instead of " -- valueType printString
 }.
 
 ParseTreeNode !{
@@ -65,6 +88,26 @@ analyzeAndEvaluateInEnvironment: (LexicalEnvironment)environment :: ArgumentValu
         environment setSymbol: name binding: argumentValue
     }.
     argumentValue
+}.
+
+Value !{
+analyzeAndBuildAssignment: (ParseTreeAssignmentNode)assignment with: (HIRBuilder)builder :: HIRValue.
+    let storageValue := self.
+    if: storageValue type isReferenceType then: {
+        let valueToStore := assignment value analyzeAndBuildWith: builder expectedType: storageValue type baseType.
+        let storagePointer := storageValue analyzeAndBuildWith: builder.
+
+        builder store: valueToStore in: storagePointer at: assignment sourcePosition.
+        return: storagePointer
+    }.
+
+    error: "Not assignable value"
+}.
+
+ParseTreeAssignmentNode !{
+analyzeAndBuildWith: (HIRBuilder)aBuilder :: HIRValue.
+    let storageValue := storage analyzeAndBuildWith: aBuilder.
+    storageValue analyzeAndBuildAssignment: self with: aBuilder
 }.
 
 ParseTreeBinaryExpressionSequenceNode !{
@@ -288,8 +331,7 @@ analyzeAndBuildMessage: (ParseTreeMessageSendNode)messageSend selector: (Symbol)
     let receiverValueIsSuper := self isSuperArgumentValue.
     
     if: receiverValue type isReferenceType then: {
-        error: "TODO: load reference".
-        ##receiverValue := aBuilder makeLoadFrom: receiverValue type: receiverValue type baseType at: messageSend
+        receiverValue := aBuilder loadFrom: (receiverValue analyzeAndBuildWith: aBuilder) at: messageSend sourcePosition.
     }.
 
     if: selectorValue = #yourself then: {
@@ -430,5 +472,36 @@ analyzeAndBuildWith: (HIRBuilder)aBuilder :: HIRValue.
 
     result
 }.
+
+## ParseTreeVariableDefinitionNode
+ParseTreeVariableDefinitionNode !{
+analyzeAndBuildWith: (HIRBuilder)builder :: HIRValue.
+    let name := nameExpression analyzeAndEvaluateInEnvironment: builder environment withExpectedType: CompilationContext current SymbolType.
+    let typeValue mutable type: SysmelType := nil.
+    if: nil ~~ optionalTypeExpression then: {
+        let typeExpressionValue := optionalTypeExpression analyzeAndEvaluateInEnvironmentWithDecayedType: builder environment.
+        typeValue := typeExpressionValue asType
+    }.
+    
+    let initialValue mutable type: HIRValue := nil.
+    if: nil ~~ optionalInitialValue then: {
+        initialValue := optionalInitialValue analyzeAndBuildWith: builder expectedType: typeValue
+    }.
+
+    if: isMutable then: {
+        let valueType := initialValue type.
+        let referenceType := CompilationContext current getOrCreateReferenceType: valueType.
+        let allocaValue := builder allocaBuilder alloca: valueType type: referenceType at: sourcePosition.
+
+        builder store: initialValue in: allocaValue at: sourcePosition.
+
+        builder environment setSymbol: name asSymbolValue binding: allocaValue.
+        return: allocaValue
+    }.
+
+    builder environment setSymbol: name asSymbolValue binding: initialValue.
+    initialValue
+}.
+
 
 }.

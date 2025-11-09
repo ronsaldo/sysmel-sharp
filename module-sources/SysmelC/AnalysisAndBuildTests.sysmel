@@ -7,6 +7,7 @@ function evaluateSourceString(sourceString: String) => Value := {
     parseTree analyzeAndEvaluateInEnvironment: environment
 }.
 
+
 ## testLiteral
 {
     let blockClosure := evaluateSourceString("{:: Integer | 42}").
@@ -90,7 +91,7 @@ function evaluateSourceString(sourceString: String) => Value := {
 {
     let value := evaluateSourceString("{:: Integer | 1 . 2 }").
     ##value dumpToConsole
-    let evalResult := evaluateSourceString("{:: Boolean | 1 . 2 }()").
+    let evalResult := evaluateSourceString("{:: Integer | 1 . 2 }()").
     assert: evalResult asInteger = 2
 }.
 
@@ -149,6 +150,46 @@ function evaluateSourceString(sourceString: String) => Value := {
     assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a ~= b }(false . true)") asBoolean = true.
     assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a ~= b }(true . false)") asBoolean = true.
     assert: evaluateSourceString("{:(Boolean)a :(Boolean)b :: Boolean | a ~= b }(true . true)") asBoolean = false.
+}.
+
+## testLetMacro
+{
+    let value := evaluateSourceString("{:: Integer | let: #x with: 42. x} ()").
+    assert: value value = 42
+}.
+
+## testLetMacro2
+{
+    let value := evaluateSourceString("{:: Integer | let: #x with: 42. x + 3} ()").
+    assert: value value = 45
+}.
+
+## testLetMutableMacro
+{
+    ##let value := evaluateSourceString("{:: Integer | let: #var mutableWith: 42}").
+    ##value dumpToConsole.
+    assert: evaluateSourceString("{:: Integer | let: #var mutableWith: 42}()") asInteger = 42
+}.
+
+## testLetMutableMacro2
+{
+    ##let value := evaluateSourceString("{:: Integer | let: #var mutableWith: 42. var}").
+    ##value dumpToConsole.
+    assert: evaluateSourceString("{:: Integer | let: #var mutableWith: 42. var}()") asInteger = 42
+}.
+
+## testLetMutableMacro3
+{
+    ##let value := evaluateSourceString("{:: Integer | let: #var mutableWith: 42. var := 5}").
+    ##value dumpToConsole.
+    assert: evaluateSourceString("{:: Integer | let: #var mutableWith: 42. var := 5}()") asInteger = 5.
+}.
+
+## testLetMutableMacro4
+{
+    ##let value := evaluateSourceString("{:: Integer | let: #var mutableWith: 42. var + 5}").
+    ##value dumpToConsole.
+    assert: evaluateSourceString("{:: Integer | let: #var mutableWith: 42. var + 5}()") asInteger = 47
 }.
 
 }
