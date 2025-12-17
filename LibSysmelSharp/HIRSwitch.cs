@@ -32,6 +32,24 @@ namespace LibSysmelSharp
             return true;
         }
 
+        public override void EvaluateInActivationContext(HIRFunctionActivationContext context)
+        {
+            Value selectValue = switchValue.GetValueInEvaluationContext(context);
+            int caseCount = caseValues.Length;
+            for(int caseIndex = 0; caseIndex < caseCount; caseIndex++)
+            {
+                Value caseValue = caseValues[caseIndex].GetValueInEvaluationContext(context);
+                if(caseValue.Equals(selectValue))
+                {
+                    HIRBasicBlock caseBlock = caseBlocks[caseIndex];
+                    context.pc = caseBlock.index;
+                    return;
+                }
+            }
+
+            context.pc = defaultDestination.index;
+        }
+
         public override void DumpToConsole()
         {
             Console.Write("  switch " + switchValue.ToString() + " cases ");
